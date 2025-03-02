@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum FileType {
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+model File {
+  id           String    @id @default(uuid()) @db.VarChar(36)
+  originalName String    @db.VarChar(100)
+  url          String    @db.VarChar(255)
+  key          String    @db.VarChar(255)
+  size         Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime?
+  isActive     Boolean
+  fileType     FileType  @default(IMAGE)
+  uploader     User      @relation("file-uploader", fields: [uploaderId], references: [id])
+  User         User[]    @relation("user-avatar")
+  Post         Post[]
+  uploaderId   String    @db.VarChar(36)
+  Project      Project[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.VarChar(36)
+  firstName    String    @db.VarChar(20)
+  lastName     String    @db.VarChar(20)
+  email        String    @unique @db.VarChar(50)
+  passwordHash String    @db.VarChar(255)
+  refreshToken String?   @unique @db.VarChar(255)
+  bio          String?   @db.VarChar(250)
+  avatarFile   File?     @relation("user-avatar", fields: [avatarFileId], references: [id])
+  registeredAt DateTime  @default(now())
+  lastLoginAt  DateTime?
+  avatarFileId String    @db.VarChar(36)
+  role         Role      @default(USER)
+  Post         Post[]
+  File         File[]    @relation("file-uploader")
+  Project      Project[]
+}
+
+model Post {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  title        String     @unique @db.VarChar(100)
+  excerpt      String?    @db.VarChar(250)
+  content      String     @db.Text
+  dateCreated  DateTime
+  dateUpdated  DateTime
+  publishDate  DateTime?
+  isPublished  Boolean
+  coverImage   File?      @relation(fields: [coverImageId], references: [id])
+  coverImageId String?    @db.VarChar(36)
+  author       User       @relation(fields: [authorId], references: [id])
+  authorId     String     @db.VarChar(36)
+  PostTag      PostTag[]
+  PostView     PostView[]
+}
+
+model Tag {
+  id      String    @id @default(uuid()) @db.VarChar(36)
+  name    String    @unique @db.VarChar(50)
+  PostTag PostTag[]
+}
+
+model PostTag {
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @db.VarChar(36)
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  tagId  String @db.VarChar(36)
+
+  @@id([tagId, postId])
+}
+
+model PostView {
+  id        String   @id @default(uuid())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String   @db.VarChar(36)
+  ipAddress String   @db.VarChar(39) // Should be able to fit ipv6 address
+  date      DateTime @db.Date
+
+  @@unique([date, ipAddress])
+}
+
+model Project {
+  id            String    @id @default(uuid())
+  title         String    @unique @db.VarChar(100)
+  description   String    @db.VarChar(250)
+  coverImg      File?     @relation(fields: [coverImageId], references: [id])
+  coverImageId  String?   @db.VarChar(36)
+  author        User      @relation(fields: [authorId], references: [id])
+  authorId      String    @db.VarChar(36)
+  isPublished   Boolean
+  dateCreated   DateTime  @default(now())
+  dateUpdated   DateTime?
+  productionUrl String    @db.VarChar(255)
+  codeUrl       String    @db.VarChar(255)
+}
