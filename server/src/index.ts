@@ -1,13 +1,38 @@
 import express from "express";
-import { PORT } from "./env";
+import { NODE_ENV, PORT } from "./env";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { authRouter } from "./routes";
+import middlware from "./middlware";
+import { apiUtils } from "./utils";
+import { db } from "./db";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-const main = async () => {
-  app.listen(PORT, () => console.log(`Server Running On: ${PORT}`));
-};
-main();
+
+app.get("/api/v1/health", (req, res, next) => {
+  res
+    .status(200)
+    .json(apiUtils.formatApiRespone(null, 200, "Health Check Passed"));
+});
+
+app.use("/api/v1/auth", authRouter);
+app.use(middlware.errorMiddleware);
+
+if (NODE_ENV.toLocaleLowerCase() !== "test") {
+  const main = async () => {
+    try {
+      console.log("Connecting Database");
+      await db.$connect();
+    } catch (error) {
+      console.log(error);
+      process.exit(1);
+    }
+    app.listen(PORT, () => console.log(`API Server Running On: ${PORT}`));
+  };
+  main();
+}
+
+export default app;

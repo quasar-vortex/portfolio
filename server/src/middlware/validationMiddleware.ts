@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import z from "zod";
-import { formatApiRespone } from "../utils/apiUtils";
+import { apiUtils } from "../utils";
 
 export const validateSchema: (s: z.ZodSchema) => RequestHandler =
   (s) => async (req, res, next) => {
@@ -15,16 +15,15 @@ export const validateSchema: (s: z.ZodSchema) => RequestHandler =
     } catch (error) {
       // Return issues if fails on validation
       if (error instanceof z.ZodError) {
-        res.json(
-          formatApiRespone(
-            null,
-            400,
-            error.message,
-            undefined,
-            undefined,
-            error.issues
-          )
+        const errorResponse = apiUtils.formatApiRespone(
+          null,
+          400,
+          error.message,
+          undefined,
+          undefined,
+          error.issues
         );
+        res.status(400).json(errorResponse);
         return;
       }
       // If some other error occurs pass to catch all

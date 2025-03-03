@@ -7,7 +7,7 @@ export interface ApiRespone<T> {
   statusCode: number;
 }
 
-export function formatApiRespone<T>(
+function formatApiRespone<T>(
   data: T,
   statusCode?: number,
   message?: string,
@@ -24,3 +24,5 @@ export function formatApiRespone<T>(
     error,
   };
 }
+
+export default { formatApiRespone };

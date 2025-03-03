@@ -3,7 +3,7 @@ import z from "zod";
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
 export type RegisterUserModel = z.infer<typeof registerUserModel>["body"];
-export const registerUserModel = z.object({
+const registerUserModel = z.object({
   body: z.object({
     firstName: z
       .string()
@@ -21,9 +21,11 @@ export const registerUserModel = z.object({
   }),
 });
 export type LoginUserModel = z.infer<typeof loginUserModel>["body"];
-export const loginUserModel = z.object({
-  body: z.object({
-    email: registerUserModel.shape.body.shape.email,
-    password: registerUserModel.shape.body.shape.password,
-  }),
+const loginUserModel = z.object({
+  body: registerUserModel.shape.body.pick({ email: true, password: true }),
 });
+
+export default {
+  loginUserModel,
+  registerUserModel,
+};

@@ -52,7 +52,7 @@ model User {
   avatarFile   File?     @relation("user-avatar", fields: [avatarFileId], references: [id])
   registeredAt DateTime  @default(now())
   lastLoginAt  DateTime?
-  avatarFileId String    @db.VarChar(36)
+  avatarFileId String?   @db.VarChar(36)
   role         Role      @default(USER)
   Post         Post[]
   File         File[]    @relation("file-uploader")

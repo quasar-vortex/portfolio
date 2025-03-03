@@ -1,12 +1,12 @@
 import { ErrorRequestHandler } from "express";
-import { formatApiRespone } from "../utils/apiUtils";
+import { apiUtils } from "../utils";
 import HttpError from "../error";
 
 export const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
   res
-    .status(500)
+    .status(err instanceof HttpError ? err.status : 500)
     .json(
-      formatApiRespone(
+      apiUtils.formatApiRespone(
         null,
         err instanceof HttpError ? err.status : 500,
         err instanceof HttpError ? err.message : "INTERNAL_ERROR"

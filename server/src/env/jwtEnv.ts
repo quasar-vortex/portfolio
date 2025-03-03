@@ -1,4 +1,11 @@
-export const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
-export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
-export const JWT_ACCESS_EXPIRATION_TIME = "15m";
-export const JWT_REFRESH_EXPIRATION_TIME = "7d";
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
+const JWT_ACCESS_EXPIRATION_TIME = "15m";
+const JWT_REFRESH_EXPIRATION_TIME = "7d";
+
+export default {
+  JWT_ACCESS_SECRET,
+  JWT_ACCESS_EXPIRATION_TIME,
+  JWT_REFRESH_EXPIRATION_TIME,
+  JWT_REFRESH_SECRET,
+};

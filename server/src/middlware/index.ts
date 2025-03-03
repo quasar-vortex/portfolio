@@ -1,3 +1,4 @@
-import { validateSchema } from "./validation";
+import { errorMiddleware } from "./errorMiddleware";
+import { validateSchema } from "./validationMiddleware";
 
-export default { validateSchema };
+export default { validateSchema, errorMiddleware };
