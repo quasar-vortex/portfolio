@@ -15,8 +15,7 @@ const registerUserHandler = asyncHandler(async (req, res, next) => {
     req.body as RegisterUserModel;
 
   // Check if the user exists
-  const foundUser = await db.user.findUnique({ where: { email } });
-  if (foundUser)
+  if (await db.user.findUnique({ where: { email } }))
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "User Already Exists",
@@ -45,7 +44,7 @@ const registerUserHandler = asyncHandler(async (req, res, next) => {
   };
   await db.user.update({
     where: { id: newUser.id },
-    data: { lastLoginAt: new Date().toISOString() },
+    data: { lastLoginAt: new Date().toISOString(), refreshToken: refresh },
   });
   // Sign refresh http only cookie
   res.cookie("refreshToken", refresh, {
@@ -87,7 +86,7 @@ const loginUserHandler = asyncHandler(async (req, res, next) => {
   };
   await db.user.update({
     where: { id: restOfUser.id },
-    data: { lastLoginAt: new Date().toISOString() },
+    data: { lastLoginAt: new Date().toISOString(), refreshToken: refresh },
   });
   // Build response
   const response = {
@@ -148,7 +147,7 @@ const logOffUserHandler = asyncHandler(async (req, res, next) => {
     // Check if the user exists in the database
     const foundUser = await db.user.findUnique({
       where: { id },
-      select: { ...selectUser },
+      select: { refreshToken: true },
     });
     if (!foundUser)
       throw new HttpError({
@@ -156,9 +155,11 @@ const logOffUserHandler = asyncHandler(async (req, res, next) => {
         message: "User Not Found",
       });
     // Remove the token from the database
-    await db.user.update({ where: { id }, data: { refreshToken: null } });
+    if (foundUser.refreshToken) {
+      await db.user.update({ where: { id }, data: { refreshToken: null } });
+    }
     // Clear the cookie
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", undefined);
   }
 
   res.status(200).json(formatApiRespone(null, 200, "User Signed Out"));
