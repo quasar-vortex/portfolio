@@ -8,10 +8,10 @@ describe("Health Check", () => {
     expect(res.status).toBe(200);
   });
 });
-const mockUser = {
+export const mockUser = {
   firstName: "John",
   lastName: "Doe",
-  password: "4rfv5tgb$RFV%TGB",
+  password: "8D6DCF*7e8",
   email: "testuser@mail.io",
 };
 

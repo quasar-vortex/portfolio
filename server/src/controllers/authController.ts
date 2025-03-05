@@ -117,7 +117,7 @@ const refreshUserHandler = asyncHandler(async (req, res, next) => {
   const { id } = await verifyUserToken("REFRESH", refreshToken);
   // Check if the user exists in the database
   const foundUser = await db.user.findUnique({
-    where: { id },
+    where: { id, refreshToken },
     select: { ...selectUser },
   });
   if (!foundUser)

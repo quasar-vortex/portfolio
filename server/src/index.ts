@@ -2,14 +2,14 @@ import express from "express";
 import { NODE_ENV, PORT } from "./env";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authRouter } from "./routes";
+import { authRouter, userRouter } from "./routes";
 import middlware from "./middlware";
 import { apiUtils } from "./utils";
 import { db } from "./db";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 
 app.get("/api/v1/health", (req, res, next) => {
@@ -19,6 +19,7 @@ app.get("/api/v1/health", (req, res, next) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 app.use(middlware.errorMiddleware);
 
 if (NODE_ENV.toLocaleLowerCase() !== "test") {

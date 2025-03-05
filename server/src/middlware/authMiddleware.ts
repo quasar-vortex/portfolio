@@ -20,11 +20,11 @@ export const authMiddleware: CustomRequestHandler = asyncHandler(
     // Split on Bearer space, grab the token
     const parts = authorizationHeader.split(" ");
     if (parts.length === 2) {
-      const { id } = await jwtUtils.verifyUserToken(
+      const decoded = await jwtUtils.verifyUserToken(
         "ACCESS",
         authorizationHeader.split(" ")[1]
       );
-      req.user = { id };
+      req.user = decoded;
       next();
       return;
     }
