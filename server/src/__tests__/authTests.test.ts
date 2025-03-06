@@ -93,6 +93,7 @@ describe("Login User", () => {
       .expect(401);
   });
 });
+
 describe("Log Out User", () => {
   it("Should Return A Success Message and Remove The Refresh Cookie", async () => {
     // Login user
@@ -120,6 +121,7 @@ describe("Log Out User", () => {
     // should be set to date in 1970 / expired
     expect(refreshTokenTwo).toMatch("1970");
   });
+
   it("Should Throw An Error If User Is Not Found", async () => {
     // Login user
     const loginUser = await request(app)
@@ -144,6 +146,7 @@ describe("Log Out User", () => {
     await request(app).post("/api/v1/auth/register").send(mockUser).expect(201);
   });
 });
+
 describe("Refresh User", () => {
   it("Should Return The User and Access Token", async () => {
     // Login user
