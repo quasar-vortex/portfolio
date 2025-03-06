@@ -27,7 +27,6 @@ model File {
   size         Int
   createdAt    DateTime  @default(now())
   updatedAt    DateTime?
-  isActive     Boolean
   fileType     FileType  @default(IMAGE)
   uploader     User      @relation("file-uploader", fields: [uploaderId], references: [id])
   User         User[]    @relation("user-avatar")

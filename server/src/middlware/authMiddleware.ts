@@ -2,7 +2,7 @@ import { asyncHandler, jwtUtils } from "../utils";
 import HttpError from "../error";
 import { CustomRequestHandler } from "../types";
 
-export const authMiddleware: CustomRequestHandler = asyncHandler(
+const authMiddleware: CustomRequestHandler = asyncHandler(
   async (req, res, next) => {
     const headers = req.headers as unknown as Record<
       string,
@@ -35,3 +35,4 @@ export const authMiddleware: CustomRequestHandler = asyncHandler(
     );
   }
 );
+export default authMiddleware;

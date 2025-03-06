@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import z from "zod";
 import { apiUtils } from "../utils";
 
-export const validateSchema: (s: z.ZodSchema) => RequestHandler =
+const validateSchema: (s: z.ZodSchema) => RequestHandler =
   (s) => async (req, res, next) => {
     try {
       // verify body, params, and query match schemas
@@ -30,3 +30,4 @@ export const validateSchema: (s: z.ZodSchema) => RequestHandler =
       next(error);
     }
   };
+export default validateSchema;

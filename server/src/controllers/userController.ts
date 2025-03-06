@@ -81,7 +81,6 @@ const updateSignedInUserProfileHandler = asyncHandler(
       );
   }
 );
-
 const getSignedInUserProfile = asyncHandler(async (req, res, next) => {
   const signedInId = req.user!.id;
   const foundUser = await db.user.findUnique({
@@ -118,10 +117,22 @@ const getManyUsersHandler = asyncHandler(async (req, res, next) => {
   const foundUsers = await db.user.findMany({ select: { ...selectUser } });
   res.status(200).json(formatApiRespone(foundUsers, 200, "Users Retrieved."));
 });
+/* 
+Will need to check if the user has an avatar file
+Then delete the file from storage if it exists prior to user deletion
+*/
+const deleteSignedInUserHandler = asyncHandler(async (req, res, next) => {
+  const userId = req.user!.id;
+  await db.user.delete({ where: { id: userId } });
+  res
+    .status(200)
+    .json(formatApiRespone(null, 200, "User Deleted Successfully."));
+});
 
 export default {
   updateSignedInUserProfileHandler,
   getSignedInUserProfile,
   getUserByIdHandler,
   getManyUsersHandler,
+  deleteSignedInUserHandler,
 };

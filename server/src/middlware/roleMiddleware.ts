@@ -4,10 +4,11 @@ import { CustomRequestHandler } from "../types";
 import { db } from "../db";
 import { userModels } from "../models";
 
-export const roleMiddleware: (
-  role: "ADMIN" | "USER"
-) => CustomRequestHandler = (requiredRole) =>
+const roleMiddleware: (role: "ADMIN" | "USER") => CustomRequestHandler = (
+  requiredRole
+) =>
   asyncHandler(async (req, res, next) => {
+    // Find the user
     const userId = req.user!.id;
     const dbUser = await db.user.findUnique({
       where: { id: userId },
@@ -22,6 +23,7 @@ export const roleMiddleware: (
       );
       return;
     }
+    // Check the role
     const { role } = dbUser;
     if (requiredRole !== role) {
       next(
@@ -32,5 +34,8 @@ export const roleMiddleware: (
       );
       return;
     }
+    // continue
     next();
   });
+
+export default roleMiddleware;

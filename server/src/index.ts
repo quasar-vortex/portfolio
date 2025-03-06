@@ -3,7 +3,7 @@ import { NODE_ENV, PORT } from "./env";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authRouter, userRouter } from "./routes";
-import middlware from "./middlware";
+import { errorMiddleware } from "./middlware";
 import { apiUtils } from "./utils";
 import { db } from "./db";
 
@@ -20,7 +20,7 @@ app.get("/api/v1/health", (req, res, next) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use(middlware.errorMiddleware);
+app.use(errorMiddleware);
 
 if (NODE_ENV.toLocaleLowerCase() !== "test") {
   const main = async () => {
