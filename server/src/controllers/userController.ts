@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import { db } from "../db";
 import HttpError from "../error";
 import { userModels } from "../models";
-import { UpdateUserProfileModel } from "../models/userModels";
+import { QueryUserModel, UpdateUserProfileModel } from "../models/userModels";
 import { apiUtils, asyncHandler, passUtils, jwtUtils } from "../utils";
 
 const { selectUser } = userModels;
@@ -111,12 +111,59 @@ const getUserByIdHandler = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(formatApiRespone(foundUser, 200, "User Profile Retrieved."));
 });
-// May add pagination later if I add admin features for user management to the app
-// Primary focus first to get blog up and running then enhance and add admin capabilities.
+
 const getManyUsersHandler = asyncHandler(async (req, res, next) => {
-  const foundUsers = await db.user.findMany({ select: { ...selectUser } });
-  res.status(200).json(formatApiRespone(foundUsers, 200, "Users Retrieved."));
+  const { pageIndex, pageSize, searchTerm } = req.query as QueryUserModel;
+
+  let take = parseInt(pageSize || "10");
+  let skip = parseInt(pageIndex || "0") * take;
+
+  // Ensure pagination values are within valid ranges
+  if (Number.isNaN(skip) || skip < 0) skip = 0;
+  if (Number.isNaN(take) || take < 10) take = 10;
+  if (take > 50) take = 50;
+
+  const trimmedSearch = searchTerm?.trim();
+
+  const where = trimmedSearch
+    ? {
+        OR: [
+          { firstName: { contains: trimmedSearch, mode: "insensitive" } },
+          { lastName: { contains: trimmedSearch, mode: "insensitive" } },
+          { email: { contains: trimmedSearch, mode: "insensitive" } },
+        ],
+      }
+    : {};
+
+  // Fetch paginated users and total count
+  const [foundUsers, totalUsers] = await Promise.all([
+    db.user.findMany({
+      select: { ...selectUser },
+      where,
+      take,
+      skip,
+    }),
+    db.user.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(totalUsers / take);
+  const currentPage = Math.floor(skip / take) + 1; // Convert to 1-based index
+
+  res.status(200).json(
+    formatApiRespone(
+      {
+        users: foundUsers,
+        totalUsers,
+        totalPages,
+        currentPage,
+        pageSize: take,
+      },
+      200,
+      "Users Retrieved."
+    )
+  );
 });
+
 /* 
 Will need to check if the user has an avatar file
 Then delete the file from storage if it exists prior to user deletion

@@ -4,7 +4,7 @@ import { authMiddleware, roleMiddleware } from "../middlware";
 /*
 POST / Uploads a new file
 GET /:fileId Gets a file by id
-GET / Gets many files (returns files for the signed in user)
+GET / Gets many files, requires admin role
 DELETE /:fileId Deletes a file by ID
 */
 

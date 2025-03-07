@@ -8,7 +8,7 @@ const selectUser = {
   role: true,
   registeredAt: true,
   lastLoginAt: true,
-  avatarFile: true,
+  avatarFileId: true,
 };
 export type UpdateUserProfileModel = z.infer<typeof updateUserModel>["body"];
 const updateUserModel = z.object({
@@ -33,7 +33,16 @@ const updateUserModel = z.object({
       .optional(),
   }),
 });
+export type QueryUserModel = z.infer<typeof queryUserModel>["query"];
+const queryUserModel = z.object({
+  query: z.object({
+    pageSize: z.string().optional(),
+    pageIndex: z.string().optional(),
+    searchTerm: z.string().optional(),
+  }),
+});
 export default {
   selectUser,
   updateUserModel,
+  queryUserModel,
 };
