@@ -4,6 +4,7 @@ import HttpError from "../error";
 import { userModels } from "../models";
 import { QueryUserModel, UpdateUserProfileModel } from "../models/userModels";
 import { apiUtils, asyncHandler, passUtils, jwtUtils } from "../utils";
+import fileUtils from "../utils/fileUtils";
 
 const { selectUser } = userModels;
 const { formatApiRespone } = apiUtils;
@@ -170,6 +171,23 @@ Then delete the file from storage if it exists prior to user deletion
 */
 const deleteSignedInUserHandler = asyncHandler(async (req, res, next) => {
   const userId = req.user!.id;
+  // Delete the users' projects
+  const userProjects = await db.project.deleteMany({
+    where: { authorId: userId },
+  });
+  // Delete the user's posts
+  const userPosts = await db.post.deleteMany({
+    where: { authorId: userId },
+  });
+  // Get the files for the user
+  const userFiles = await db.file.findMany({ where: { uploaderId: userId } });
+  // Delete the files from s3
+  await Promise.all(
+    userFiles.map(async (f) => {
+      return await fileUtils.deleteFile(f.key);
+    })
+  );
+  // Delete the user from the db
   await db.user.delete({ where: { id: userId } });
   res
     .status(200)

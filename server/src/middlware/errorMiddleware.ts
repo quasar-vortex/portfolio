@@ -1,8 +1,13 @@
 import { ErrorRequestHandler } from "express";
 import { apiUtils } from "../utils";
 import HttpError from "../error";
+import logger from "../logger";
 
-export const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
+const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
+  logger.error(
+    { method: req.method, url: req.url, ip: req.ip },
+    err?.message || "INTERNAL_ERROR"
+  );
   res
     .status(err instanceof HttpError ? err.status : 500)
     .json(
@@ -13,3 +18,4 @@ export const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
       )
     );
 };
+export default errorMiddleware;
