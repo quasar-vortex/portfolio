@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userController } from "../controllers";
+import { userController, filesController } from "../controllers";
 import { validateSchema, authMiddleware, roleMiddleware } from "../middlware";
 import { userModels } from "../models";
 
@@ -9,6 +9,7 @@ GET /:userId Gets a user by their id
 GET / Gets may users and requires admin role
 GET /me Gets the signed in user's profile
 DELETE /me Deletes the signed in user's profile
+GET /me/files Gets the signed in user's files
 */
 
 const userRouter = Router();
@@ -28,6 +29,7 @@ userRouter
     userController.getManyUsersHandler
   )
   .get("/me", authMiddleware, userController.getSignedInUserProfile)
-  .delete("/me", authMiddleware, userController.deleteSignedInUserHandler);
+  .delete("/me", authMiddleware, userController.deleteSignedInUserHandler)
+  .get("/me/files", authMiddleware, filesController.getUsersFilesHandler);
 
 export default userRouter;

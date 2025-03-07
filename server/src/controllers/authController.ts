@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { NODE_ENV } from "../env";
+import { appEnv } from "../env";
 import HttpError from "../error";
 import { LoginUserModel, RegisterUserModel } from "../models/authModels";
 import { userModels } from "../models";
@@ -49,7 +49,7 @@ const registerUserHandler = asyncHandler(async (req, res, next) => {
   // Sign refresh http only cookie
   res.cookie("refreshToken", refresh, {
     httpOnly: true,
-    secure: NODE_ENV.toLocaleLowerCase() === "production",
+    secure: appEnv.NODE_ENV.toLocaleLowerCase() === "production",
     sameSite: "strict",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
@@ -96,7 +96,7 @@ const loginUserHandler = asyncHandler(async (req, res, next) => {
   // Sign refresh http only cookie
   res.cookie("refreshToken", refresh, {
     httpOnly: true,
-    secure: NODE_ENV.toLocaleLowerCase() === "production",
+    secure: appEnv.NODE_ENV.toLocaleLowerCase() === "production",
     sameSite: "strict",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });

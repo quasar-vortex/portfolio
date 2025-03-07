@@ -8,7 +8,6 @@ import multer from "multer";
 import multerS3 from "multer-s3";
 import { s3Env } from "../env";
 
-export type CustomFile = {};
 const ACCEPTED_FILE_TYPES = [
   "image/jpeg",
   "image/webp",

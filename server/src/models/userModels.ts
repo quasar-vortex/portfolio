@@ -8,7 +8,7 @@ const selectUser = {
   role: true,
   registeredAt: true,
   lastLoginAt: true,
-  avatarFileId: true,
+  avatarFile: true,
 };
 export type UpdateUserProfileModel = z.infer<typeof updateUserModel>["body"];
 const updateUserModel = z.object({

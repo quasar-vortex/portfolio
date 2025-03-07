@@ -128,9 +128,9 @@ const getManyUsersHandler = asyncHandler(async (req, res, next) => {
   const where = trimmedSearch
     ? {
         OR: [
-          { firstName: { contains: trimmedSearch, mode: "insensitive" } },
-          { lastName: { contains: trimmedSearch, mode: "insensitive" } },
-          { email: { contains: trimmedSearch, mode: "insensitive" } },
+          { firstName: { contains: trimmedSearch } },
+          { lastName: { contains: trimmedSearch } },
+          { email: { contains: trimmedSearch } },
         ],
       }
     : {};
