@@ -7,6 +7,8 @@ import { errorMiddleware } from "./middleware";
 import { apiUtils } from "./utils";
 import { db } from "./db";
 import logger from "./logger";
+import tagRouter from "./routes/tagsRoutes";
+import projectRouter from "./routes/projectRoutes";
 
 const app = express();
 app.use(express.json());
@@ -23,6 +25,8 @@ app.use(`/api/${appEnv.API_VERSION}/auth`, authRouter);
 app.use(`/api/${appEnv.API_VERSION}/users`, userRouter);
 app.use(`/api/${appEnv.API_VERSION}/uploads`, filesRouter);
 app.use(`/api/${appEnv.API_VERSION}/posts`, postsRouter);
+app.use(`/api/${appEnv.API_VERSION}/tags`, tagRouter);
+app.use(`/api/${appEnv.API_VERSION}/projects`, projectRouter);
 
 app.use(errorMiddleware);
 

@@ -57,6 +57,11 @@ const updatePostModel = z.object({
     isPublished: z.boolean({
       message: "isPublished must be a boolean value.",
     }),
+    isFeatured: z
+      .boolean({
+        message: "isPublished must be a boolean value.",
+      })
+      .optional(),
     tags: z.array(z.string()),
   }),
 });

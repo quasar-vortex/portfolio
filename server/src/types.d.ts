@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "@prisma/client";
+// role is only added on backend after verifying role
+// from token never sent to front end, only id in token
 export type CustomRequestHandler = (
-  req: Request & { user?: { id: string } },
+  req: Request & { user?: { id: string; role?: string } },
   res: Response,
   next: NextFunction
 ) => void;

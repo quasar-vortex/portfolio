@@ -34,6 +34,7 @@ const roleMiddleware: (role: "ADMIN" | "USER") => CustomRequestHandler = (
       );
       return;
     }
+    req.user!.role = role;
     // continue
     next();
   });

@@ -9,29 +9,25 @@ import logger from "../logger";
 
 const { formatApiRespone } = apiUtils;
 
+// Upload file
 const uploadFileHandler = asyncHandler(async (req, res, next) => {
-  const file = req.file as unknown as S3UploadedFile | undefined;
+  const file = req.file as S3UploadedFile | undefined;
   const userId = req.user!.id;
-  let fileType: FileType = "IMAGE";
 
   logger.info(
-    { method: req.method, url: req.url, ip: req.ip, userId },
+    { userId, method: req.method, url: req.url, ip: req.ip },
     "Upload request received"
   );
 
   if (!file) {
-    logger.error(
-      { method: req.method, url: req.url, ip: req.ip, userId },
-      "No file provided"
-    );
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "No File Provided",
     });
   }
 
-  let mimeType = file.mimetype.toLowerCase();
-  fileType = mimeType.split("/")[0] as FileType;
+  const mimeType = file.mimetype.toLowerCase();
+  const fileType: FileType = mimeType.startsWith("image") ? "IMAGE" : "VIDEO";
 
   const { key, originalname, size, location: url } = file;
 
@@ -46,80 +42,52 @@ const uploadFileHandler = asyncHandler(async (req, res, next) => {
     },
   });
 
-  logger.info(
-    {
-      method: req.method,
-      url: req.url,
-      ip: req.ip,
-      userId,
-      fileId: newFile.id,
-    },
-    "File uploaded successfully"
-  );
+  logger.info({ userId, fileId: newFile.id }, "File uploaded successfully");
 
   res.status(201).json(formatApiRespone(newFile, 201, "File Uploaded"));
 });
 
+// Delete file (owner or admin)
 const deleteFileByIdHandler = asyncHandler(async (req, res, next) => {
   const userId = req.user!.id;
   const fileId = req.params.fileId;
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-    "Delete file request received"
-  );
+  logger.info({ userId, fileId }, "Delete file request received");
 
   const foundFile = await db.file.findUnique({ where: { id: fileId } });
 
   if (!foundFile) {
-    logger.error(
-      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-      "File not found"
-    );
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "No File to Delete",
     });
   }
 
-  if (foundFile.uploaderId !== userId) {
-    logger.error(
-      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-      "Unauthorized delete attempt"
-    );
+  // Allow deletion if the user is the uploader or an admin
+  const isAdmin = req.user!.role === "ADMIN";
+  if (foundFile.uploaderId !== userId && !isAdmin) {
     throw new HttpError({
       statusMessage: "FORBIDDEN",
-      message: "May not delete another's files.",
+      message: "Unauthorized file deletion.",
     });
   }
 
   await fileUtils.deleteFile(foundFile.key);
-  await db.file.delete({ where: { id: fileId, uploaderId: userId } });
+  await db.file.delete({ where: { id: fileId } });
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-    "File deleted successfully"
-  );
+  logger.info({ fileId }, "File deleted successfully");
 
   res.status(200).json(formatApiRespone(null, 200, "File Deleted"));
 });
 
+// Admin file deletion (any file)
 const deleteFileAdminHandler = asyncHandler(async (req, res, next) => {
-  const userId = req.user!.id;
   const fileId = req.params.fileId;
-
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-    "Delete file request received"
-  );
+  logger.info({ fileId }, "Admin delete file request received");
 
   const foundFile = await db.file.findUnique({ where: { id: fileId } });
 
   if (!foundFile) {
-    logger.error(
-      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-      "File not found"
-    );
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "No File to Delete",
@@ -127,181 +95,82 @@ const deleteFileAdminHandler = asyncHandler(async (req, res, next) => {
   }
 
   await fileUtils.deleteFile(foundFile.key);
-  await db.file.delete({ where: { id: fileId, uploaderId: userId } });
+  await db.file.delete({ where: { id: fileId } });
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
-    "File deleted successfully"
-  );
+  logger.info({ fileId }, "File deleted by admin");
 
-  res.status(200).json(formatApiRespone(null, 200, "File Deleted"));
+  res.status(200).json(formatApiRespone(null, 200, "Admin Deleted File"));
 });
 
+// Get file by ID
 const getFileByIdHandler = asyncHandler(async (req, res, next) => {
   const fileId = req.params.fileId;
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, fileId },
-    "Get file request received"
-  );
+  logger.info({ fileId }, "Get file request received");
 
   const foundFile = await db.file.findUnique({ where: { id: fileId } });
 
   if (!foundFile) {
-    logger.error(
-      { method: req.method, url: req.url, ip: req.ip, fileId },
-      "File not found"
-    );
     throw new HttpError({
       statusMessage: "NOT_FOUND",
       message: "No File Found",
     });
   }
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, fileId },
-    "File retrieved successfully"
-  );
-
   res
     .status(200)
     .json(formatApiRespone(foundFile, 200, "Found File Successfully."));
 });
 
+// Get all files (admin)
 const getManyFilesHandler = asyncHandler(async (req, res, next) => {
   const { pageIndex, pageSize, searchTerm } = req.query as QueryFileModel;
+  const take = Math.min(Math.max(parseInt(pageSize || "10"), 10), 50);
+  const skip = Math.max(parseInt(pageIndex || "0") * take, 0);
 
-  let take = parseInt(pageSize || "10");
-  let skip = parseInt(pageIndex || "0") * take;
+  const where = searchTerm ? { originalName: { contains: searchTerm } } : {};
 
-  if (Number.isNaN(skip) || skip < 0) skip = 0;
-  if (Number.isNaN(take) || take < 10) take = 10;
-  if (take > 50) take = 50;
-
-  const trimmedSearch = searchTerm?.trim();
-
-  const where = trimmedSearch
-    ? { originalName: { contains: trimmedSearch } }
-    : {};
-
-  logger.info(
-    {
-      method: req.method,
-      url: req.url,
-      ip: req.ip,
-      searchTerm,
-      pageIndex,
-      pageSize,
-    },
-    "Fetching files"
-  );
+  logger.info({ searchTerm, pageIndex, pageSize }, "Fetching files");
 
   const [foundFiles, totalFiles] = await Promise.all([
     db.file.findMany({ skip, where, take }),
     db.file.count({ where }),
   ]);
 
-  const totalPages = Math.ceil(totalFiles / take);
-  const currentPage = Math.floor(skip / take) + 1;
-
-  logger.info(
-    {
-      method: req.method,
-      url: req.url,
-      ip: req.ip,
-      totalFiles,
-      currentPage,
-      totalPages,
-    },
-    "Files retrieved successfully"
-  );
-
-  res.status(200).json(
-    formatApiRespone(
-      {
-        files: foundFiles,
-        totalFiles,
-        totalPages,
-        currentPage,
-        pageSize: take,
-      },
-      200,
-      "Files Retrieved."
-    )
-  );
+  res
+    .status(200)
+    .json(
+      formatApiRespone({ foundFiles, totalFiles }, 200, "Files Retrieved.")
+    );
 });
 
+// Get files uploaded by the signed-in user
 const getUsersFilesHandler = asyncHandler(async (req, res, next) => {
   const userId = req.user!.id;
   const { pageIndex, pageSize, searchTerm } = req.query as QueryFileModel;
+  const take = Math.min(Math.max(parseInt(pageSize || "10"), 10), 50);
+  const skip = Math.max(parseInt(pageIndex || "0") * take, 0);
 
-  let take = parseInt(pageSize || "10");
-  let skip = parseInt(pageIndex || "0") * take;
-
-  if (Number.isNaN(skip) || skip < 0) skip = 0;
-  if (Number.isNaN(take) || take < 10) take = 10;
-  if (take > 50) take = 50;
-
-  const trimmedSearch = searchTerm?.trim();
-
-  const where = trimmedSearch
-    ? { originalName: { contains: trimmedSearch }, uploaderId: userId }
+  const where = searchTerm
+    ? { uploaderId: userId, originalName: { contains: searchTerm } }
     : { uploaderId: userId };
 
-  logger.info(
-    {
-      method: req.method,
-      url: req.url,
-      ip: req.ip,
-      userId,
-      searchTerm,
-      pageIndex,
-      pageSize,
-    },
-    "Fetching user files"
-  );
+  logger.info({ userId }, "Fetching user files");
 
-  const [foundFiles, totalFiles] = await Promise.all([
-    db.file.findMany({ skip, where, take }),
-    db.file.count({ where }),
-  ]);
+  const foundFiles = await db.file.findMany({ skip, where, take });
 
-  const totalPages = Math.ceil(totalFiles / take);
-  const currentPage = Math.floor(skip / take) + 1;
-
-  logger.info(
-    {
-      method: req.method,
-      url: req.url,
-      ip: req.ip,
-      userId,
-      totalFiles,
-      currentPage,
-      totalPages,
-    },
-    "User files retrieved successfully"
-  );
-
-  res.status(200).json(
-    formatApiRespone(
-      {
-        files: foundFiles,
-        totalFiles,
-        totalPages,
-        currentPage,
-        pageSize: take,
-      },
-      200,
-      "User Files Retrieved."
-    )
-  );
+  res
+    .status(200)
+    .json(
+      formatApiRespone({ files: foundFiles }, 200, "User Files Retrieved.")
+    );
 });
 
 export default {
   uploadFileHandler,
   deleteFileByIdHandler,
-  getManyFilesHandler,
-  getFileByIdHandler,
-  getUsersFilesHandler,
   deleteFileAdminHandler,
+  getFileByIdHandler,
+  getManyFilesHandler,
+  getUsersFilesHandler,
 };
