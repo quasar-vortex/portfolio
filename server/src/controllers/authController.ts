@@ -35,7 +35,7 @@ const registerUserHandler = asyncHandler(async (req, res, next) => {
       },
       "User Already Exists"
     );
-    new HttpError({
+    throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "User Already Exists",
     });
