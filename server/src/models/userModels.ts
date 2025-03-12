@@ -8,7 +8,12 @@ const selectUser = {
   role: true,
   registeredAt: true,
   lastLoginAt: true,
-  avatarFile: true,
+  avatarFile: {
+    select: {
+      id: true,
+      url: true,
+    },
+  },
 };
 export type UpdateUserProfileModel = z.infer<typeof updateUserModel>["body"];
 const updateUserModel = z.object({
@@ -27,10 +32,6 @@ const updateUserModel = z.object({
       })
       .max(250, { message: "Bio cannot exceed 250 characters." })
       .optional(),
-    avatarFileId: z
-      .string()
-      .max(36, { message: "ID cannot exceed 36 characters." })
-      .optional(),
   }),
 });
 export type QueryUserModel = z.infer<typeof queryUserModel>["query"];
@@ -41,6 +42,7 @@ const queryUserModel = z.object({
     searchTerm: z.string().optional(),
   }),
 });
+
 export default {
   selectUser,
   updateUserModel,

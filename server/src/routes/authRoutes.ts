@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { authController } from "../controllers";
-import { validateSchema } from "../middlware";
+import { validateSchema } from "../middleware";
 import { authModels } from "../models";
 
 /*
-POST /auth/login User logins in and access token, with http only refresh token and user is returned
+POST /auth/login    User logins in and access token, with http only refresh token and user is returned
 POST /auth/register Same as login except it also creates the user first
-GET/auth/refresh Refreshes the access token and returns user profile with it
-GET /auth/logoff Logs off the user and removes refresh token from database
+GET  /auth/refresh  Refreshes the access token and returns user profile with it
+GET  /auth/logoff   Logs off the user and removes refresh token from database
 */
 const authRouter = Router();
 

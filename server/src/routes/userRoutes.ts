@@ -1,35 +1,43 @@
 import { Router } from "express";
 import { userController, filesController } from "../controllers";
-import { validateSchema, authMiddleware, roleMiddleware } from "../middlware";
+import { validateSchema, authMiddleware, roleMiddleware } from "../middleware";
 import { userModels } from "../models";
+import fileUtils from "../utils/fileUtils";
 
 /*
-PATCH /me/ Updates the signed in user's profile
-GET /:userId Gets a user by their id
-GET / Gets may users and requires admin role
-GET /me Gets the signed in user's profile
-DELETE /me Deletes the signed in user's profile
-GET /me/files Gets the signed in user's files
+GET    /users/:id Get user profile by ID (public)
+GET    /users/me Get current authenticated user (private)
+PUT    /users/me Update own profile (private)
+DELETE /users/me User can set account to inactive then auto delete after x days
+PUT    /users/me/avatar Upload or change profile pic (private)
+GET    /users Admin can list all users
+DELETE /users/:id Admin can delete a user
 */
 
 const userRouter = Router();
 
 userRouter
-  .patch(
-    "/me",
+  .get("/users/:userId", userController.getUserByIdHandler)
+  .get("/users/me", authMiddleware, userController.getSignedInUserProfile)
+  .put(
+    "/users/me",
     authMiddleware,
     validateSchema(userModels.updateUserModel),
     userController.updateSignedInUserProfileHandler
   )
-  .get("/:userId", authMiddleware, userController.getUserByIdHandler)
-  .get(
-    "/",
+  .put(
+    "/users/me/avatar",
+    authMiddleware,
+    fileUtils.upload.single("avatar"),
+    userController.createOrReplaceUserAvatarHandler
+  )
+  .get("/users", userController.getManyUsersHandler)
+  .delete("/users/me", userController.getSignedInUserProfile)
+  .delete(
+    "/users/:userId",
     authMiddleware,
     roleMiddleware("ADMIN"),
-    userController.getManyUsersHandler
-  )
-  .get("/me", authMiddleware, userController.getSignedInUserProfile)
-  .delete("/me", authMiddleware, userController.deleteSignedInUserHandler)
-  .get("/me/files", authMiddleware, filesController.getUsersFilesHandler);
+    userController.deleteUserByIdHandler
+  );
 
 export default userRouter;

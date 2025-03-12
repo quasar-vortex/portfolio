@@ -50,7 +50,7 @@ const registerUserHandler = asyncHandler(async (req, res, next) => {
       // hash the password
       passwordHash: await hashPass(password),
     },
-    select: selectUser,
+    select: { ...selectUser },
   });
   // Sign Tokens
   const tokenPayload = { id: newUser.id };

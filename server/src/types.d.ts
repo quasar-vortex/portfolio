@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
+import { User } from "@prisma/client";
 export type CustomRequestHandler = (
   req: Request & { user?: { id: string } },
   res: Response,
@@ -20,3 +20,14 @@ export type S3UploadedFile = {
   versionId?: string; // Version ID (if versioning is enabled)
   contentEncoding?: string; // Encoding used during upload (optional)
 } & Express.Multer.File;
+
+export type PublicUser = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  id: string;
+  registeredAt: Date;
+  lastLoginAt: Date | null;
+  role: User["role"];
+  avatarUrl: string | null;
+};

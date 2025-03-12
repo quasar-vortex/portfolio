@@ -2,48 +2,51 @@ import express from "express";
 import { appEnv } from "./env";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authRouter, userRouter } from "./routes";
-import { errorMiddleware } from "./middlware";
+import { authRouter, filesRouter, postsRouter, userRouter } from "./routes";
+import { errorMiddleware } from "./middleware";
 import { apiUtils } from "./utils";
 import { db } from "./db";
-import filesRouter from "./routes/fileRoutes";
+import logger from "./logger";
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 
-app.get("/api/v1/health", (req, res, next) => {
+app.get(`/api/${appEnv.API_VERSION}/health`, (req, res, next) => {
   res
     .status(200)
     .json(apiUtils.formatApiRespone(null, 200, "Health Check Passed"));
 });
 
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/files", filesRouter);
+app.use(`/api/${appEnv.API_VERSION}/auth`, authRouter);
+app.use(`/api/${appEnv.API_VERSION}/users`, userRouter);
+app.use(`/api/${appEnv.API_VERSION}/uploads`, filesRouter);
+app.use(`/api/${appEnv.API_VERSION}/posts`, postsRouter);
+
 app.use(errorMiddleware);
 
 // Only start if not running integration tests
 if (appEnv.NODE_ENV.toLocaleLowerCase() !== "test") {
   const main = async () => {
+    logger.info("Starting The Application");
     // Connect to the database. If it fails, exit the application
     try {
-      console.log("Connecting Database");
+      logger.info("Connecting to Database");
       await db.$connect();
     } catch (error) {
-      console.warn("Unable to Connect to Database");
-      console.error(error);
+      logger.error("Failed to Connect to Database");
+      logger.error(error);
       process.exit(1);
     }
     // Start the HTTP server. If it fails, exit the application
     try {
       app.listen(appEnv.PORT, () =>
-        console.log(`API Server Running On: ${appEnv.PORT}`)
+        logger.info(`API Server Running On: ${appEnv.PORT}`)
       );
     } catch (error) {
-      console.warn("Unable to Start HTTP Server");
-      console.error(error);
+      logger.error("Unable to Start API Server");
+      logger.error(error);
       process.exit(1);
     }
   };

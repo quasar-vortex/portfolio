@@ -5,6 +5,7 @@ import { apiUtils, asyncHandler } from "../utils";
 import fileUtils from "../utils/fileUtils";
 import { S3UploadedFile } from "../types";
 import { QueryFileModel } from "../models/fileModels";
+import logger from "../logger";
 
 const { formatApiRespone } = apiUtils;
 
@@ -13,28 +14,25 @@ const uploadFileHandler = asyncHandler(async (req, res, next) => {
   const userId = req.user!.id;
   let fileType: FileType = "IMAGE";
 
-  // check if file uploaded
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, userId },
+    "Upload request received"
+  );
+
   if (!file) {
+    logger.error(
+      { method: req.method, url: req.url, ip: req.ip, userId },
+      "No file provided"
+    );
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "No File Provided",
     });
   }
-  let mimeType = file.mimetype.toLocaleLowerCase();
-  // File Filter checks if image already currently in the multer setup, this is for future extension
-  if (mimeType.includes("image")) fileType = "IMAGE";
-  else if (mimeType.includes("video")) fileType = "VIDEO";
-  else if (mimeType.includes("audio")) fileType = "AUDIO";
-  else {
-    // clean up s3 file
-    await fileUtils.deleteFile(file.key);
-    throw new HttpError({
-      statusMessage: "BAD_REQUEST",
-      message: "Invalid File Type",
-    });
-  }
 
-  // Upload to DB
+  let mimeType = file.mimetype.toLowerCase();
+  fileType = mimeType.split("/")[0] as FileType;
+
   const { key, originalname, size, location: url } = file;
 
   const newFile = await db.file.create({
@@ -48,45 +46,123 @@ const uploadFileHandler = asyncHandler(async (req, res, next) => {
     },
   });
 
-  // Send to user
+  logger.info(
+    {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userId,
+      fileId: newFile.id,
+    },
+    "File uploaded successfully"
+  );
+
   res.status(201).json(formatApiRespone(newFile, 201, "File Uploaded"));
 });
 
 const deleteFileByIdHandler = asyncHandler(async (req, res, next) => {
   const userId = req.user!.id;
   const fileId = req.params.fileId;
+
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+    "Delete file request received"
+  );
+
   const foundFile = await db.file.findUnique({ where: { id: fileId } });
 
-  // Check if file exists
-  if (!foundFile)
+  if (!foundFile) {
+    logger.error(
+      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+      "File not found"
+    );
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
       message: "No File to Delete",
     });
-  // Verify ownership
-  if (foundFile.uploaderId !== userId)
+  }
+
+  if (foundFile.uploaderId !== userId) {
+    logger.error(
+      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+      "Unauthorized delete attempt"
+    );
     throw new HttpError({
       statusMessage: "FORBIDDEN",
       message: "May not delete another's files.",
     });
-  // Remove from s3 bucket
+  }
+
   await fileUtils.deleteFile(foundFile.key);
-  // Remove database record
   await db.file.delete({ where: { id: fileId, uploaderId: userId } });
 
-  // Send response to user
-  res.status(201).json(formatApiRespone(null, 200, "File Deleted"));
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+    "File deleted successfully"
+  );
+
+  res.status(200).json(formatApiRespone(null, 200, "File Deleted"));
+});
+
+const deleteFileAdminHandler = asyncHandler(async (req, res, next) => {
+  const userId = req.user!.id;
+  const fileId = req.params.fileId;
+
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+    "Delete file request received"
+  );
+
+  const foundFile = await db.file.findUnique({ where: { id: fileId } });
+
+  if (!foundFile) {
+    logger.error(
+      { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+      "File not found"
+    );
+    throw new HttpError({
+      statusMessage: "BAD_REQUEST",
+      message: "No File to Delete",
+    });
+  }
+
+  await fileUtils.deleteFile(foundFile.key);
+  await db.file.delete({ where: { id: fileId, uploaderId: userId } });
+
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, userId, fileId },
+    "File deleted successfully"
+  );
+
+  res.status(200).json(formatApiRespone(null, 200, "File Deleted"));
 });
 
 const getFileByIdHandler = asyncHandler(async (req, res, next) => {
   const fileId = req.params.fileId;
+
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, fileId },
+    "Get file request received"
+  );
+
   const foundFile = await db.file.findUnique({ where: { id: fileId } });
-  // Check if file exists
-  if (!foundFile)
+
+  if (!foundFile) {
+    logger.error(
+      { method: req.method, url: req.url, ip: req.ip, fileId },
+      "File not found"
+    );
     throw new HttpError({
       statusMessage: "NOT_FOUND",
       message: "No File Found",
     });
+  }
+
+  logger.info(
+    { method: req.method, url: req.url, ip: req.ip, fileId },
+    "File retrieved successfully"
+  );
+
   res
     .status(200)
     .json(formatApiRespone(foundFile, 200, "Found File Successfully."));
@@ -98,32 +174,47 @@ const getManyFilesHandler = asyncHandler(async (req, res, next) => {
   let take = parseInt(pageSize || "10");
   let skip = parseInt(pageIndex || "0") * take;
 
-  // Ensure pagination values are within valid ranges
   if (Number.isNaN(skip) || skip < 0) skip = 0;
   if (Number.isNaN(take) || take < 10) take = 10;
   if (take > 50) take = 50;
 
-  // mysql search with varchar is case insenstive by default
   const trimmedSearch = searchTerm?.trim();
 
   const where = trimmedSearch
-    ? {
-        originalName: { contains: trimmedSearch },
-      }
+    ? { originalName: { contains: trimmedSearch } }
     : {};
 
-  // Fetch paginated files and total count
+  logger.info(
+    {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      searchTerm,
+      pageIndex,
+      pageSize,
+    },
+    "Fetching files"
+  );
+
   const [foundFiles, totalFiles] = await Promise.all([
-    db.file.findMany({
-      skip,
-      where,
-      take,
-    }),
+    db.file.findMany({ skip, where, take }),
     db.file.count({ where }),
   ]);
 
   const totalPages = Math.ceil(totalFiles / take);
-  const currentPage = Math.floor(skip / take) + 1; // Convert to 1-based index
+  const currentPage = Math.floor(skip / take) + 1;
+
+  logger.info(
+    {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      totalFiles,
+      currentPage,
+      totalPages,
+    },
+    "Files retrieved successfully"
+  );
 
   res.status(200).json(
     formatApiRespone(
@@ -147,33 +238,49 @@ const getUsersFilesHandler = asyncHandler(async (req, res, next) => {
   let take = parseInt(pageSize || "10");
   let skip = parseInt(pageIndex || "0") * take;
 
-  // Ensure pagination values are within valid ranges
   if (Number.isNaN(skip) || skip < 0) skip = 0;
   if (Number.isNaN(take) || take < 10) take = 10;
   if (take > 50) take = 50;
 
-  // mysql search with varchar is case insenstive by default
   const trimmedSearch = searchTerm?.trim();
 
   const where = trimmedSearch
-    ? {
-        originalName: { contains: trimmedSearch },
-        uploaderId: userId,
-      }
+    ? { originalName: { contains: trimmedSearch }, uploaderId: userId }
     : { uploaderId: userId };
 
-  // Fetch paginated files and total count
+  logger.info(
+    {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userId,
+      searchTerm,
+      pageIndex,
+      pageSize,
+    },
+    "Fetching user files"
+  );
+
   const [foundFiles, totalFiles] = await Promise.all([
-    db.file.findMany({
-      skip,
-      where,
-      take,
-    }),
+    db.file.findMany({ skip, where, take }),
     db.file.count({ where }),
   ]);
 
   const totalPages = Math.ceil(totalFiles / take);
-  const currentPage = Math.floor(skip / take) + 1; // Convert to 1-based index
+  const currentPage = Math.floor(skip / take) + 1;
+
+  logger.info(
+    {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userId,
+      totalFiles,
+      currentPage,
+      totalPages,
+    },
+    "User files retrieved successfully"
+  );
 
   res.status(200).json(
     formatApiRespone(
@@ -189,10 +296,12 @@ const getUsersFilesHandler = asyncHandler(async (req, res, next) => {
     )
   );
 });
+
 export default {
   uploadFileHandler,
   deleteFileByIdHandler,
   getManyFilesHandler,
   getFileByIdHandler,
   getUsersFilesHandler,
+  deleteFileAdminHandler,
 };

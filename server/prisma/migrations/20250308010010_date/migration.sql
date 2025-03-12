@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE `Post` MODIFY `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    MODIFY `dateUpdated` DATETIME(3) NULL,
+    MODIFY `isPublished` BOOLEAN NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE `Project` MODIFY `isPublished` BOOLEAN NOT NULL DEFAULT false;

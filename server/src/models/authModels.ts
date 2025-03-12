@@ -21,6 +21,7 @@ const registerUserModel = z.object({
   }),
 });
 export type LoginUserModel = z.infer<typeof loginUserModel>["body"];
+
 const loginUserModel = z.object({
   body: registerUserModel.shape.body.pick({ email: true, password: true }),
 });
