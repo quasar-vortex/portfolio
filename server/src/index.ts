@@ -15,12 +15,13 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 
+// Health Check
 app.get(`/api/${appEnv.API_VERSION}/health`, (req, res, next) => {
   res
     .status(200)
     .json(apiUtils.formatApiRespone(null, 200, "Health Check Passed"));
 });
-
+// Routes
 app.use(`/api/${appEnv.API_VERSION}/auth`, authRouter);
 app.use(`/api/${appEnv.API_VERSION}/users`, userRouter);
 app.use(`/api/${appEnv.API_VERSION}/uploads`, filesRouter);
@@ -28,6 +29,7 @@ app.use(`/api/${appEnv.API_VERSION}/posts`, postsRouter);
 app.use(`/api/${appEnv.API_VERSION}/tags`, tagRouter);
 app.use(`/api/${appEnv.API_VERSION}/projects`, projectRouter);
 
+// Catch All Error Handler (if no custom http error)
 app.use(errorMiddleware);
 
 // Only start if not running integration tests
