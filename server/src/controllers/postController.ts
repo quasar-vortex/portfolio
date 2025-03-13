@@ -96,51 +96,87 @@ const editPostHandler = (isAdmin: boolean) =>
         statusMessage: "BAD_REQUEST",
         message: "Post does not exist.",
       });
+
     if (!isAdmin && foundPost.authorId !== userId)
       throw new HttpError({
         statusMessage: "FORBIDDEN",
         message: "You do not have permission to update this post.",
       });
 
-    if (coverImageId !== foundPost.coverImageId) {
-      // Delete old cover image if it exists
-      if (foundPost.coverImage) {
-        await fileUtils.deleteFile(foundPost.coverImage.key);
-        await db.file.delete({ where: { id: foundPost.coverImage.id } });
-      }
-    }
-
     const updatePayload: Partial<Post> = {
       title,
       content,
       isPublished,
-      coverImageId,
       excerpt,
     };
-    if (isAdmin) updatePayload.isFeatured = isFeatured;
 
-    if (tags) {
-      const foundTags = await db.tag.findMany({
-        where: { name: { in: tags } },
+    // Handle cover image updates
+    if (coverImageId && coverImageId !== foundPost.coverImageId) {
+      if (foundPost.coverImage) {
+        await fileUtils.deleteFile(foundPost.coverImage.key);
+        await db.file.delete({ where: { id: foundPost.coverImage.id } });
+      }
+      updatePayload.coverImageId = coverImageId;
+    } else if (!coverImageId) {
+      updatePayload.coverImageId = null;
+    }
+
+    // Ensure max 3 featured posts
+    if (isAdmin && isFeatured) {
+      await db.$transaction(async (tx) => {
+        const count = await tx.post.count({ where: { isFeatured: true } });
+        if (count === 3) {
+          const oldestFeatured = await tx.post.findFirst({
+            where: { isFeatured: true },
+            orderBy: { publishDate: "asc" },
+          });
+          if (oldestFeatured) {
+            await tx.post.update({
+              where: { id: oldestFeatured.id },
+              data: { isFeatured: false },
+            });
+          }
+        }
+        await tx.post.update({
+          where: { id: postId },
+          data: { isFeatured: true },
+        });
       });
-      const newTags = await Promise.all(
-        tags
-          .filter((t) => !foundTags.some((tag) => tag.name === t))
-          .map((t) => db.tag.create({ data: { name: t } }))
-      );
-      const allTags = [...foundTags, ...newTags];
-
-      await db.postTag.deleteMany({ where: { postId } });
-      await db.postTag.createMany({
-        data: allTags.map((tag) => ({ postId, tagId: tag.id })),
+    } else if (!isFeatured && foundPost.isFeatured) {
+      await db.post.update({
+        where: { id: foundPost.id },
+        data: { isFeatured: false },
       });
     }
 
+    // Tag management
+    if (tags) {
+      await db.$transaction(async (tx) => {
+        await tx.postTag.deleteMany({ where: { postId } });
+
+        const allTags = await Promise.all(
+          tags.map(async (tagName) => {
+            return await tx.tag.upsert({
+              where: { name: tagName },
+              update: {},
+              create: { name: tagName },
+            });
+          })
+        );
+
+        await tx.postTag.createMany({
+          data: allTags.map((tag) => ({ postId, tagId: tag.id })),
+        });
+      });
+    }
+
+    // Update post
     const updatedPost = await db.post.update({
       where: { id: postId },
       data: updatePayload,
       select: basePostSelect,
     });
+
     res
       .status(200)
       .json(formatApiRespone(updatedPost, 200, "Post Updated Successfully!"));

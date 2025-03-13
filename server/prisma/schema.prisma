@@ -116,6 +116,7 @@ model Project {
   isPublished   Boolean      @default(false)
   dateCreated   DateTime     @default(now())
   dateUpdated   DateTime?
+  publishDate   DateTime?
   productionUrl String       @db.VarChar(255)
   codeUrl       String       @db.VarChar(255)
   isFeatured    Boolean      @default(false)

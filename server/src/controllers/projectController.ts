@@ -106,6 +106,7 @@ const editProjectHandler = (isAdmin: boolean) =>
         message: "Project does not exist.",
       });
     }
+
     if (!isAdmin && foundProject.authorId !== userId) {
       throw new HttpError({
         statusMessage: "FORBIDDEN",
@@ -113,8 +114,16 @@ const editProjectHandler = (isAdmin: boolean) =>
       });
     }
 
-    // Handle cover image cleanup if changed
-    if (coverImageId !== foundProject.coverImageId) {
+    const updatePayload: Partial<Project> = {
+      title,
+      description,
+      productionUrl,
+      codeUrl,
+      isPublished,
+    };
+
+    // Handle cover image updates
+    if (coverImageId && coverImageId !== foundProject.coverImageId) {
       if (foundProject.coverImg) {
         logger.info(
           { projectId, oldCoverImageId: foundProject.coverImageId },
@@ -123,39 +132,61 @@ const editProjectHandler = (isAdmin: boolean) =>
         await fileUtils.deleteFile(foundProject.coverImg.key);
         await db.file.delete({ where: { id: foundProject.coverImg.id } });
       }
+      updatePayload.coverImageId = coverImageId;
+    } else if (!coverImageId) {
+      updatePayload.coverImageId = null;
     }
 
-    const updatePayload: Partial<Project> = {
-      title,
-      description,
-      coverImageId,
-      productionUrl,
-      codeUrl,
-      isPublished,
-    };
-    if (isAdmin) updatePayload.isFeatured = isFeatured;
+    // Ensure max 3 featured projects
+    if (isAdmin && isFeatured) {
+      await db.$transaction(async (tx) => {
+        const count = await tx.project.count({ where: { isFeatured: true } });
+        if (count === 3) {
+          const oldestFeatured = await tx.project.findFirst({
+            where: { isFeatured: true },
+            orderBy: { publishDate: "asc" },
+          });
+          if (oldestFeatured) {
+            await tx.project.update({
+              where: { id: oldestFeatured.id },
+              data: { isFeatured: false },
+            });
+          }
+        }
+        await tx.project.update({
+          where: { id: projectId },
+          data: { isFeatured: true },
+        });
+      });
+    } else if (!isFeatured && foundProject.isFeatured) {
+      await db.project.update({
+        where: { id: foundProject.id },
+        data: { isFeatured: false },
+      });
+    }
 
+    // Tag management with upsert for efficiency
     if (tags) {
-      // Find existing tags or create new ones
-      const foundTags = await db.tag.findMany({
-        where: { name: { in: tags } },
-      });
-      const newTags = await Promise.all(
-        tags
-          .filter((t) => !foundTags.some((tag) => tag.name === t))
-          .map((t) => db.tag.create({ data: { name: t } }))
-      );
-      const allTags = [...foundTags, ...newTags];
+      await db.$transaction(async (tx) => {
+        await tx.projectTag.deleteMany({ where: { projectId } });
 
-      // Delete old project tags
-      await db.projectTag.deleteMany({ where: { projectId } });
+        const allTags = await Promise.all(
+          tags.map(async (tagName) => {
+            return await tx.tag.upsert({
+              where: { name: tagName },
+              update: {},
+              create: { name: tagName },
+            });
+          })
+        );
 
-      // Create new project tags
-      await db.projectTag.createMany({
-        data: allTags.map((tag) => ({ projectId, tagId: tag.id })),
+        await tx.projectTag.createMany({
+          data: allTags.map((tag) => ({ projectId, tagId: tag.id })),
+        });
       });
     }
 
+    // Update project details
     const updatedProject = await db.project.update({
       where: { id: projectId },
       data: updatePayload,
