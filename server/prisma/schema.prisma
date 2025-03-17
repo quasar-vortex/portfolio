@@ -37,6 +37,7 @@ model File {
 
 enum Role {
   USER
+  AUTHOR
   ADMIN
 }
 

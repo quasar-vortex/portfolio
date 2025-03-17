@@ -1,7 +1,7 @@
 import z from "zod";
 
-export type QueryFileModel = z.infer<typeof queryFileModel>["query"];
-const queryFileModel = z.object({
+export type QueryTagModel = z.infer<typeof queryTagModel>["query"];
+const queryTagModel = z.object({
   query: z.object({
     pageSize: z.string().optional(),
     pageIndex: z.string().optional(),
@@ -9,5 +9,5 @@ const queryFileModel = z.object({
   }),
 });
 export default {
-  queryFileModel,
+  queryTagModel,
 };

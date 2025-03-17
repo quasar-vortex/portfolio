@@ -1,107 +1,180 @@
 import { db } from "../db";
 import HttpError from "../error";
-import { apiUtils, asyncHandler } from "../utils";
 import logger from "../logger";
+import { QueryTagModel } from "../models/tagModels";
+import { apiUtils, asyncHandler } from "../utils";
 
-const { formatApiRespone } = apiUtils;
+export const createNewTagHandler = asyncHandler(async (req, res, next) => {
+  const name = req.body.name;
+  const logMeta = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    signedInId: req.user!.id,
+  };
+  logger.info(logMeta, "Request to create tag received.");
+  const foundTag = await db.tag.findUnique({ where: { name } });
 
-// Create a new tag
-const createTagHandler = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, name },
-    "Creating new tag"
-  );
-
-  if (!name) {
+  if (foundTag) {
+    logger.error({ ...logMeta, name }, "Tag exists already.");
     throw new HttpError({
       statusMessage: "BAD_REQUEST",
-      message: "Tag name is required.",
+      message: "Tag Exists.",
     });
   }
 
-  // Check if tag exists
-  const existingTag = await db.tag.findUnique({ where: { name } });
-  if (existingTag) {
-    throw new HttpError({
-      statusMessage: "BAD_REQUEST",
-      message: "Tag already exists.",
-    });
-  }
-
-  // Create the tag
   const newTag = await db.tag.create({ data: { name } });
-
-  logger.info({ tagId: newTag.id, name }, "Tag created successfully");
-  res
-    .status(201)
-    .json(formatApiRespone(newTag, 201, "Tag Created Successfully"));
-});
-
-// Get all tags
-const getAllTagsHandler = asyncHandler(async (req, res, next) => {
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip },
-    "Fetching all tags"
+  logger.info({ ...logMeta, name }, "Tag created successfully..");
+  res.status(201).json(
+    apiUtils.formatApiResponse({
+      data: newTag,
+      message: "Tag Created Successfully",
+    })
   );
-
-  const tags = await db.tag.findMany();
-  res
-    .status(200)
-    .json(formatApiRespone(tags, 200, "Tags Retrieved Successfully"));
 });
-
-// Get a tag by ID
-const getTagByIdHandler = asyncHandler(async (req, res, next) => {
+export const updateTagByIdHandler = asyncHandler(async (req, res, next) => {
   const tagId = req.params.tagId;
+  const name = req.body.name;
+  const logMeta = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    signedInId: req.user!.id,
+  };
+  const foundTag = await db.tag.findUnique({ where: { id: tagId } });
 
-  logger.info(
-    { method: req.method, url: req.url, ip: req.ip, tagId },
-    "Fetching tag by ID"
-  );
-
-  const tag = await db.tag.findUnique({ where: { id: tagId } });
-
-  if (!tag) {
+  if (!foundTag) {
+    logger.error({ ...logMeta, tagId }, "Tag Not Found.");
     throw new HttpError({
       statusMessage: "NOT_FOUND",
-      message: "Tag Not Found.",
+      message: "Tag Does Not Exist.",
     });
   }
+  const updatedTag = await db.tag.update({
+    where: { id: tagId },
+    data: { name },
+  });
 
-  res
-    .status(200)
-    .json(formatApiRespone(tag, 200, "Tag Retrieved Successfully"));
+  logger.info({ ...logMeta, tagId }, "Tag created successfully..");
+  res.status(200).json(
+    apiUtils.formatApiResponse({
+      data: updatedTag,
+      message: "Tag Updated Successfully",
+    })
+  );
 });
-
-// Delete a tag (Admin Only)
-const deleteTagHandler = asyncHandler(async (req, res, next) => {
+export const deleteTagByIdHandler = asyncHandler(async (req, res, next) => {
   const tagId = req.params.tagId;
+  const name = req.body.name;
+  const logMeta = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    signedInId: req.user!.id,
+  };
+  const foundTag = await db.tag.findUnique({ where: { id: tagId } });
+
+  if (!foundTag) {
+    logger.error({ ...logMeta, tagId }, "Tag Not Found.");
+    throw new HttpError({
+      statusMessage: "NOT_FOUND",
+      message: "Tag Does Not Exist.",
+    });
+  }
+  await db.tag.delete({
+    where: { id: tagId },
+  });
+
+  logger.info({ ...logMeta, tagId }, "Tag deleted successfully.");
+  res.status(200).json(
+    apiUtils.formatApiResponse({
+      message: "Tag Deleted Successfully",
+    })
+  );
+});
+export const getManyTagsHandler = asyncHandler(async (req, res, next) => {
+  const { pageIndex, pageSize, searchTerm } = req.query as QueryTagModel;
 
   logger.info(
-    { method: req.method, url: req.url, ip: req.ip, tagId },
-    "Deleting tag request received"
+    { userId: req.user!.id, searchTerm, pageIndex, pageSize },
+    "Fetching tags..."
   );
 
-  const tag = await db.tag.findUnique({ where: { id: tagId } });
+  // Trim search term if provided
+  const trimmedSearchTerm = searchTerm?.trim();
 
-  if (!tag) {
+  // Define search filter (no need for `mode: "insensitive"` in MySQL)
+  const where = trimmedSearchTerm
+    ? {
+        name: { contains: trimmedSearchTerm },
+      }
+    : {};
+
+  // Pagination Handling (Ensure valid values)
+  const parsedPageIndex = Math.max(1, Number(pageIndex) || 1) - 1;
+  const parsedPageSize = Math.max(1, Number(pageSize) || 10);
+  const skip = parsedPageIndex * parsedPageSize;
+
+  // Get total count
+  const totalRecords = await db.tag.count({ where });
+
+  // Fetch paginated tags
+  const foundTags = await db.tag.findMany({
+    where,
+    skip,
+    take: parsedPageSize,
+  });
+
+  // Calculate total pages (ensure at least 1)
+  const totalPages = Math.max(1, Math.ceil(totalRecords / parsedPageSize));
+
+  logger.info(
+    { userId: req.user!.id, totalRecords },
+    "Tags retrieved successfully."
+  );
+
+  // Return response
+  res.status(200).json(
+    apiUtils.formatApiResponse({
+      data: foundTags,
+      currentPage: parsedPageIndex + 1,
+      totalPages,
+      totalRecords,
+      message: "Tags retrieved successfully",
+    })
+  );
+});
+export const getTagByIdHandler = asyncHandler(async (req, res, next) => {
+  const tagId = req.params.tagId;
+
+  const logMeta = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    signedInId: req.user!.id,
+  };
+  const foundTag = await db.tag.findUnique({ where: { id: tagId } });
+
+  if (!foundTag) {
+    logger.error({ ...logMeta, tagId }, "Tag Not Found.");
     throw new HttpError({
-      statusMessage: "BAD_REQUEST",
-      message: "No Tag Found to Delete.",
+      statusMessage: "NOT_FOUND",
+      message: "Tag Does Not Exist.",
     });
   }
-
-  // Delete the tag
-  await db.tag.delete({ where: { id: tagId } });
-
-  logger.info({ tagId }, "Tag deleted successfully");
-  res.status(200).json(formatApiRespone(null, 200, "Tag Deleted Successfully"));
+  logger.info({ ...logMeta, tagId }, "Found tag successfully.");
+  res.status(200).json(
+    apiUtils.formatApiResponse({
+      data: foundTag,
+      message: "Tag Found Successfully",
+    })
+  );
 });
 
 export default {
-  createTagHandler,
-  getAllTagsHandler,
+  createNewTagHandler,
+  updateTagByIdHandler,
+  deleteTagByIdHandler,
+  getManyTagsHandler,
   getTagByIdHandler,
-  deleteTagHandler,
 };

@@ -1,43 +1,51 @@
 import { Router } from "express";
-import { userController, filesController } from "../controllers";
-import { validateSchema, authMiddleware, roleMiddleware } from "../middleware";
+import { authMiddleware, roleMiddleware, validateSchema } from "../middleware";
 import { userModels } from "../models";
+import { userController } from "../controllers";
 import fileUtils from "../utils/fileUtils";
 
 /*
-GET    /users/:id Get user profile by ID (public)
-GET    /users/me Get current authenticated user (private)
-PUT    /users/me Update own profile (private)
-DELETE /users/me User can set account to inactive then auto delete after x days
-PUT    /users/me/avatar Upload or change profile pic (private)
-GET    /users Admin can list all users
-DELETE /users/:id Admin can delete a user
+GET /users                Get all users (admin only)
+GET /users/:userId        Get User profile by ID (public)
+PUT /users/:userId        Update user profile (authenticated)
+PUT /users/:userId/avatar Upload avatar file  (authenticated)
+GET /users/:userId/posts  Get posts by user (public)
+PUT /users/:userId/status Toggle user status to inactive (admin)
+DELETE /users/:userId/avatar Delete own avatar (authenticated)
+DELETE /users/:userId Delete own account (authenticated)
 */
 
 const userRouter = Router();
 
 userRouter
-  .get("/users/:userId", userController.getUserByIdHandler)
-  .get("/users/me", authMiddleware, userController.getSignedInUserProfile)
-  .put(
-    "/users/me",
-    authMiddleware,
-    validateSchema(userModels.updateUserModel),
-    userController.updateSignedInUserProfileHandler
-  )
-  .put(
-    "/users/me/avatar",
-    authMiddleware,
-    fileUtils.upload.single("avatar"),
-    userController.createOrReplaceUserAvatarHandler
-  )
-  .get("/users", userController.getManyUsersHandler)
-  .delete("/users/me", userController.getSignedInUserProfile)
-  .delete(
-    "/users/:userId",
+  .get(
+    "/",
     authMiddleware,
     roleMiddleware("ADMIN"),
-    userController.deleteUserByIdHandler
-  );
+    validateSchema(userModels.queryUserModel),
+    userController.getAllUsersHandler
+  )
+  .get("/:userId", userController.getUserProfileByIdHandler)
+  .put(
+    "/:userId",
+    authMiddleware,
+    validateSchema(userModels.updateUserModel),
+    userController.updateUserProfileHandler
+  )
+  .put(
+    "/:userId/avatar",
+    authMiddleware,
+    fileUtils.upload.single("avatar"),
+    userController.uploadAvatarHandler
+  )
+  .get("/:userId/posts", userController.getPostsByUserId)
+  .put(
+    "/:userId/status",
+    authMiddleware,
+    roleMiddleware("ADMIN"),
+    userController.toggleUserStatusHandler
+  )
+  .delete("/:userId/avatar", authMiddleware, userController.deleteAvatarHandler)
+  .delete("/:userId", authMiddleware, userController.deleteUserHandler);
 
 export default userRouter;

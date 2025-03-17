@@ -1,9 +1,8 @@
 import request from "supertest";
 import app from "../index";
 import { db } from "../db";
-import { passUtils, jwtUtils } from "../utils";
+import { jwtUtils } from "../utils";
 import { appEnv } from "../env";
-import exp from "constants";
 
 const mockUser = {
   firstName: "John",
