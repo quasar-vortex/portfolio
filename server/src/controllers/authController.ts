@@ -41,7 +41,7 @@ const registerUserHandler = asyncHandler(async (req, res) => {
     select: { ...selectUser },
   });
 
-  const tokenPayload = { id: newUser.id };
+  const tokenPayload = { id: newUser.id, role: newUser.role };
   const access = signUserToken("ACCESS", tokenPayload);
   const refresh = signUserToken("REFRESH", tokenPayload);
 
@@ -105,7 +105,7 @@ const loginUserHandler = asyncHandler(async (req, res) => {
     });
   }
   const { passwordHash, ...restOfUser } = foundUser;
-  const tokenPayload = { id: restOfUser.id };
+  const tokenPayload = { id: restOfUser.id, role: restOfUser.role };
   const access = signUserToken("ACCESS", tokenPayload);
   const refresh = signUserToken("REFRESH", tokenPayload);
 
@@ -188,7 +188,7 @@ const refreshUserHandler = asyncHandler(async (req, res, next) => {
       message: "User is inactive, please contact admin.",
     });
   }
-  const newAccessToken = signUserToken("ACCESS", { id });
+  const newAccessToken = signUserToken("ACCESS", { id, role: foundUser.role });
 
   res.status(200).json(
     formatApiResponse({

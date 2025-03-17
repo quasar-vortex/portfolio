@@ -539,6 +539,7 @@ export const toggleUserStatusHandler = asyncHandler(async (req, res, next) => {
 export const deleteUserHandler = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
   const signedInUser = req.user!.id;
+  const role = req.user!.role;
   const logMeta = {
     method: req.method,
     url: req.url,

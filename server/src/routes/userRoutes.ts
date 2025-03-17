@@ -12,7 +12,7 @@ PUT /users/:userId/avatar Upload avatar file  (authenticated)
 GET /users/:userId/posts  Get posts by user (public)
 PUT /users/:userId/status Toggle user status to inactive (admin)
 DELETE /users/:userId/avatar Delete own avatar (authenticated)
-DELETE /users/:userId Delete own account (authenticated)
+DELETE /users/:userId Delete own account (authenticated, admin)
 */
 
 const userRouter = Router();
