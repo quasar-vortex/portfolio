@@ -15,14 +15,10 @@ const validateSchema: (s: z.ZodSchema) => RequestHandler =
     } catch (error) {
       // Return issues if fails on validation
       if (error instanceof z.ZodError) {
-        const errorResponse = apiUtils.formatApiRespone(
-          null,
-          400,
-          error.message,
-          undefined,
-          undefined,
-          error.issues
-        );
+        const errorResponse = apiUtils.formatApiResponse({
+          error: error.issues,
+          message: "Validation Error. Check your input.",
+        });
         res.status(400).json(errorResponse);
         return;
       }

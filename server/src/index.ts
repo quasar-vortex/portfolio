@@ -2,7 +2,13 @@ import express from "express";
 import { appEnv } from "./env";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authRouter, filesRouter, postsRouter, userRouter } from "./routes";
+import {
+  authRouter,
+  filesRouter,
+  postsRouter,
+  tagsRouter,
+  userRouter,
+} from "./routes";
 import { errorMiddleware } from "./middleware";
 import { apiUtils } from "./utils";
 import { db } from "./db";
@@ -12,18 +18,18 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
-
 // Health Check
-app.get(`/api/${appEnv.API_VERSION}/health`, (req, res, next) => {
+app.get(`/api/v${appEnv.API_VERSION}/health`, (req, res, next) => {
   res
     .status(200)
     .json(apiUtils.formatApiResponse({ message: "Health Check Passed!" }));
 });
 // Routes
-app.use(`/api/${appEnv.API_VERSION}/auth`, authRouter);
-app.use(`/api/${appEnv.API_VERSION}/users`, userRouter);
-app.use(`/api/${appEnv.API_VERSION}/uploads`, filesRouter);
-app.use(`/api/${appEnv.API_VERSION}/posts`, postsRouter);
+app.use(`/api/v${appEnv.API_VERSION}/auth`, authRouter);
+app.use(`/api/v${appEnv.API_VERSION}/users`, userRouter);
+app.use(`/api/v${appEnv.API_VERSION}/uploads`, filesRouter);
+app.use(`/api/v${appEnv.API_VERSION}/posts`, postsRouter);
+app.use(`/api/v${appEnv.API_VERSION}/tags`, tagsRouter);
 
 // Catch All Error Handler (if no custom http error)
 app.use(errorMiddleware);
@@ -44,7 +50,9 @@ if (appEnv.NODE_ENV.toLocaleLowerCase() !== "test") {
     // Start the HTTP server. If it fails, exit the application
     try {
       app.listen(appEnv.PORT, () =>
-        logger.info(`API Server Running On: ${appEnv.PORT}`)
+        logger.info(
+          `API Server Running On: ${appEnv.PORT} | Version: ${appEnv.API_VERSION}`
+        )
       );
     } catch (error) {
       logger.error("Unable to Start API Server");

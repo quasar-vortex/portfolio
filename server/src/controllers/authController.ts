@@ -141,7 +141,7 @@ const refreshUserHandler = asyncHandler(async (req, res, next) => {
   );
 
   const refreshToken = req.cookies?.refreshToken;
-  if (!refreshToken) {
+  if (refreshToken === undefined) {
     logger.error(
       { method: req.method, url: req.url, ip: req.ip },
       "Missing Refresh Token"
@@ -170,7 +170,13 @@ const refreshUserHandler = asyncHandler(async (req, res, next) => {
   });
   if (!foundUser) {
     logger.error(
-      { method: req.method, url: req.url, ip: req.ip, userId: id },
+      {
+        method: req.method,
+        url: req.url,
+        ip: req.ip,
+        userId: id,
+        refreshToken,
+      },
       "User Not Found"
     );
     throw new HttpError({

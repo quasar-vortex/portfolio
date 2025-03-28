@@ -46,10 +46,7 @@ const updatePostModel = z.object({
       .min(2, { message: "Excerpt must be at least 2 characters long." })
       .max(250, { message: "Excerpt cannot exceed 250 characters." })
       .optional(),
-    coverImageId: z
-      .string()
-      .max(36, { message: "Cover Image ID cannot exceed 36 characters." })
-      .optional(),
+
     content: z
       .string()
       .min(10, { message: "Content must be at least 10 characters long." })
@@ -57,15 +54,40 @@ const updatePostModel = z.object({
     isPublished: z.boolean({
       message: "isPublished must be a boolean value.",
     }),
-    isFeatured: z
-      .boolean({
-        message: "isPublished must be a boolean value.",
-      })
-      .optional(),
+
     tags: z.array(z.string()),
   }),
 });
-
+export type UpdatePostPublishModel = z.infer<
+  typeof updatePostPublishModel
+>["body"];
+export const updatePostPublishModel = z.object({
+  params: z.object({
+    postId: z
+      .string()
+      .max(36, { message: "Post ID cannot exceed 36 characters." }),
+  }),
+  body: z.object({
+    isPublished: z.boolean({
+      message: "isPublished must be a boolean value.",
+    }),
+  }),
+});
+export type UpdatePostFeatureModel = z.infer<
+  typeof updatePostFeatureModel
+>["body"];
+export const updatePostFeatureModel = z.object({
+  params: z.object({
+    postId: z
+      .string()
+      .max(36, { message: "Post ID cannot exceed 36 characters." }),
+  }),
+  body: z.object({
+    isFeatured: z.boolean({
+      message: "isFeatured must be a boolean value.",
+    }),
+  }),
+});
 export type GetPostBySlugModel = z.infer<typeof getPostBySlugModel>["params"];
 const getPostBySlugModel = z.object({
   params: z.object({
@@ -88,4 +110,6 @@ export default {
   updatePostModel,
   getPostBySlugModel,
   queryPostsModel,
+  updatePostFeatureModel,
+  updatePostPublishModel,
 };

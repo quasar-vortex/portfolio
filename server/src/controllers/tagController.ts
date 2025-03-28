@@ -95,10 +95,7 @@ export const deleteTagByIdHandler = asyncHandler(async (req, res, next) => {
 export const getManyTagsHandler = asyncHandler(async (req, res, next) => {
   const { pageIndex, pageSize, searchTerm } = req.query as QueryTagModel;
 
-  logger.info(
-    { userId: req.user!.id, searchTerm, pageIndex, pageSize },
-    "Fetching tags..."
-  );
+  logger.info({ searchTerm, pageIndex, pageSize }, "Fetching tags...");
 
   // Trim search term if provided
   const trimmedSearchTerm = searchTerm?.trim();
@@ -128,10 +125,7 @@ export const getManyTagsHandler = asyncHandler(async (req, res, next) => {
   // Calculate total pages (ensure at least 1)
   const totalPages = Math.max(1, Math.ceil(totalRecords / parsedPageSize));
 
-  logger.info(
-    { userId: req.user!.id, totalRecords },
-    "Tags retrieved successfully."
-  );
+  logger.info({ totalRecords }, "Tags retrieved successfully.");
 
   // Return response
   res.status(200).json(
@@ -151,7 +145,6 @@ export const getTagByIdHandler = asyncHandler(async (req, res, next) => {
     method: req.method,
     url: req.url,
     ip: req.ip,
-    signedInId: req.user!.id,
   };
   const foundTag = await db.tag.findUnique({ where: { id: tagId } });
 

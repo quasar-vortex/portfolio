@@ -3,8 +3,9 @@ import HttpError from "../error";
 import { CustomRequestHandler } from "../types";
 import { db } from "../db";
 import { userModels } from "../models";
+import { User } from "@prisma/client";
 
-const roleMiddleware: (role: "ADMIN" | "USER") => CustomRequestHandler = (
+const roleMiddleware: (role: User["role"]) => CustomRequestHandler = (
   requiredRole
 ) =>
   asyncHandler(async (req, res, next) => {
@@ -28,7 +29,7 @@ const roleMiddleware: (role: "ADMIN" | "USER") => CustomRequestHandler = (
     if (requiredRole !== role) {
       next(
         new HttpError({
-          statusMessage: "FORBIDDEN",
+          statusMessage: "NOT_AUTHORIZED",
           message: `You are not authorized to access this resource. You must be a ${requiredRole}.`,
         })
       );

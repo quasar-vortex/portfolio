@@ -30,6 +30,6 @@ export type PublicUser = {
   id: string;
   registeredAt: Date;
   lastLoginAt: Date | null;
-  role: User["role"];
+  role: "ADMIN" | "AUTHOR";
   avatarUrl: string | null;
 };

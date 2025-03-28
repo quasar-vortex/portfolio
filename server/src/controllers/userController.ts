@@ -550,7 +550,7 @@ export const deleteUserHandler = asyncHandler(async (req, res, next) => {
   logger.info(logMeta, "Request to change user status received.");
 
   // Verify Account Owner
-  if (userId !== signedInUser) {
+  if (userId !== signedInUser || role !== "ADMIN") {
     logger.error(logMeta, "Attempt to delete another's account.");
     throw new HttpError({
       statusMessage: "FORBIDDEN",

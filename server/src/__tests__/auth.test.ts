@@ -4,13 +4,13 @@ import { db } from "../db";
 import { jwtUtils } from "../utils";
 import { appEnv } from "../env";
 
-const mockUser = {
+export const mockUser = {
   firstName: "John",
   lastName: "Doe",
   email: "john.doe@example.com",
   password: "edcRz&7EEed",
 };
-const mockHash =
+export const mockHash =
   "$argon2id$v=19$m=65536,t=3,p=4$m6aWQMtWr7RC8Nfd4ETE+A$2R5DP8NqIRQdwLfO7IcdVOPMa/woY43JeqquZQFiCAg";
 
 // Function to generate a fake authentication cookie
