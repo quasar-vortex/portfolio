@@ -8,6 +8,8 @@ const passwordRegex =
 
 const baseUseModel = z.object({
   email: z.string().email(),
+  firstName: z.string().min(2).max(20),
+  lastName: z.string().min(2).max(20),
   password: z.string().regex(passwordRegex, { message: passwordMessage }),
   confirmPassword: z
     .string()
@@ -20,6 +22,8 @@ export const registerUserModel = z
       email: true,
       password: true,
       confirmPassword: true,
+      firstName: true,
+      lastName: true,
     }),
   })
   .refine(

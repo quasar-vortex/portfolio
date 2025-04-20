@@ -23,6 +23,7 @@ model File {
   id           String    @id @default(uuid())
   originalName String    @db.VarChar(100)
   size         Int
+  url          String    @unique @db.VarChar(200)
   objectKey    String    @unique @db.VarChar(36)
   uploader     User      @relation("file-uploader", fields: [userId], references: [id])
   fileType     FileType  @default(IMAGE)
@@ -43,10 +44,13 @@ enum Role {
 
 model User {
   id             String    @id @default(uuid())
-  email          String    @db.VarChar(50)
+  firstName      String    @db.VarChar(20)
+  lastName       String    @db.VarChar(20)
+  email          String    @unique @db.VarChar(50)
   passwordHash   String    @db.VarChar(255)
   registeredDate DateTime  @default(now())
   lastLoginDate  DateTime?
+  refreshToken   String?   @unique
   role           Role      @default(USER)
   bio            String?   @db.VarChar(250)
   avatarFile     File?     @relation("avatar-file", fields: [avatarFileId], references: [id], onDelete: Cascade)
