@@ -9,7 +9,8 @@ const createNewTagHandler: AuthenticatedRequestHandler = async (
   res,
   next
 ) => {
-  const signedInId = req.user.id;
+  const signedInId = req.user!.id;
+  const role = req.user!.role;
   const meta = {
     ip: req.ip,
     method: req.method,
@@ -19,11 +20,17 @@ const createNewTagHandler: AuthenticatedRequestHandler = async (
   try {
     logger.info({ ...meta }, "Creating new tag.");
 
+    if (role !== "ADMIN") {
+      throw new HttpError({
+        status: "NOT_AUTHORIZED",
+        message: "Must be an admin to make a tag.",
+      });
+    }
+
     const { name } = req.body as CreateTagModel;
 
     const existingTag = await db.tag.findUnique({ where: { name } });
     if (existingTag) {
-      logger.warn({ ...meta }, "Tag Exists");
       throw new HttpError({
         status: "BAD_REQUEST",
         message: "Tag name in use.",
@@ -52,7 +59,7 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
 ) => {
   const meta = { ip: req.ip, method: req.method, url: req.url };
   try {
-    const role = req.user.role;
+    const role = req.user?.role;
     const {
       name,
       pageIndex = "0",
@@ -104,8 +111,8 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const tagId = req.params.tagId;
-  const signedInId = req.user.id;
-  const role = req.user.role;
+  const signedInId = req.user!.id;
+  const role = req.user!.role;
   const isAdmin = role === "ADMIN";
   const meta = {
     ip: req.ip,
@@ -117,6 +124,12 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
 
   logger.info(meta, "Updating tag.");
   try {
+    if (!isAdmin) {
+      throw new HttpError({
+        status: "NOT_AUTHORIZED",
+        message: "Must be an admin to update a tag.",
+      });
+    }
     const { name } = req.body as UpdateTagModel;
     const updatedTag = await db.tag.update({
       where: { id: tagId },
@@ -219,13 +232,13 @@ const deleteTagByIdHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const tagId = req.params.tagId;
-  const isAdmin = req.user.role === "ADMIN";
+  const isAdmin = req.user!.role === "ADMIN";
   const meta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
     tagId,
-    userId: req.user.id,
+    userId: req.user!.id,
   };
 
   logger.info(meta, "Request to delete tag by Id.");

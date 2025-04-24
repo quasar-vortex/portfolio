@@ -8,6 +8,7 @@ GET / Get all tags with search by tag name - PUBLIC Access
 POST / Create a new tag - ADMIN Access
 PUT /:tagId Update a tag name - ADMIN Access
 GET /:tagId - PUBLIC Access
+GET /name/:tagName PUBLIC Access
 DELETE /:tagID - ADMIN Access
 */
 
@@ -34,6 +35,5 @@ tagsRouter
     "/:tagId",
     authMiddleware,
     roleMiddleware("ADMIN"),
-    valMiddleware(updateTagModel),
     tagsController.deleteTagByIdHandler
   );
