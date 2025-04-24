@@ -1,12 +1,15 @@
-import { RequestHandler } from "express";
-import { CreateTagModel, SearchTagsModel } from "./tags.models";
+import { CreateTagModel, SearchTagsModel, UpdateTagModel } from "./tags.models";
 import logger from "../logger";
 import { db } from "../db";
 import { HttpError } from "../error";
+import { AuthenticatedRequestHandler } from "../types";
 
-const createNewTagHandler: RequestHandler = async (req, res, next) => {
-  //@ts-ignore: Global issue with user
-  const signedInId = req.user!.id;
+const createNewTagHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const signedInId = req.user.id;
   const meta = {
     ip: req.ip,
     method: req.method,
@@ -18,7 +21,6 @@ const createNewTagHandler: RequestHandler = async (req, res, next) => {
 
     const { name } = req.body as CreateTagModel;
 
-    // check if tag exists
     const existingTag = await db.tag.findUnique({ where: { name } });
     if (existingTag) {
       logger.warn({ ...meta }, "Tag Exists");
@@ -33,160 +35,125 @@ const createNewTagHandler: RequestHandler = async (req, res, next) => {
     });
 
     logger.info({ ...meta }, "New Tag Created");
-
-    res.status(201).json({
-      data: { ...newTag },
-      message: "Tag Created Successfully",
-    });
+    res.status(201).json({ data: newTag, message: "Tag Created Successfully" });
   } catch (error) {
-    logger.warn({ error }, "Tag creation failed");
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Tag creation failed"
+    );
     return next(error);
   }
 };
-const searchTagsHandler: RequestHandler = async (req, res, next) => {
-  const meta = {
-    ip: req.ip,
-    method: req.method,
-    url: req.url,
-  };
+
+const searchTagsHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const meta = { ip: req.ip, method: req.method, url: req.url };
   try {
-    const role = req.user?.role;
+    const role = req.user.role;
     const {
       name,
       pageIndex = "0",
       pageSize = "10",
-    } = req.query as SearchTagsModel;
+    } = req.query as unknown as SearchTagsModel;
 
     const trimmedTerm = name?.trim();
-    // Ensure index is at least 0
-    const index = parseInt(pageIndex);
-    const parsedIndex = isNaN(index) ? 0 : Math.max(index, 0);
-    // Ensure size is at least 10
-    const size = parseInt(pageSize);
-    const parsedPageSize = isNaN(size) ? 10 : Math.min(10, Math.max(size, 0));
+    const index = Math.max(parseInt(pageIndex) || 0, 0);
+    const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
 
     logger.info(
-      {
-        ...meta,
-        term: trimmedTerm,
-        pageIndex: parsedIndex,
-        pageSize: parsedPageSize,
-      },
+      { ...meta, term: trimmedTerm, pageIndex: index, pageSize: size },
       "Searching for tags."
     );
-    // if not admin only able to see active tags
+
     const where: { name?: { contains: string }; isActive?: boolean } = {};
-    // if term add to search
     if (trimmedTerm) where.name = { contains: trimmedTerm };
     if (role !== "ADMIN") where.isActive = true;
-    // if admin able to see author and isactive
-    const select: Record<string, boolean> = {
-      id: true,
-      name: true,
-      authorId: role === "ADMIN" || false,
-      isActive: role === "ADMIN" || false,
-    };
-    const foundTags = await db.tag.findMany({
-      where,
-      take: parsedPageSize,
-      skip: parsedIndex * parsedPageSize,
-      select,
-    });
-    logger.info(
-      {
-        ...meta,
-        term: trimmedTerm,
-        pageIndex: parsedIndex,
-        pageSize: parsedPageSize,
-      },
-      "Tags Successfully Found"
-    );
-    res
-      .status(200)
-      .json({ message: "Tags found succesfully!", data: foundTags });
-  } catch (error) {
-    logger.warn({ error }, "Unable to retrieve tags.");
-    return next(error);
-  }
-};
-const updateTagByIdHandler: RequestHandler = async (req, res, next) => {
-  const tagId = req.params.tagId;
-  //@ts-ignore: global user type issue
-  const signedInId = req.user!.id;
-  //@ts-ignore: global user type issue
-  const role = req.user!.role;
-  const meta = {
-    ip: req.ip,
-    method: req.method,
-    url: req.url,
-    tagId: tagId,
-    userId: signedInId,
-  };
-  const isAdmin = role === "ADMIN";
 
-  logger.info(meta, "Updating tag.");
-  try {
-    const where: { id: string; isActive?: boolean } = {
-      id: tagId,
-    };
-    // only show author and isactive to admin
     const select = {
       id: true,
       name: true,
-      authorId: isAdmin,
-      isActive: isAdmin,
+      ...(role === "ADMIN" && { authorId: true, isActive: true }),
     };
-    // if not admin only show active tags
-    if (!isAdmin) where.isActive = true;
-    const foundTag = await db.tag.findUnique({
+
+    const foundTags = await db.tag.findMany({
       where,
+      take: size,
+      skip: index * size,
       select,
     });
-    if (!foundTag) {
-      logger.warn(meta, "Tag was not found");
-      throw new HttpError({
-        status: "NOT_FOUND",
-        message: `Tag with ${tagId} was not found!`,
-      });
-    }
 
-    logger.info(meta, "Tag found successfully.");
+    logger.info({ ...meta }, "Tags Successfully Found");
     res
       .status(200)
-      .json({ message: "Tag found successfully!", data: foundTag });
+      .json({ message: "Tags found successfully!", data: foundTags });
   } catch (error) {
-    logger.warn({ error }, "Unable to update tag.");
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Unable to retrieve tags."
+    );
     return next(error);
   }
 };
 
-const getTagByIdHandler: RequestHandler = async (req, res, next) => {
+const updateTagByIdHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const tagId = req.params.tagId;
+  const signedInId = req.user.id;
+  const role = req.user.role;
+  const isAdmin = role === "ADMIN";
   const meta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
     tagId,
+    userId: signedInId,
   };
+
+  logger.info(meta, "Updating tag.");
+  try {
+    const { name } = req.body as UpdateTagModel;
+    const updatedTag = await db.tag.update({
+      where: { id: tagId },
+      data: { name },
+    });
+    logger.info(meta, "Tag updated successfully.");
+    res
+      .status(200)
+      .json({ message: "Tag updated successfully!", data: updatedTag });
+  } catch (error) {
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Unable to update tag."
+    );
+    return next(error);
+  }
+};
+
+const getTagByIdHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const tagId = req.params.tagId;
+  const isAdmin = req.user?.role === "ADMIN";
+  const meta = { ip: req.ip, method: req.method, url: req.url, tagId };
+
   logger.info(meta, "Request to get tag by Id.");
   try {
-    const isAdmin = req.user?.role === "ADMIN";
-    const where: { id: string; isActive?: boolean } = {
-      id: tagId,
-    };
-    // only show author and isactive to admin
+    const where = isAdmin ? { id: tagId } : { id: tagId, isActive: true };
     const select = {
       id: true,
       name: true,
-      authorId: isAdmin,
-      isActive: isAdmin,
+      ...(isAdmin && { authorId: true, isActive: true }),
     };
-    // if not admin only show active tags
-    if (!isAdmin) where.isActive = true;
-    const foundTag = await db.tag.findUnique({
-      where,
-      select,
-    });
+
+    const foundTag = await db.tag.findUnique({ where, select });
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");
       throw new HttpError({
@@ -194,41 +161,39 @@ const getTagByIdHandler: RequestHandler = async (req, res, next) => {
         message: `Tag with ${tagId} was not found!`,
       });
     }
-    logger.info("Tag was found!");
+
+    logger.info(meta, "Tag was found!");
     res.status(200).json({ data: foundTag });
   } catch (error) {
-    logger.warn({ error }, "Unable to get tag.");
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Unable to get tag."
+    );
     return next(error);
   }
 };
 
-const getTagByNameHandler: RequestHandler = async (req, res, next) => {
+const getTagByNameHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const tagName = req.params.tagName;
-  const meta = {
-    ip: req.ip,
-    method: req.method,
-    url: req.url,
-    tagName,
-  };
+  const isAdmin = req.user?.role === "ADMIN";
+  const meta = { ip: req.ip, method: req.method, url: req.url, tagName };
+
   logger.info(meta, "Request to get tag by name.");
   try {
-    const isAdmin = req.user?.role === "ADMIN";
-    const where: { name: string; isActive?: boolean } = {
-      name: tagName,
-    };
-    // only show author and isactive to admin
+    const where = isAdmin
+      ? { name: tagName }
+      : { name: tagName, isActive: true };
     const select = {
       id: true,
       name: true,
-      authorId: isAdmin,
-      isActive: isAdmin,
+      ...(isAdmin && { authorId: true, isActive: true }),
     };
-    // if not admin only show active tags
-    if (!isAdmin) where.isActive = true;
-    const foundTag = await db.tag.findUnique({
-      where,
-      select,
-    });
+
+    const foundTag = await db.tag.findUnique({ where, select });
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");
       throw new HttpError({
@@ -236,35 +201,43 @@ const getTagByNameHandler: RequestHandler = async (req, res, next) => {
         message: `Tag with ${tagName} was not found!`,
       });
     }
-    logger.info("Tag was found!");
+
+    logger.info(meta, "Tag was found!");
     res.status(200).json({ data: foundTag });
   } catch (error) {
-    logger.warn({ error }, "Unable to get tag.");
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Unable to get tag."
+    );
     return next(error);
   }
 };
-const deleteTagByIdHandler: RequestHandler = async (req, res, next) => {
+
+const deleteTagByIdHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const tagId = req.params.tagId;
+  const isAdmin = req.user.role === "ADMIN";
   const meta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
     tagId,
-    //@ts-ignore: global user
-    userId: req.user!.id,
+    userId: req.user.id,
   };
-  logger.info(meta, "Request to get tag by Id.");
+
+  logger.info(meta, "Request to delete tag by Id.");
   try {
-    //@ts-ignore: global user
-    const isAdmin = req.user!.role === "ADMIN";
-    if (!isAdmin)
+    if (!isAdmin) {
       throw new HttpError({
         status: "NOT_AUTHORIZED",
         message: "Must be admin to delete tag.",
       });
+    }
 
     const foundTag = await db.tag.findUnique({ where: { id: tagId } });
-
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");
       throw new HttpError({
@@ -272,11 +245,15 @@ const deleteTagByIdHandler: RequestHandler = async (req, res, next) => {
         message: `Tag with ${tagId} was not found!`,
       });
     }
-    logger.info("Tag was deleted!");
-    await db.tag.delete({ where: { id: tagId } });
+
+    await db.tag.update({ where: { id: tagId }, data: { isActive: false } });
+    logger.info(meta, "Tag was deactivated (soft deleted).");
     res.status(200).json({ data: foundTag });
   } catch (error) {
-    logger.warn({ error }, "Unable to delete tag.");
+    logger.warn(
+      { error: error instanceof Error ? error.message : error },
+      "Unable to delete tag."
+    );
     return next(error);
   }
 };

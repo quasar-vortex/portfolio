@@ -1,3 +1,4 @@
+import { NextFunction, RequestHandler, Response, Request } from "express";
 import { Prisma, Role } from "./generated/prisma";
 
 type User = {
@@ -11,3 +12,13 @@ declare global {
     }
   }
 }
+
+type AuthenticatedRequest = Request & {
+  user?: User;
+};
+
+export type AuthenticatedRequestHandler = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => void;
