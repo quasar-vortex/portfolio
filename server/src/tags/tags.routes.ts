@@ -22,7 +22,7 @@ tagsRouter
     valMiddleware(createTagModel),
     tagsController.createNewTagHandler
   )
-  .put(
+  .patch(
     "/:tagId",
     authMiddleware,
     roleMiddleware("ADMIN"),

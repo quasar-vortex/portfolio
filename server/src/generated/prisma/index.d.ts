@@ -5090,7 +5090,7 @@ export namespace Prisma {
     updatedDate: Date | null
     coverImageId: string | null
     authorId: string
-    updatedById: string
+    updatedById: string | null
     _count: PostCountAggregateOutputType | null
     _min: PostMinAggregateOutputType | null
     _max: PostMaxAggregateOutputType | null
@@ -5127,7 +5127,7 @@ export namespace Prisma {
     updatedById?: boolean
     coverImage?: boolean | Post$coverImageArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    updatedBy?: boolean | UserDefaultArgs<ExtArgs>
+    updatedBy?: boolean | Post$updatedByArgs<ExtArgs>
     PostTag?: boolean | Post$PostTagArgs<ExtArgs>
     _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
@@ -5155,7 +5155,7 @@ export namespace Prisma {
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     coverImage?: boolean | Post$coverImageArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    updatedBy?: boolean | UserDefaultArgs<ExtArgs>
+    updatedBy?: boolean | Post$updatedByArgs<ExtArgs>
     PostTag?: boolean | Post$PostTagArgs<ExtArgs>
     _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5165,7 +5165,7 @@ export namespace Prisma {
     objects: {
       coverImage: Prisma.$FilePayload<ExtArgs> | null
       author: Prisma.$UserPayload<ExtArgs>
-      updatedBy: Prisma.$UserPayload<ExtArgs>
+      updatedBy: Prisma.$UserPayload<ExtArgs> | null
       PostTag: Prisma.$PostTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5182,7 +5182,7 @@ export namespace Prisma {
       updatedDate: Date | null
       coverImageId: string | null
       authorId: string
-      updatedById: string
+      updatedById: string | null
     }, ExtArgs["result"]["post"]>
     composites: {}
   }
@@ -5525,7 +5525,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     coverImage<T extends Post$coverImageArgs<ExtArgs> = {}>(args?: Subset<T, Post$coverImageArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    updatedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends Post$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Post$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     PostTag<T extends Post$PostTagArgs<ExtArgs> = {}>(args?: Subset<T, Post$PostTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5929,6 +5929,25 @@ export namespace Prisma {
      */
     include?: FileInclude<ExtArgs> | null
     where?: FileWhereInput
+  }
+
+  /**
+   * Post.updatedBy
+   */
+  export type Post$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -7082,7 +7101,7 @@ export namespace Prisma {
     authorId: string
     codeUrl: string | null
     liveUrl: string | null
-    updatedById: string
+    updatedById: string | null
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -7120,7 +7139,7 @@ export namespace Prisma {
     updatedById?: boolean
     coverImage?: boolean | Project$coverImageArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    updatedBy?: boolean | UserDefaultArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
     ProjectTag?: boolean | Project$ProjectTagArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -7149,7 +7168,7 @@ export namespace Prisma {
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     coverImage?: boolean | Project$coverImageArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    updatedBy?: boolean | UserDefaultArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
     ProjectTag?: boolean | Project$ProjectTagArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -7159,7 +7178,7 @@ export namespace Prisma {
     objects: {
       coverImage: Prisma.$FilePayload<ExtArgs> | null
       author: Prisma.$UserPayload<ExtArgs>
-      updatedBy: Prisma.$UserPayload<ExtArgs>
+      updatedBy: Prisma.$UserPayload<ExtArgs> | null
       ProjectTag: Prisma.$ProjectTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -7177,7 +7196,7 @@ export namespace Prisma {
       authorId: string
       codeUrl: string | null
       liveUrl: string | null
-      updatedById: string
+      updatedById: string | null
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -7520,7 +7539,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     coverImage<T extends Project$coverImageArgs<ExtArgs> = {}>(args?: Subset<T, Project$coverImageArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    updatedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends Project$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Project$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     ProjectTag<T extends Project$ProjectTagArgs<ExtArgs> = {}>(args?: Subset<T, Project$ProjectTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -7925,6 +7944,25 @@ export namespace Prisma {
      */
     include?: FileInclude<ExtArgs> | null
     where?: FileWhereInput
+  }
+
+  /**
+   * Project.updatedBy
+   */
+  export type Project$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -9412,10 +9450,10 @@ export namespace Prisma {
     updatedDate?: DateTimeNullableFilter<"Post"> | Date | string | null
     coverImageId?: StringNullableFilter<"Post"> | string | null
     authorId?: StringFilter<"Post"> | string
-    updatedById?: StringFilter<"Post"> | string
+    updatedById?: StringNullableFilter<"Post"> | string | null
     coverImage?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    updatedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     PostTag?: PostTagListRelationFilter
   }
 
@@ -9433,7 +9471,7 @@ export namespace Prisma {
     updatedDate?: SortOrderInput | SortOrder
     coverImageId?: SortOrderInput | SortOrder
     authorId?: SortOrder
-    updatedById?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
     coverImage?: FileOrderByWithRelationInput
     author?: UserOrderByWithRelationInput
     updatedBy?: UserOrderByWithRelationInput
@@ -9458,10 +9496,10 @@ export namespace Prisma {
     updatedDate?: DateTimeNullableFilter<"Post"> | Date | string | null
     coverImageId?: StringNullableFilter<"Post"> | string | null
     authorId?: StringFilter<"Post"> | string
-    updatedById?: StringFilter<"Post"> | string
+    updatedById?: StringNullableFilter<"Post"> | string | null
     coverImage?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    updatedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     PostTag?: PostTagListRelationFilter
   }, "id" | "title" | "slug">
 
@@ -9479,7 +9517,7 @@ export namespace Prisma {
     updatedDate?: SortOrderInput | SortOrder
     coverImageId?: SortOrderInput | SortOrder
     authorId?: SortOrder
-    updatedById?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
     _count?: PostCountOrderByAggregateInput
     _max?: PostMaxOrderByAggregateInput
     _min?: PostMinOrderByAggregateInput
@@ -9502,7 +9540,7 @@ export namespace Prisma {
     updatedDate?: DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
     coverImageId?: StringNullableWithAggregatesFilter<"Post"> | string | null
     authorId?: StringWithAggregatesFilter<"Post"> | string
-    updatedById?: StringWithAggregatesFilter<"Post"> | string
+    updatedById?: StringNullableWithAggregatesFilter<"Post"> | string | null
   }
 
   export type PostTagWhereInput = {
@@ -9568,10 +9606,10 @@ export namespace Prisma {
     authorId?: StringFilter<"Project"> | string
     codeUrl?: StringNullableFilter<"Project"> | string | null
     liveUrl?: StringNullableFilter<"Project"> | string | null
-    updatedById?: StringFilter<"Project"> | string
+    updatedById?: StringNullableFilter<"Project"> | string | null
     coverImage?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    updatedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     ProjectTag?: ProjectTagListRelationFilter
   }
 
@@ -9590,7 +9628,7 @@ export namespace Prisma {
     authorId?: SortOrder
     codeUrl?: SortOrderInput | SortOrder
     liveUrl?: SortOrderInput | SortOrder
-    updatedById?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
     coverImage?: FileOrderByWithRelationInput
     author?: UserOrderByWithRelationInput
     updatedBy?: UserOrderByWithRelationInput
@@ -9616,10 +9654,10 @@ export namespace Prisma {
     authorId?: StringFilter<"Project"> | string
     codeUrl?: StringNullableFilter<"Project"> | string | null
     liveUrl?: StringNullableFilter<"Project"> | string | null
-    updatedById?: StringFilter<"Project"> | string
+    updatedById?: StringNullableFilter<"Project"> | string | null
     coverImage?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    updatedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     ProjectTag?: ProjectTagListRelationFilter
   }, "id" | "title" | "slug">
 
@@ -9638,7 +9676,7 @@ export namespace Prisma {
     authorId?: SortOrder
     codeUrl?: SortOrderInput | SortOrder
     liveUrl?: SortOrderInput | SortOrder
-    updatedById?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -9662,7 +9700,7 @@ export namespace Prisma {
     authorId?: StringWithAggregatesFilter<"Project"> | string
     codeUrl?: StringNullableWithAggregatesFilter<"Project"> | string | null
     liveUrl?: StringNullableWithAggregatesFilter<"Project"> | string | null
-    updatedById?: StringWithAggregatesFilter<"Project"> | string
+    updatedById?: StringNullableWithAggregatesFilter<"Project"> | string | null
   }
 
   export type ProjectTagWhereInput = {
@@ -10010,7 +10048,7 @@ export namespace Prisma {
     updatedDate?: Date | string | null
     coverImage?: FileCreateNestedOneWithoutPostInput
     author: UserCreateNestedOneWithoutPostAuthorInput
-    updatedBy: UserCreateNestedOneWithoutPostUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutPostUpdaterInput
     PostTag?: PostTagCreateNestedManyWithoutPostInput
   }
 
@@ -10028,7 +10066,7 @@ export namespace Prisma {
     updatedDate?: Date | string | null
     coverImageId?: string | null
     authorId: string
-    updatedById: string
+    updatedById?: string | null
     PostTag?: PostTagUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -10046,7 +10084,7 @@ export namespace Prisma {
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImage?: FileUpdateOneWithoutPostNestedInput
     author?: UserUpdateOneRequiredWithoutPostAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutPostUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutPostUpdaterNestedInput
     PostTag?: PostTagUpdateManyWithoutPostNestedInput
   }
 
@@ -10064,7 +10102,7 @@ export namespace Prisma {
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     PostTag?: PostTagUncheckedUpdateManyWithoutPostNestedInput
   }
 
@@ -10082,7 +10120,7 @@ export namespace Prisma {
     updatedDate?: Date | string | null
     coverImageId?: string | null
     authorId: string
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type PostUpdateManyMutationInput = {
@@ -10113,7 +10151,7 @@ export namespace Prisma {
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PostTagCreateInput = {
@@ -10165,7 +10203,7 @@ export namespace Prisma {
     liveUrl?: string | null
     coverImage?: FileCreateNestedOneWithoutProjectInput
     author: UserCreateNestedOneWithoutProjectAuthorInput
-    updatedBy: UserCreateNestedOneWithoutProjectUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutProjectUpdaterInput
     ProjectTag?: ProjectTagCreateNestedManyWithoutProjectInput
   }
 
@@ -10184,7 +10222,7 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
     ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
@@ -10203,7 +10241,7 @@ export namespace Prisma {
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImage?: FileUpdateOneWithoutProjectNestedInput
     author?: UserUpdateOneRequiredWithoutProjectAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutProjectUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutProjectUpdaterNestedInput
     ProjectTag?: ProjectTagUpdateManyWithoutProjectNestedInput
   }
 
@@ -10222,7 +10260,7 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     ProjectTag?: ProjectTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
@@ -10241,7 +10279,7 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -10274,7 +10312,7 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectTagCreateInput = {
@@ -10715,6 +10753,11 @@ export namespace Prisma {
     name?: SortOrder
     authorId?: SortOrder
     isActive?: SortOrder
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type PostOrderByRelevanceInput = {
@@ -11493,10 +11536,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostAuthorInput, UserUpdateWithoutPostAuthorInput>, UserUncheckedUpdateWithoutPostAuthorInput>
   }
 
-  export type UserUpdateOneRequiredWithoutPostUpdaterNestedInput = {
+  export type UserUpdateOneWithoutPostUpdaterNestedInput = {
     create?: XOR<UserCreateWithoutPostUpdaterInput, UserUncheckedCreateWithoutPostUpdaterInput>
     connectOrCreate?: UserCreateOrConnectWithoutPostUpdaterInput
     upsert?: UserUpsertWithoutPostUpdaterInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostUpdaterInput, UserUpdateWithoutPostUpdaterInput>, UserUncheckedUpdateWithoutPostUpdaterInput>
   }
@@ -11607,10 +11652,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectAuthorInput, UserUpdateWithoutProjectAuthorInput>, UserUncheckedUpdateWithoutProjectAuthorInput>
   }
 
-  export type UserUpdateOneRequiredWithoutProjectUpdaterNestedInput = {
+  export type UserUpdateOneWithoutProjectUpdaterNestedInput = {
     create?: XOR<UserCreateWithoutProjectUpdaterInput, UserUncheckedCreateWithoutProjectUpdaterInput>
     connectOrCreate?: UserCreateOrConnectWithoutProjectUpdaterInput
     upsert?: UserUpsertWithoutProjectUpdaterInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectUpdaterInput, UserUpdateWithoutProjectUpdaterInput>, UserUncheckedUpdateWithoutProjectUpdaterInput>
   }
@@ -11991,7 +12038,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     author: UserCreateNestedOneWithoutPostAuthorInput
-    updatedBy: UserCreateNestedOneWithoutPostUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutPostUpdaterInput
     PostTag?: PostTagCreateNestedManyWithoutPostInput
   }
 
@@ -12008,7 +12055,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     authorId: string
-    updatedById: string
+    updatedById?: string | null
     PostTag?: PostTagUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -12036,7 +12083,7 @@ export namespace Prisma {
     codeUrl?: string | null
     liveUrl?: string | null
     author: UserCreateNestedOneWithoutProjectAuthorInput
-    updatedBy: UserCreateNestedOneWithoutProjectUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutProjectUpdaterInput
     ProjectTag?: ProjectTagCreateNestedManyWithoutProjectInput
   }
 
@@ -12054,7 +12101,7 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
     ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
@@ -12186,7 +12233,7 @@ export namespace Prisma {
     updatedDate?: DateTimeNullableFilter<"Post"> | Date | string | null
     coverImageId?: StringNullableFilter<"Post"> | string | null
     authorId?: StringFilter<"Post"> | string
-    updatedById?: StringFilter<"Post"> | string
+    updatedById?: StringNullableFilter<"Post"> | string | null
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutCoverImageInput = {
@@ -12223,7 +12270,7 @@ export namespace Prisma {
     authorId?: StringFilter<"Project"> | string
     codeUrl?: StringNullableFilter<"Project"> | string | null
     liveUrl?: StringNullableFilter<"Project"> | string | null
-    updatedById?: StringFilter<"Project"> | string
+    updatedById?: StringNullableFilter<"Project"> | string | null
   }
 
   export type FileCreateWithoutUserInput = {
@@ -12274,7 +12321,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     coverImage?: FileCreateNestedOneWithoutPostInput
-    updatedBy: UserCreateNestedOneWithoutPostUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutPostUpdaterInput
     PostTag?: PostTagCreateNestedManyWithoutPostInput
   }
 
@@ -12291,7 +12338,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     coverImageId?: string | null
-    updatedById: string
+    updatedById?: string | null
     PostTag?: PostTagUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -12319,7 +12366,7 @@ export namespace Prisma {
     codeUrl?: string | null
     liveUrl?: string | null
     coverImage?: FileCreateNestedOneWithoutProjectInput
-    updatedBy: UserCreateNestedOneWithoutProjectUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutProjectUpdaterInput
     ProjectTag?: ProjectTagCreateNestedManyWithoutProjectInput
   }
 
@@ -12337,7 +12384,7 @@ export namespace Prisma {
     isActive?: boolean
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
     ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
@@ -13166,7 +13213,7 @@ export namespace Prisma {
     updatedDate?: Date | string | null
     coverImage?: FileCreateNestedOneWithoutPostInput
     author: UserCreateNestedOneWithoutPostAuthorInput
-    updatedBy: UserCreateNestedOneWithoutPostUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutPostUpdaterInput
   }
 
   export type PostUncheckedCreateWithoutPostTagInput = {
@@ -13183,7 +13230,7 @@ export namespace Prisma {
     updatedDate?: Date | string | null
     coverImageId?: string | null
     authorId: string
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type PostCreateOrConnectWithoutPostTagInput = {
@@ -13237,7 +13284,7 @@ export namespace Prisma {
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImage?: FileUpdateOneWithoutPostNestedInput
     author?: UserUpdateOneRequiredWithoutPostAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutPostUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutPostUpdaterNestedInput
   }
 
   export type PostUncheckedUpdateWithoutPostTagInput = {
@@ -13254,7 +13301,7 @@ export namespace Prisma {
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUpsertWithoutPostTagInput = {
@@ -13601,7 +13648,7 @@ export namespace Prisma {
     liveUrl?: string | null
     coverImage?: FileCreateNestedOneWithoutProjectInput
     author: UserCreateNestedOneWithoutProjectAuthorInput
-    updatedBy: UserCreateNestedOneWithoutProjectUpdaterInput
+    updatedBy?: UserCreateNestedOneWithoutProjectUpdaterInput
   }
 
   export type ProjectUncheckedCreateWithoutProjectTagInput = {
@@ -13619,7 +13666,7 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type ProjectCreateOrConnectWithoutProjectTagInput = {
@@ -13674,7 +13721,7 @@ export namespace Prisma {
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImage?: FileUpdateOneWithoutProjectNestedInput
     author?: UserUpdateOneRequiredWithoutProjectAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutProjectUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutProjectUpdaterNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProjectTagInput = {
@@ -13692,7 +13739,7 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUpsertWithoutProjectTagInput = {
@@ -13749,7 +13796,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     authorId: string
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type ProjectCreateManyCoverImageInput = {
@@ -13766,7 +13813,7 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type UserUpdateWithoutAvatarFileInput = {
@@ -13836,7 +13883,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutPostAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutPostUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutPostUpdaterNestedInput
     PostTag?: PostTagUpdateManyWithoutPostNestedInput
   }
 
@@ -13853,7 +13900,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     PostTag?: PostTagUncheckedUpdateManyWithoutPostNestedInput
   }
 
@@ -13870,7 +13917,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectUpdateWithoutCoverImageInput = {
@@ -13887,7 +13934,7 @@ export namespace Prisma {
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
     author?: UserUpdateOneRequiredWithoutProjectAuthorNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutProjectUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutProjectUpdaterNestedInput
     ProjectTag?: ProjectTagUpdateManyWithoutProjectNestedInput
   }
 
@@ -13905,7 +13952,7 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     ProjectTag?: ProjectTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
@@ -13923,7 +13970,7 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PostCreateManyAuthorInput = {
@@ -13939,7 +13986,7 @@ export namespace Prisma {
     createdDate?: Date | string
     updatedDate?: Date | string | null
     coverImageId?: string | null
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type ProjectCreateManyAuthorInput = {
@@ -13956,7 +14003,7 @@ export namespace Prisma {
     isActive?: boolean
     codeUrl?: string | null
     liveUrl?: string | null
-    updatedById: string
+    updatedById?: string | null
   }
 
   export type FileCreateManyUploaderInput = {
@@ -14023,7 +14070,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImage?: FileUpdateOneWithoutPostNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutPostUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutPostUpdaterNestedInput
     PostTag?: PostTagUpdateManyWithoutPostNestedInput
   }
 
@@ -14040,7 +14087,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     PostTag?: PostTagUncheckedUpdateManyWithoutPostNestedInput
   }
 
@@ -14057,7 +14104,7 @@ export namespace Prisma {
     createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectUpdateWithoutAuthorInput = {
@@ -14074,7 +14121,7 @@ export namespace Prisma {
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImage?: FileUpdateOneWithoutProjectNestedInput
-    updatedBy?: UserUpdateOneRequiredWithoutProjectUpdaterNestedInput
+    updatedBy?: UserUpdateOneWithoutProjectUpdaterNestedInput
     ProjectTag?: ProjectTagUpdateManyWithoutProjectNestedInput
   }
 
@@ -14092,7 +14139,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     ProjectTag?: ProjectTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
@@ -14110,7 +14157,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     codeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedById?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FileUpdateWithoutUploaderInput = {

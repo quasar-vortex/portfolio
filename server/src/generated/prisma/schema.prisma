@@ -90,8 +90,8 @@ model Post {
   coverImageId String?
   author       User      @relation("post-author", fields: [authorId], references: [id], onDelete: Cascade)
   authorId     String
-  updatedBy    User      @relation("post-updater", fields: [updatedById], references: [id])
-  updatedById  String
+  updatedBy    User?     @relation("post-updater", fields: [updatedById], references: [id])
+  updatedById  String?
   PostTag      PostTag[]
 
   @@index([isFeatured])
@@ -125,8 +125,8 @@ model Project {
   authorId     String
   codeUrl      String?      @db.VarChar(150)
   liveUrl      String?      @db.VarChar(150)
-  updatedBy    User         @relation("project-updater", fields: [updatedById], references: [id])
-  updatedById  String
+  updatedBy    User?        @relation("project-updater", fields: [updatedById], references: [id])
+  updatedById  String?
   ProjectTag   ProjectTag[]
 
   @@index([isFeatured])
