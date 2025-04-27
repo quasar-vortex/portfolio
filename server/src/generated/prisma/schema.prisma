@@ -31,7 +31,7 @@ model File {
   dateUpdated  DateTime? @updatedAt
   isActive     Boolean   @default(true)
   User         User[]    @relation("avatar-file")
-  Post         Post[]
+  Post         Post[]    @relation()
   Project      Project[]
   userId       String
 }
@@ -86,7 +86,7 @@ model Post {
   publishDate  DateTime?
   createdDate  DateTime  @default(now())
   updatedDate  DateTime? @updatedAt
-  coverImage   File?     @relation(fields: [coverImageId], references: [id])
+  coverImage   File?     @relation(fields: [coverImageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   coverImageId String?
   author       User      @relation("post-author", fields: [authorId], references: [id], onDelete: Cascade)
   authorId     String
@@ -113,7 +113,7 @@ model Project {
   title        String       @unique @db.VarChar(100)
   slug         String       @unique @db.VarChar(150)
   description  String       @db.VarChar(500)
-  coverImage   File?        @relation(fields: [coverImageId], references: [id], onDelete: Cascade)
+  coverImage   File?        @relation(fields: [coverImageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   coverImageId String?
   isPublished  Boolean      @default(false)
   isFeatured   Boolean      @default(false)

@@ -67,17 +67,18 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
     } = req.query as unknown as SearchTagsModel;
 
     const trimmedTerm = name?.trim();
-    const index = Math.max(parseInt(pageIndex) || 0, 0);
-    const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
+    const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
+    const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
 
     logger.info(
-      { ...meta, term: trimmedTerm, pageIndex: index, pageSize: size },
+      { ...meta, term: trimmedTerm, pageIndex: index + 1, pageSize: size },
       "Searching for tags."
     );
 
-    const where: { name?: { contains: string }; isActive?: boolean } = {};
-    if (trimmedTerm) where.name = { contains: trimmedTerm };
-    if (role !== "ADMIN") where.isActive = true;
+    const where = {
+      ...(trimmedTerm && { name: { contains: trimmedTerm } }),
+      ...(role !== "ADMIN" && { isActive: true }),
+    };
 
     const select = {
       id: true,
@@ -85,6 +86,7 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       ...(role === "ADMIN" && { authorId: true, isActive: true }),
     };
 
+    const count = await db.tag.count({ where });
     const foundTags = await db.tag.findMany({
       where,
       take: size,
@@ -92,13 +94,22 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       select,
     });
 
-    logger.info({ ...meta }, "Tags Successfully Found");
-    res
-      .status(200)
-      .json({ message: "Tags found successfully!", data: foundTags });
+    logger.info(
+      { ...meta, count: foundTags.length },
+      "Tags Successfully Found"
+    );
+    res.status(200).json({
+      message: "Tags found successfully!",
+      data: foundTags,
+      meta: {
+        pageSize: size,
+        pageIndex: index + 1,
+        totalPages: Math.ceil(count / size),
+      },
+    });
   } catch (error) {
     logger.warn(
-      { error: error instanceof Error ? error.message : error },
+      { ...meta, error: error instanceof Error ? error.message : error },
       "Unable to retrieve tags."
     );
     return next(error);
