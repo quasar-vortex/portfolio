@@ -127,6 +127,7 @@ exports.Prisma.FileScalarFieldEnum = {
   dateUploaded: 'dateUploaded',
   dateUpdated: 'dateUpdated',
   isActive: 'isActive',
+  updatedById: 'updatedById',
   userId: 'userId'
 };
 
@@ -212,6 +213,7 @@ exports.Prisma.FileOrderByRelevanceFieldEnum = {
   originalName: 'originalName',
   url: 'url',
   objectKey: 'objectKey',
+  updatedById: 'updatedById',
   userId: 'userId'
 };
 

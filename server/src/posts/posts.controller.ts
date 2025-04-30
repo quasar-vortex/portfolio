@@ -3,21 +3,40 @@ import { HttpError } from "../error";
 import logger from "../logger";
 import { AuthenticatedRequestHandler } from "../types";
 import { db } from "../db";
-import { deleteFileByKey, S3UploadedFile } from "../upload";
 import {
   CreatePostModel,
   SearchPostsModel,
   UpdatePostModel,
 } from "./post.models";
-import { FileType } from "../generated/prisma";
+
+const baseSelect = {
+  id: true,
+  title: true,
+  excerpt: true,
+  content: true,
+  slug: true,
+  coverImageId: true,
+  authorId: true,
+  publishDate: true,
+  PostTag: { include: { tag: { select: { id: true, name: true } } } },
+};
+const adminSelect = {
+  ...baseSelect,
+  isActive: true,
+  isFeatured: true,
+  isPublished: true,
+  createdDate: true,
+  updatedDate: true,
+  updatedById: true,
+};
 
 const MAX_FEATURED_POSTS = 3;
-export const createPostHandler: AuthenticatedRequestHandler = async (
+const createPostHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
 ) => {
-  const role = req.user!.role;
+  const isAdmin = req.user!.role === "ADMIN";
   const authorId = req.user!.id;
   const {
     title,
@@ -35,7 +54,6 @@ export const createPostHandler: AuthenticatedRequestHandler = async (
     url: req.url,
     userId: authorId,
   };
-  const isAdmin = role === "ADMIN";
 
   try {
     logger.info(meta, "Creating Post");
@@ -87,6 +105,7 @@ export const createPostHandler: AuthenticatedRequestHandler = async (
     const featuredPosts = await db.post.findMany({
       where: { isFeatured: true },
     });
+
     const newPost = await db.post.create({
       data: {
         title,
@@ -98,22 +117,7 @@ export const createPostHandler: AuthenticatedRequestHandler = async (
         ...(coverImageId && { coverImageId }),
         PostTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
       },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        slug: true,
-        coverImageId: true,
-        authorId: true,
-        publishDate: true,
-        isActive: true,
-        isFeatured: true,
-        isPublished: true,
-        createdDate: true,
-        updatedDate: true,
-        updatedById: true,
-        PostTag: { include: { tag: { select: { id: true, name: true } } } },
-      },
+      select: adminSelect,
     });
     if (featuredPosts.length === 3 && isFeatured) {
       const oldestPostId = [...featuredPosts].sort(
@@ -142,7 +146,7 @@ export const createPostHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-export const updatePostHandler: AuthenticatedRequestHandler = async (
+const updatePostHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -254,22 +258,7 @@ export const updatePostHandler: AuthenticatedRequestHandler = async (
               : existingPost.publishDate,
           coverImageId,
         },
-        select: {
-          id: true,
-          title: true,
-          content: true,
-          slug: true,
-          coverImageId: true,
-          authorId: true,
-          publishDate: true,
-          isActive: true,
-          isFeatured: true,
-          isPublished: true,
-          createdDate: true,
-          updatedDate: true,
-          updatedById: true,
-          PostTag: { include: { tag: { select: { id: true, name: true } } } },
-        },
+        select: adminSelect,
       });
     });
 
@@ -300,7 +289,7 @@ export const updatePostHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-export const getPostByIdHandler: AuthenticatedRequestHandler = async (
+const getPostByIdHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -316,26 +305,11 @@ export const getPostByIdHandler: AuthenticatedRequestHandler = async (
   };
   try {
     logger.info(meta, "Locating post.");
+    const where = isAdmin ? { id: postId } : { id: postId, isActive: true };
+    const select = isAdmin ? adminSelect : baseSelect;
     const foundPost = await db.post.findUnique({
-      where: { id: postId },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        slug: true,
-        coverImageId: true,
-        authorId: true,
-        publishDate: true,
-        isFeatured: true,
-        isPublished: true,
-        ...(isAdmin && {
-          isActive: true,
-          createdDate: true,
-          updatedDate: true,
-          updatedById: true,
-        }),
-        PostTag: { include: { tag: { select: { id: true, name: true } } } },
-      },
+      where,
+      select,
     });
     if (!foundPost)
       throw new HttpError({
@@ -350,7 +324,7 @@ export const getPostByIdHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-export const getPostBySlugHandler: AuthenticatedRequestHandler = async (
+const getPostBySlugHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -367,26 +341,12 @@ export const getPostBySlugHandler: AuthenticatedRequestHandler = async (
   };
   try {
     logger.info(meta, "Locating post.");
+    const where = isAdmin ? { slug } : { slug, isActive: true };
+
+    const select = isAdmin ? adminSelect : baseSelect;
     const foundPost = await db.post.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        slug: true,
-        coverImageId: true,
-        authorId: true,
-        publishDate: true,
-        isFeatured: true,
-        isPublished: true,
-        ...(isAdmin && {
-          isActive: true,
-          createdDate: true,
-          updatedDate: true,
-          updatedById: true,
-        }),
-        PostTag: { include: { tag: { select: { id: true, name: true } } } },
-      },
+      where,
+      select,
     });
     if (!foundPost)
       throw new HttpError({
@@ -401,7 +361,7 @@ export const getPostBySlugHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-export const getManyPostsHandler: AuthenticatedRequestHandler = async (
+const getManyPostsHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -429,38 +389,43 @@ export const getManyPostsHandler: AuthenticatedRequestHandler = async (
 
     logger.info(searchMeta, "Searching for posts.");
 
-    const where = {
-      ...(tags?.length && { PostTag: { some: { tag: { id: { in: tags } } } } }),
-      ...(trimmedTerm && {
-        OR: [
-          { title: { contains: trimmedTerm } },
-          { excerpt: { contains: trimmedTerm } },
-        ],
-      }),
+    type PostSearchWhere = {
+      OR?: (
+        | { title: { contains: string }; excerpt?: undefined }
+        | { excerpt: { contains: string }; title?: undefined }
+      )[];
+      PostTag?: {
+        some: {
+          tag: {
+            id: {
+              in: string[];
+            };
+          };
+        };
+      };
     };
+    const where: PostSearchWhere = {};
+    if (tags?.length) {
+      where.PostTag = { some: { tag: { id: { in: tags } } } };
+    }
+    if (trimmedTerm) {
+      where.OR = [
+        { title: { contains: trimmedTerm } },
+        { excerpt: { contains: trimmedTerm } },
+      ];
+    }
 
-    const count = await db.post.count({ where });
+    const select = isAdmin ? adminSelect : baseSelect;
+    const count = await db.post.count({
+      where,
+      take: size,
+      skip: index * size,
+    });
     const foundPosts = await db.post.findMany({
       where,
       skip: index * size,
       take: size,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        coverImageId: true,
-        authorId: true,
-        publishDate: true,
-        isFeatured: true,
-        isPublished: true,
-        ...(isAdmin && {
-          isActive: true,
-          createdDate: true,
-          updatedDate: true,
-          updatedById: true,
-        }),
-        PostTag: { include: { tag: { select: { id: true, name: true } } } },
-      },
+      select: { ...select, content: false },
     });
 
     logger.info(searchMeta, "Found posts!");
@@ -481,7 +446,7 @@ export const getManyPostsHandler: AuthenticatedRequestHandler = async (
 };
 
 // Set post to inactive flag
-export const deletePostHandler: AuthenticatedRequestHandler = async (
+const deletePostHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -510,11 +475,7 @@ export const deletePostHandler: AuthenticatedRequestHandler = async (
 };
 
 // Remove oldest featured post and add new one if count exceeds 3
-export const setPostFeatured: AuthenticatedRequestHandler = async (
-  req,
-  res,
-  next
-) => {
+const setPostFeatured: AuthenticatedRequestHandler = async (req, res, next) => {
   const postId = req.params.postId;
   const userId = req.user!.id;
   const isAdmin = req.user!.role === "ADMIN";
@@ -550,4 +511,14 @@ export const setPostFeatured: AuthenticatedRequestHandler = async (
     logger.warn({ error }, "Unable to feature post.");
     next(error);
   }
+};
+
+export {
+  createPostHandler,
+  updatePostHandler,
+  getPostByIdHandler,
+  getPostBySlugHandler,
+  getManyPostsHandler,
+  deletePostHandler,
+  setPostFeatured,
 };

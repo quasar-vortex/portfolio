@@ -80,24 +80,20 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       ...(role !== "ADMIN" && { isActive: true }),
     };
 
-    const select = {
-      id: true,
-      name: true,
-      ...(role === "ADMIN" && { authorId: true, isActive: true }),
-    };
-
-    const count = await db.tag.count({ where });
+    const count = await db.tag.count({ where, take: size, skip: index * size });
     const foundTags = await db.tag.findMany({
       where,
       take: size,
       skip: index * size,
-      select,
+      select: {
+        id: true,
+        isActive: true,
+        name: true,
+        authorId: true,
+      },
     });
 
-    logger.info(
-      { ...meta, count: foundTags.length },
-      "Tags Successfully Found"
-    );
+    logger.info({ ...meta }, "Tags Successfully Found");
     res.status(200).json({
       message: "Tags found successfully!",
       data: foundTags,
@@ -145,6 +141,12 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
     const updatedTag = await db.tag.update({
       where: { id: tagId },
       data: { name },
+      select: {
+        id: true,
+        isActive: true,
+        name: true,
+        authorId: true,
+      },
     });
     logger.info(meta, "Tag updated successfully.");
     res
@@ -171,13 +173,16 @@ const getTagByIdHandler: AuthenticatedRequestHandler = async (
   logger.info(meta, "Request to get tag by Id.");
   try {
     const where = isAdmin ? { id: tagId } : { id: tagId, isActive: true };
-    const select = {
-      id: true,
-      name: true,
-      ...(isAdmin && { authorId: true, isActive: true }),
-    };
 
-    const foundTag = await db.tag.findUnique({ where, select });
+    const foundTag = await db.tag.findUnique({
+      where,
+      select: {
+        id: true,
+        isActive: true,
+        name: true,
+        authorId: true,
+      },
+    });
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");
       throw new HttpError({
@@ -211,13 +216,16 @@ const getTagByNameHandler: AuthenticatedRequestHandler = async (
     const where = isAdmin
       ? { name: tagName }
       : { name: tagName, isActive: true };
-    const select = {
-      id: true,
-      name: true,
-      ...(isAdmin && { authorId: true, isActive: true }),
-    };
 
-    const foundTag = await db.tag.findUnique({ where, select });
+    const foundTag = await db.tag.findUnique({
+      where,
+      select: {
+        id: true,
+        isActive: true,
+        name: true,
+        authorId: true,
+      },
+    });
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");
       throw new HttpError({

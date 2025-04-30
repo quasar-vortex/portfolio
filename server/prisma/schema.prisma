@@ -30,6 +30,8 @@ model File {
   dateUploaded DateTime  @default(now())
   dateUpdated  DateTime? @updatedAt
   isActive     Boolean   @default(true)
+  updatedBy    User?     @relation("file-updater", fields: [updatedById], references: [id])
+  updatedById  String?
   User         User[]    @relation("avatar-file")
   Post         Post[]    @relation()
   Project      Project[]
@@ -62,6 +64,7 @@ model User {
   PostUpdater    Post[]    @relation("post-updater")
   ProjectUpdater Project[] @relation("project-updater")
   Tag            Tag[]
+  FileU          File[]    @relation("file-updater")
 }
 
 model Tag {
