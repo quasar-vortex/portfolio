@@ -6,7 +6,7 @@ const passwordMessage =
 const passwordRegex =
   /^(?=.{8,16}$)(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]+$/;
 
-const baseUseModel = z.object({
+export const baseUseModel = z.object({
   email: z.string().email(),
   firstName: z.string().min(2).max(20),
   lastName: z.string().min(2).max(20),

@@ -75,10 +75,9 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       "Searching for tags."
     );
 
-    const where = {
-      ...(trimmedTerm && { name: { contains: trimmedTerm } }),
-      ...(role !== "ADMIN" && { isActive: true }),
-    };
+    const where: { name?: { contains: string }; isActive?: boolean } = {};
+    if (trimmedTerm) where.name = { contains: trimmedTerm };
+    if (role !== "ADMIN") where.isActive = true;
 
     const count = await db.tag.count({ where, take: size, skip: index * size });
     const foundTags = await db.tag.findMany({

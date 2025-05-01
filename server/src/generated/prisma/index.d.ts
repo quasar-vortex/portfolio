@@ -1444,6 +1444,7 @@ export namespace Prisma {
     ProjectUpdater: number
     Tag: number
     FileU: number
+    User: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1454,6 +1455,7 @@ export namespace Prisma {
     ProjectUpdater?: boolean | UserCountOutputTypeCountProjectUpdaterArgs
     Tag?: boolean | UserCountOutputTypeCountTagArgs
     FileU?: boolean | UserCountOutputTypeCountFileUArgs
+    User?: boolean | UserCountOutputTypeCountUserArgs
   }
 
   // Custom InputTypes
@@ -1514,6 +1516,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFileUArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FileWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
 
@@ -2784,6 +2793,8 @@ export namespace Prisma {
     bio: string | null
     avatarFileId: string | null
     isActive: boolean | null
+    updatedById: string | null
+    dateUpdated: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2799,6 +2810,8 @@ export namespace Prisma {
     bio: string | null
     avatarFileId: string | null
     isActive: boolean | null
+    updatedById: string | null
+    dateUpdated: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2814,6 +2827,8 @@ export namespace Prisma {
     bio: number
     avatarFileId: number
     isActive: number
+    updatedById: number
+    dateUpdated: number
     _all: number
   }
 
@@ -2831,6 +2846,8 @@ export namespace Prisma {
     bio?: true
     avatarFileId?: true
     isActive?: true
+    updatedById?: true
+    dateUpdated?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2846,6 +2863,8 @@ export namespace Prisma {
     bio?: true
     avatarFileId?: true
     isActive?: true
+    updatedById?: true
+    dateUpdated?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2861,6 +2880,8 @@ export namespace Prisma {
     bio?: true
     avatarFileId?: true
     isActive?: true
+    updatedById?: true
+    dateUpdated?: true
     _all?: true
   }
 
@@ -2949,6 +2970,8 @@ export namespace Prisma {
     bio: string | null
     avatarFileId: string | null
     isActive: boolean
+    updatedById: string | null
+    dateUpdated: Date | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -2981,7 +3004,10 @@ export namespace Prisma {
     bio?: boolean
     avatarFileId?: boolean
     isActive?: boolean
+    updatedById?: boolean
+    dateUpdated?: boolean
     avatarFile?: boolean | User$avatarFileArgs<ExtArgs>
+    updatedBy?: boolean | User$updatedByArgs<ExtArgs>
     PostAuthor?: boolean | User$PostAuthorArgs<ExtArgs>
     ProjectAuthor?: boolean | User$ProjectAuthorArgs<ExtArgs>
     File?: boolean | User$FileArgs<ExtArgs>
@@ -2989,6 +3015,7 @@ export namespace Prisma {
     ProjectUpdater?: boolean | User$ProjectUpdaterArgs<ExtArgs>
     Tag?: boolean | User$TagArgs<ExtArgs>
     FileU?: boolean | User$FileUArgs<ExtArgs>
+    User?: boolean | User$UserArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3007,11 +3034,14 @@ export namespace Prisma {
     bio?: boolean
     avatarFileId?: boolean
     isActive?: boolean
+    updatedById?: boolean
+    dateUpdated?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "registeredDate" | "lastLoginDate" | "refreshToken" | "role" | "bio" | "avatarFileId" | "isActive", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "registeredDate" | "lastLoginDate" | "refreshToken" | "role" | "bio" | "avatarFileId" | "isActive" | "updatedById" | "dateUpdated", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     avatarFile?: boolean | User$avatarFileArgs<ExtArgs>
+    updatedBy?: boolean | User$updatedByArgs<ExtArgs>
     PostAuthor?: boolean | User$PostAuthorArgs<ExtArgs>
     ProjectAuthor?: boolean | User$ProjectAuthorArgs<ExtArgs>
     File?: boolean | User$FileArgs<ExtArgs>
@@ -3019,6 +3049,7 @@ export namespace Prisma {
     ProjectUpdater?: boolean | User$ProjectUpdaterArgs<ExtArgs>
     Tag?: boolean | User$TagArgs<ExtArgs>
     FileU?: boolean | User$FileUArgs<ExtArgs>
+    User?: boolean | User$UserArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3026,6 +3057,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       avatarFile: Prisma.$FilePayload<ExtArgs> | null
+      updatedBy: Prisma.$UserPayload<ExtArgs> | null
       PostAuthor: Prisma.$PostPayload<ExtArgs>[]
       ProjectAuthor: Prisma.$ProjectPayload<ExtArgs>[]
       File: Prisma.$FilePayload<ExtArgs>[]
@@ -3033,6 +3065,7 @@ export namespace Prisma {
       ProjectUpdater: Prisma.$ProjectPayload<ExtArgs>[]
       Tag: Prisma.$TagPayload<ExtArgs>[]
       FileU: Prisma.$FilePayload<ExtArgs>[]
+      User: Prisma.$UserPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3047,6 +3080,8 @@ export namespace Prisma {
       bio: string | null
       avatarFileId: string | null
       isActive: boolean
+      updatedById: string | null
+      dateUpdated: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3388,6 +3423,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     avatarFile<T extends User$avatarFileArgs<ExtArgs> = {}>(args?: Subset<T, User$avatarFileArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends User$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     PostAuthor<T extends User$PostAuthorArgs<ExtArgs> = {}>(args?: Subset<T, User$PostAuthorArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ProjectAuthor<T extends User$ProjectAuthorArgs<ExtArgs> = {}>(args?: Subset<T, User$ProjectAuthorArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     File<T extends User$FileArgs<ExtArgs> = {}>(args?: Subset<T, User$FileArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3395,6 +3431,7 @@ export namespace Prisma {
     ProjectUpdater<T extends User$ProjectUpdaterArgs<ExtArgs> = {}>(args?: Subset<T, User$ProjectUpdaterArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Tag<T extends User$TagArgs<ExtArgs> = {}>(args?: Subset<T, User$TagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     FileU<T extends User$FileUArgs<ExtArgs> = {}>(args?: Subset<T, User$FileUArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    User<T extends User$UserArgs<ExtArgs> = {}>(args?: Subset<T, User$UserArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3436,6 +3473,8 @@ export namespace Prisma {
     readonly bio: FieldRef<"User", 'String'>
     readonly avatarFileId: FieldRef<"User", 'String'>
     readonly isActive: FieldRef<"User", 'Boolean'>
+    readonly updatedById: FieldRef<"User", 'String'>
+    readonly dateUpdated: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -3798,6 +3837,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.updatedBy
+   */
+  export type User$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * User.PostAuthor
    */
   export type User$PostAuthorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3963,6 +4021,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * User.User
+   */
+  export type User$UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -9022,7 +9104,9 @@ export namespace Prisma {
     role: 'role',
     bio: 'bio',
     avatarFileId: 'avatarFileId',
-    isActive: 'isActive'
+    isActive: 'isActive',
+    updatedById: 'updatedById',
+    dateUpdated: 'dateUpdated'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -9131,7 +9215,8 @@ export namespace Prisma {
     passwordHash: 'passwordHash',
     refreshToken: 'refreshToken',
     bio: 'bio',
-    avatarFileId: 'avatarFileId'
+    avatarFileId: 'avatarFileId',
+    updatedById: 'updatedById'
   };
 
   export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
@@ -9364,7 +9449,10 @@ export namespace Prisma {
     bio?: StringNullableFilter<"User"> | string | null
     avatarFileId?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    updatedById?: StringNullableFilter<"User"> | string | null
+    dateUpdated?: DateTimeNullableFilter<"User"> | Date | string | null
     avatarFile?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     PostAuthor?: PostListRelationFilter
     ProjectAuthor?: ProjectListRelationFilter
     File?: FileListRelationFilter
@@ -9372,6 +9460,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectListRelationFilter
     Tag?: TagListRelationFilter
     FileU?: FileListRelationFilter
+    User?: UserListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -9387,7 +9476,10 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     avatarFileId?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
+    dateUpdated?: SortOrderInput | SortOrder
     avatarFile?: FileOrderByWithRelationInput
+    updatedBy?: UserOrderByWithRelationInput
     PostAuthor?: PostOrderByRelationAggregateInput
     ProjectAuthor?: ProjectOrderByRelationAggregateInput
     File?: FileOrderByRelationAggregateInput
@@ -9395,6 +9487,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectOrderByRelationAggregateInput
     Tag?: TagOrderByRelationAggregateInput
     FileU?: FileOrderByRelationAggregateInput
+    User?: UserOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -9414,7 +9507,10 @@ export namespace Prisma {
     bio?: StringNullableFilter<"User"> | string | null
     avatarFileId?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    updatedById?: StringNullableFilter<"User"> | string | null
+    dateUpdated?: DateTimeNullableFilter<"User"> | Date | string | null
     avatarFile?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     PostAuthor?: PostListRelationFilter
     ProjectAuthor?: ProjectListRelationFilter
     File?: FileListRelationFilter
@@ -9422,6 +9518,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectListRelationFilter
     Tag?: TagListRelationFilter
     FileU?: FileListRelationFilter
+    User?: UserListRelationFilter
   }, "id" | "email" | "refreshToken">
 
   export type UserOrderByWithAggregationInput = {
@@ -9437,6 +9534,8 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     avatarFileId?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    updatedById?: SortOrderInput | SortOrder
+    dateUpdated?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -9458,6 +9557,8 @@ export namespace Prisma {
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     avatarFileId?: StringNullableWithAggregatesFilter<"User"> | string | null
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
+    updatedById?: StringNullableWithAggregatesFilter<"User"> | string | null
+    dateUpdated?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type TagWhereInput = {
@@ -9952,7 +10053,9 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
@@ -9960,6 +10063,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -9975,6 +10079,8 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
@@ -9982,6 +10088,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUpdateInput = {
@@ -9996,7 +10103,9 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
@@ -10004,6 +10113,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -10019,6 +10129,8 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
@@ -10026,6 +10138,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -10041,6 +10154,8 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -10055,6 +10170,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -10070,6 +10186,8 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TagCreateInput = {
@@ -10768,6 +10886,8 @@ export namespace Prisma {
     bio?: SortOrder
     avatarFileId?: SortOrder
     isActive?: SortOrder
+    updatedById?: SortOrder
+    dateUpdated?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -10783,6 +10903,8 @@ export namespace Prisma {
     bio?: SortOrder
     avatarFileId?: SortOrder
     isActive?: SortOrder
+    updatedById?: SortOrder
+    dateUpdated?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -10798,6 +10920,8 @@ export namespace Prisma {
     bio?: SortOrder
     avatarFileId?: SortOrder
     isActive?: SortOrder
+    updatedById?: SortOrder
+    dateUpdated?: SortOrder
   }
 
   export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -11235,6 +11359,12 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutUserInput = {
+    create?: XOR<UserCreateWithoutUserInput, UserUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type PostCreateNestedManyWithoutAuthorInput = {
     create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
     connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
@@ -11282,6 +11412,13 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutUpdatedByInput | FileCreateOrConnectWithoutUpdatedByInput[]
     createMany?: FileCreateManyUpdatedByInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput> | UserCreateWithoutUpdatedByInput[] | UserUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutUpdatedByInput | UserCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: UserCreateManyUpdatedByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type PostUncheckedCreateNestedManyWithoutAuthorInput = {
@@ -11333,6 +11470,13 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
+  export type UserUncheckedCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput> | UserCreateWithoutUpdatedByInput[] | UserUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutUpdatedByInput | UserCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: UserCreateManyUpdatedByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type EnumRoleFieldUpdateOperationsInput = {
     set?: $Enums.Role
   }
@@ -11345,6 +11489,16 @@ export namespace Prisma {
     delete?: FileWhereInput | boolean
     connect?: FileWhereUniqueInput
     update?: XOR<XOR<FileUpdateToOneWithWhereWithoutUserInput, FileUpdateWithoutUserInput>, FileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserUpdateOneWithoutUserNestedInput = {
+    create?: XOR<UserCreateWithoutUserInput, UserUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserInput
+    upsert?: UserUpsertWithoutUserInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserInput, UserUpdateWithoutUserInput>, UserUncheckedUpdateWithoutUserInput>
   }
 
   export type PostUpdateManyWithoutAuthorNestedInput = {
@@ -11445,6 +11599,20 @@ export namespace Prisma {
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
+  export type UserUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput> | UserCreateWithoutUpdatedByInput[] | UserUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutUpdatedByInput | UserCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutUpdatedByInput | UserUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: UserCreateManyUpdatedByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutUpdatedByInput | UserUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutUpdatedByInput | UserUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
   export type PostUncheckedUpdateManyWithoutAuthorNestedInput = {
     create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
     connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
@@ -11541,6 +11709,20 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutUpdatedByInput | FileUpdateWithWhereUniqueWithoutUpdatedByInput[]
     updateMany?: FileUpdateManyWithWhereWithoutUpdatedByInput | FileUpdateManyWithWhereWithoutUpdatedByInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput> | UserCreateWithoutUpdatedByInput[] | UserUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutUpdatedByInput | UserCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutUpdatedByInput | UserUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: UserCreateManyUpdatedByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutUpdatedByInput | UserUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutUpdatedByInput | UserUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTagInput = {
@@ -12097,13 +12279,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutFileInput = {
@@ -12119,12 +12304,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutFileInput = {
@@ -12144,13 +12332,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutFileUInput = {
@@ -12166,12 +12357,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutFileUInput = {
@@ -12191,6 +12385,8 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
@@ -12198,6 +12394,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutAvatarFileInput = {
@@ -12212,6 +12409,8 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
@@ -12219,6 +12418,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutAvatarFileInput = {
@@ -12344,13 +12544,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileInput = {
@@ -12366,12 +12569,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutFileUInput = {
@@ -12397,13 +12603,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileUInput = {
@@ -12419,12 +12628,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutAvatarFileInput = {
@@ -12459,6 +12671,8 @@ export namespace Prisma {
     bio?: StringNullableFilter<"User"> | string | null
     avatarFileId?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    updatedById?: StringNullableFilter<"User"> | string | null
+    dateUpdated?: DateTimeNullableFilter<"User"> | Date | string | null
   }
 
   export type PostUpsertWithWhereUniqueWithoutCoverImageInput = {
@@ -12569,6 +12783,59 @@ export namespace Prisma {
   export type FileCreateOrConnectWithoutUserInput = {
     where: FileWhereUniqueInput
     create: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserCreateWithoutUserInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email: string
+    passwordHash: string
+    registeredDate?: Date | string
+    lastLoginDate?: Date | string | null
+    refreshToken?: string | null
+    role?: $Enums.Role
+    bio?: string | null
+    isActive?: boolean
+    dateUpdated?: Date | string | null
+    avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
+    PostAuthor?: PostCreateNestedManyWithoutAuthorInput
+    ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
+    File?: FileCreateNestedManyWithoutUploaderInput
+    PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
+    ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
+    Tag?: TagCreateNestedManyWithoutAuthorInput
+    FileU?: FileCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutUserInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email: string
+    passwordHash: string
+    registeredDate?: Date | string
+    lastLoginDate?: Date | string | null
+    refreshToken?: string | null
+    role?: $Enums.Role
+    bio?: string | null
+    avatarFileId?: string | null
+    isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
+    PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
+    File?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
+    ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
+    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
+    FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutUserInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUserInput, UserUncheckedCreateWithoutUserInput>
   }
 
   export type PostCreateWithoutAuthorInput = {
@@ -12861,6 +13128,64 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserCreateWithoutUpdatedByInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email: string
+    passwordHash: string
+    registeredDate?: Date | string
+    lastLoginDate?: Date | string | null
+    refreshToken?: string | null
+    role?: $Enums.Role
+    bio?: string | null
+    isActive?: boolean
+    dateUpdated?: Date | string | null
+    avatarFile?: FileCreateNestedOneWithoutUserInput
+    PostAuthor?: PostCreateNestedManyWithoutAuthorInput
+    ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
+    File?: FileCreateNestedManyWithoutUploaderInput
+    PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
+    ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
+    Tag?: TagCreateNestedManyWithoutAuthorInput
+    FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutUpdatedByInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email: string
+    passwordHash: string
+    registeredDate?: Date | string
+    lastLoginDate?: Date | string | null
+    refreshToken?: string | null
+    role?: $Enums.Role
+    bio?: string | null
+    avatarFileId?: string | null
+    isActive?: boolean
+    dateUpdated?: Date | string | null
+    PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
+    File?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
+    ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
+    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
+    FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutUpdatedByInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type UserCreateManyUpdatedByInputEnvelope = {
+    data: UserCreateManyUpdatedByInput | UserCreateManyUpdatedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FileUpsertWithoutUserInput = {
     update: XOR<FileUpdateWithoutUserInput, FileUncheckedUpdateWithoutUserInput>
     create: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput>
@@ -12902,6 +13227,65 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     Post?: PostUncheckedUpdateManyWithoutCoverImageNestedInput
     Project?: ProjectUncheckedUpdateManyWithoutCoverImageNestedInput
+  }
+
+  export type UserUpsertWithoutUserInput = {
+    update: XOR<UserUpdateWithoutUserInput, UserUncheckedUpdateWithoutUserInput>
+    create: XOR<UserCreateWithoutUserInput, UserUncheckedCreateWithoutUserInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUserInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUserInput, UserUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
+    PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
+    ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
+    File?: FileUpdateManyWithoutUploaderNestedInput
+    PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
+    ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
+    Tag?: TagUpdateManyWithoutAuthorNestedInput
+    FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+    File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
+    ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
+    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
+    FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type PostUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -13043,6 +13427,22 @@ export namespace Prisma {
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutUpdatedByInput>
   }
 
+  export type UserUpsertWithWhereUniqueWithoutUpdatedByInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutUpdatedByInput, UserUncheckedUpdateWithoutUpdatedByInput>
+    create: XOR<UserCreateWithoutUpdatedByInput, UserUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutUpdatedByInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutUpdatedByInput, UserUncheckedUpdateWithoutUpdatedByInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutUpdatedByInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutUpdatedByInput>
+  }
+
   export type UserCreateWithoutTagInput = {
     id?: string
     firstName: string
@@ -13055,13 +13455,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutTagInput = {
@@ -13077,12 +13480,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutTagInput = {
@@ -13149,13 +13555,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagInput = {
@@ -13171,12 +13580,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type PostTagUpsertWithWhereUniqueWithoutTagInput = {
@@ -13276,13 +13688,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPostAuthorInput = {
@@ -13298,12 +13713,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPostAuthorInput = {
@@ -13323,13 +13741,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPostUpdaterInput = {
@@ -13345,12 +13766,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPostUpdaterInput = {
@@ -13442,13 +13866,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostAuthorInput = {
@@ -13464,12 +13891,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutPostUpdaterInput = {
@@ -13495,13 +13925,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostUpdaterInput = {
@@ -13517,12 +13950,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type PostTagUpsertWithWhereUniqueWithoutPostInput = {
@@ -13722,13 +14158,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutProjectAuthorInput = {
@@ -13744,12 +14183,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutProjectAuthorInput = {
@@ -13769,13 +14211,16 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    dateUpdated?: Date | string | null
     avatarFile?: FileCreateNestedOneWithoutUserInput
+    updatedBy?: UserCreateNestedOneWithoutUserInput
     PostAuthor?: PostCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
+    User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutProjectUpdaterInput = {
@@ -13791,12 +14236,15 @@ export namespace Prisma {
     bio?: string | null
     avatarFileId?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
     PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
+    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutProjectUpdaterInput = {
@@ -13888,13 +14336,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectAuthorInput = {
@@ -13910,12 +14361,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutProjectUpdaterInput = {
@@ -13941,13 +14395,16 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     avatarFile?: FileUpdateOneWithoutUserNestedInput
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectUpdaterInput = {
@@ -13963,12 +14420,15 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type ProjectTagUpsertWithWhereUniqueWithoutProjectInput = {
@@ -14135,6 +14595,8 @@ export namespace Prisma {
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
+    updatedById?: string | null
+    dateUpdated?: Date | string | null
   }
 
   export type PostCreateManyCoverImageInput = {
@@ -14182,6 +14644,8 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedBy?: UserUpdateOneWithoutUserNestedInput
     PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
@@ -14189,6 +14653,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAvatarFileInput = {
@@ -14203,6 +14668,8 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
@@ -14210,6 +14677,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
     Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAvatarFileInput = {
@@ -14224,6 +14692,8 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PostUpdateWithoutCoverImageInput = {
@@ -14425,6 +14895,22 @@ export namespace Prisma {
     dateUpdated?: Date | string | null
     isActive?: boolean
     userId: string
+  }
+
+  export type UserCreateManyUpdatedByInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email: string
+    passwordHash: string
+    registeredDate?: Date | string
+    lastLoginDate?: Date | string | null
+    refreshToken?: string | null
+    role?: $Enums.Role
+    bio?: string | null
+    avatarFileId?: string | null
+    isActive?: boolean
+    dateUpdated?: Date | string | null
   }
 
   export type PostUpdateWithoutAuthorInput = {
@@ -14743,6 +15229,70 @@ export namespace Prisma {
     dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarFile?: FileUpdateOneWithoutUserNestedInput
+    PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
+    ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
+    File?: FileUpdateManyWithoutUploaderNestedInput
+    PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
+    ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
+    Tag?: TagUpdateManyWithoutAuthorNestedInput
+    FileU?: FileUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+    File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
+    ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
+    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
+    FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
+    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PostTagCreateManyTagInput = {

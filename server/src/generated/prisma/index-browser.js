@@ -143,7 +143,9 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   bio: 'bio',
   avatarFileId: 'avatarFileId',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  updatedById: 'updatedById',
+  dateUpdated: 'dateUpdated'
 };
 
 exports.Prisma.TagScalarFieldEnum = {
@@ -225,7 +227,8 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   passwordHash: 'passwordHash',
   refreshToken: 'refreshToken',
   bio: 'bio',
-  avatarFileId: 'avatarFileId'
+  avatarFileId: 'avatarFileId',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.TagOrderByRelevanceFieldEnum = {

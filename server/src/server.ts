@@ -7,6 +7,8 @@ import { db } from "./db";
 import { authRouter } from "./auth";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { tagsRouter } from "./tags/tags.routes";
+import { postsRouter } from "./posts/posts.routes";
+import { uploadsRouter } from "./uploads/uploads.routes";
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.get("/api/v1/health", (req, res, next) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tags", tagsRouter);
+app.use("/api/v1/posts", postsRouter);
+app.use("/api/v1/uploads", uploadsRouter);
 
 app.use(errorMiddleware);
 

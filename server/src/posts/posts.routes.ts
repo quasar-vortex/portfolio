@@ -17,7 +17,7 @@ postsRouter
     valMiddleware(createPostModel),
     postController.createPostHandler
   )
-  .patch(
+  .put(
     "/:postId",
     authMiddleware,
     roleMiddleware("ADMIN"),

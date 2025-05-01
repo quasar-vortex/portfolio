@@ -6,6 +6,7 @@ import { HttpError } from "../error";
 import argon from "argon2";
 import { signUserToken } from "./auth.utils";
 import { NODE_ENV } from "../env";
+import { baseUserSelect } from "../users/users.controller";
 
 export const registerUserHandler: RequestHandler = async (req, res, next) => {
   try {
@@ -33,19 +34,7 @@ export const registerUserHandler: RequestHandler = async (req, res, next) => {
         firstName,
         lastName,
       },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        bio: true,
-        role: true,
-        avatarFile: {
-          select: {
-            id: true,
-            url: true,
-          },
-        },
-      },
+      select: baseUserSelect,
     });
     // Create Tokens
     const tokenPayload = {
@@ -90,20 +79,7 @@ export const loginUserHandler: RequestHandler = async (req, res, next) => {
     // check if user exists
     const foundUser = await db.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        bio: true,
-        role: true,
-        avatarFile: {
-          select: {
-            id: true,
-            url: true,
-          },
-        },
-        passwordHash: true,
-      },
+      select: { ...baseUserSelect, passwordHash: true },
     });
     if (!foundUser) {
       logger.error(meta, "Email Not Found");
@@ -171,19 +147,7 @@ export const refreshUserHandler: RequestHandler = async (req, res, next) => {
     // Find user
     const foundUser = await db.user.findUnique({
       where: { refreshToken },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        bio: true,
-        role: true,
-        avatarFile: {
-          select: {
-            id: true,
-            url: true,
-          },
-        },
-      },
+      select: baseUserSelect,
     });
     if (!foundUser) {
       logger.error(meta, "Failed to Refresh User, No User");
