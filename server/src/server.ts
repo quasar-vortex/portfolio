@@ -9,6 +9,7 @@ import { errorMiddleware } from "./middleware/error.middleware";
 import { tagsRouter } from "./tags/tags.routes";
 import { postsRouter } from "./posts/posts.routes";
 import { uploadsRouter } from "./uploads/uploads.routes";
+import { usersRouter } from "./users/users.routes";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tags", tagsRouter);
 app.use("/api/v1/posts", postsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
+app.use("/api/v1/users", usersRouter);
 
 app.use(errorMiddleware);
 

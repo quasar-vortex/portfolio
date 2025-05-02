@@ -3,7 +3,10 @@ import z from "zod";
 const basePostModel = z.object({
   title: z.string(),
   excerpt: z.string(),
-  content: z.string(),
+  content: z
+    .string()
+    .min(10, "Content must be at least 10 characters")
+    .max(100_000, "Content must be less than 100,000 characters"),
   tags: z.array(z.string()),
   isPublished: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
@@ -34,7 +37,6 @@ const updatePostModel = z.object({
     isPublished: true,
     isFeatured: true,
     coverImageId: true,
-    isActive: true,
   }),
 });
 
@@ -46,6 +48,8 @@ const searchPostsModel = z.object({
     pageIndex: z.string().optional(),
     pageSize: z.string().optional(),
     tags: z.array(z.string()),
+    // query is string unlike body which is boolean
+    isFeatured: z.union([z.literal("false"), z.literal("true")]).optional(),
   }),
 });
 export {

@@ -7061,6 +7061,7 @@ export namespace Prisma {
     title: string | null
     slug: string | null
     description: string | null
+    content: string | null
     coverImageId: string | null
     isPublished: boolean | null
     isFeatured: boolean | null
@@ -7079,6 +7080,7 @@ export namespace Prisma {
     title: string | null
     slug: string | null
     description: string | null
+    content: string | null
     coverImageId: string | null
     isPublished: boolean | null
     isFeatured: boolean | null
@@ -7097,6 +7099,7 @@ export namespace Prisma {
     title: number
     slug: number
     description: number
+    content: number
     coverImageId: number
     isPublished: number
     isFeatured: number
@@ -7117,6 +7120,7 @@ export namespace Prisma {
     title?: true
     slug?: true
     description?: true
+    content?: true
     coverImageId?: true
     isPublished?: true
     isFeatured?: true
@@ -7135,6 +7139,7 @@ export namespace Prisma {
     title?: true
     slug?: true
     description?: true
+    content?: true
     coverImageId?: true
     isPublished?: true
     isFeatured?: true
@@ -7153,6 +7158,7 @@ export namespace Prisma {
     title?: true
     slug?: true
     description?: true
+    content?: true
     coverImageId?: true
     isPublished?: true
     isFeatured?: true
@@ -7244,6 +7250,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId: string | null
     isPublished: boolean
     isFeatured: boolean
@@ -7279,6 +7286,7 @@ export namespace Prisma {
     title?: boolean
     slug?: boolean
     description?: boolean
+    content?: boolean
     coverImageId?: boolean
     isPublished?: boolean
     isFeatured?: boolean
@@ -7304,6 +7312,7 @@ export namespace Prisma {
     title?: boolean
     slug?: boolean
     description?: boolean
+    content?: boolean
     coverImageId?: boolean
     isPublished?: boolean
     isFeatured?: boolean
@@ -7317,7 +7326,7 @@ export namespace Prisma {
     updatedById?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "description" | "coverImageId" | "isPublished" | "isFeatured" | "publishDate" | "createdDate" | "updatedDate" | "isActive" | "authorId" | "codeUrl" | "liveUrl" | "updatedById", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "description" | "content" | "coverImageId" | "isPublished" | "isFeatured" | "publishDate" | "createdDate" | "updatedDate" | "isActive" | "authorId" | "codeUrl" | "liveUrl" | "updatedById", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     coverImage?: boolean | Project$coverImageArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
@@ -7339,6 +7348,7 @@ export namespace Prisma {
       title: string
       slug: string
       description: string
+      content: string
       coverImageId: string | null
       isPublished: boolean
       isFeatured: boolean
@@ -7727,6 +7737,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Project", 'String'>
     readonly slug: FieldRef<"Project", 'String'>
     readonly description: FieldRef<"Project", 'String'>
+    readonly content: FieldRef<"Project", 'String'>
     readonly coverImageId: FieldRef<"Project", 'String'>
     readonly isPublished: FieldRef<"Project", 'Boolean'>
     readonly isFeatured: FieldRef<"Project", 'Boolean'>
@@ -9155,6 +9166,7 @@ export namespace Prisma {
     title: 'title',
     slug: 'slug',
     description: 'description',
+    content: 'content',
     coverImageId: 'coverImageId',
     isPublished: 'isPublished',
     isFeatured: 'isFeatured',
@@ -9258,6 +9270,7 @@ export namespace Prisma {
     title: 'title',
     slug: 'slug',
     description: 'description',
+    content: 'content',
     coverImageId: 'coverImageId',
     authorId: 'authorId',
     codeUrl: 'codeUrl',
@@ -9781,6 +9794,7 @@ export namespace Prisma {
     title?: StringFilter<"Project"> | string
     slug?: StringFilter<"Project"> | string
     description?: StringFilter<"Project"> | string
+    content?: StringFilter<"Project"> | string
     coverImageId?: StringNullableFilter<"Project"> | string | null
     isPublished?: BoolFilter<"Project"> | boolean
     isFeatured?: BoolFilter<"Project"> | boolean
@@ -9803,6 +9817,7 @@ export namespace Prisma {
     title?: SortOrder
     slug?: SortOrder
     description?: SortOrder
+    content?: SortOrder
     coverImageId?: SortOrderInput | SortOrder
     isPublished?: SortOrder
     isFeatured?: SortOrder
@@ -9829,6 +9844,7 @@ export namespace Prisma {
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     description?: StringFilter<"Project"> | string
+    content?: StringFilter<"Project"> | string
     coverImageId?: StringNullableFilter<"Project"> | string | null
     isPublished?: BoolFilter<"Project"> | boolean
     isFeatured?: BoolFilter<"Project"> | boolean
@@ -9851,6 +9867,7 @@ export namespace Prisma {
     title?: SortOrder
     slug?: SortOrder
     description?: SortOrder
+    content?: SortOrder
     coverImageId?: SortOrderInput | SortOrder
     isPublished?: SortOrder
     isFeatured?: SortOrder
@@ -9875,6 +9892,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Project"> | string
     slug?: StringWithAggregatesFilter<"Project"> | string
     description?: StringWithAggregatesFilter<"Project"> | string
+    content?: StringWithAggregatesFilter<"Project"> | string
     coverImageId?: StringNullableWithAggregatesFilter<"Project"> | string | null
     isPublished?: BoolWithAggregatesFilter<"Project"> | boolean
     isFeatured?: BoolWithAggregatesFilter<"Project"> | boolean
@@ -10405,6 +10423,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -10424,6 +10443,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -10443,6 +10463,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10462,6 +10483,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -10481,6 +10503,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -10499,6 +10522,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10514,6 +10538,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -11085,6 +11110,7 @@ export namespace Prisma {
     title?: SortOrder
     slug?: SortOrder
     description?: SortOrder
+    content?: SortOrder
     coverImageId?: SortOrder
     isPublished?: SortOrder
     isFeatured?: SortOrder
@@ -11103,6 +11129,7 @@ export namespace Prisma {
     title?: SortOrder
     slug?: SortOrder
     description?: SortOrder
+    content?: SortOrder
     coverImageId?: SortOrder
     isPublished?: SortOrder
     isFeatured?: SortOrder
@@ -11121,6 +11148,7 @@ export namespace Prisma {
     title?: SortOrder
     slug?: SortOrder
     description?: SortOrder
+    content?: SortOrder
     coverImageId?: SortOrder
     isPublished?: SortOrder
     isFeatured?: SortOrder
@@ -12480,6 +12508,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -12498,6 +12527,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -12735,6 +12765,7 @@ export namespace Prisma {
     title?: StringFilter<"Project"> | string
     slug?: StringFilter<"Project"> | string
     description?: StringFilter<"Project"> | string
+    content?: StringFilter<"Project"> | string
     coverImageId?: StringNullableFilter<"Project"> | string | null
     isPublished?: BoolFilter<"Project"> | boolean
     isFeatured?: BoolFilter<"Project"> | boolean
@@ -12887,6 +12918,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -12905,6 +12937,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -13019,6 +13052,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -13037,6 +13071,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -14452,6 +14487,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -14470,6 +14506,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -14525,6 +14562,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14543,6 +14581,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -14620,6 +14659,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     isPublished?: boolean
     isFeatured?: boolean
     publishDate?: Date | string | null
@@ -14751,6 +14791,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14769,6 +14810,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14787,6 +14829,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14820,6 +14863,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -14866,6 +14910,7 @@ export namespace Prisma {
     title: string
     slug: string
     description: string
+    content: string
     coverImageId?: string | null
     isPublished?: boolean
     isFeatured?: boolean
@@ -14968,6 +15013,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14986,6 +15032,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -15004,6 +15051,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -15116,6 +15164,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     publishDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15134,6 +15183,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
@@ -15152,6 +15202,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     coverImageId?: NullableStringFieldUpdateOperationsInput | string | null
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     isFeatured?: BoolFieldUpdateOperationsInput | boolean

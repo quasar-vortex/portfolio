@@ -4,6 +4,12 @@ import { db } from "../db";
 import { HttpError } from "../error";
 import { AuthenticatedRequestHandler } from "../types";
 
+const baseSelect = {
+  id: true,
+
+  name: true,
+};
+const adminSelect = { ...baseSelect, isActive: true, authorId: true };
 const createNewTagHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -84,12 +90,7 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       where,
       take: size,
       skip: index * size,
-      select: {
-        id: true,
-        isActive: true,
-        name: true,
-        authorId: true,
-      },
+      select: role === "ADMIN" ? adminSelect : baseSelect,
     });
 
     logger.info({ ...meta }, "Tags Successfully Found");
@@ -175,12 +176,7 @@ const getTagByIdHandler: AuthenticatedRequestHandler = async (
 
     const foundTag = await db.tag.findUnique({
       where,
-      select: {
-        id: true,
-        isActive: true,
-        name: true,
-        authorId: true,
-      },
+      select: isAdmin ? adminSelect : baseSelect,
     });
     if (!foundTag) {
       logger.warn(meta, "Tag was not found");

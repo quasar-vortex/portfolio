@@ -135,7 +135,7 @@ const getUserByIdHandler: AuthenticatedRequestHandler = async (
     next(error);
   }
 };
-const getManyUsersByIdHandler: AuthenticatedRequestHandler = async (
+const getManyUsersHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
@@ -288,6 +288,6 @@ export {
   adminUserSelect,
   updateUserProfileHandler,
   getUserByIdHandler,
-  getManyUsersByIdHandler,
+  getManyUsersHandler,
   deleteUserByIdHandler,
 };

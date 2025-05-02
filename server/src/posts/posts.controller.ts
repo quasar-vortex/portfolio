@@ -8,6 +8,7 @@ import {
   SearchPostsModel,
   UpdatePostModel,
 } from "./post.models";
+import { Prisma } from "../generated/prisma";
 
 const baseSelect = {
   id: true,
@@ -18,8 +19,12 @@ const baseSelect = {
   coverImageId: true,
   authorId: true,
   publishDate: true,
-  PostTag: { include: { tag: { select: { id: true, name: true } } } },
+  PostTag: {
+    where: { tag: { isActive: true } },
+    include: { tag: { select: { id: true, name: true } } },
+  },
 };
+
 const adminSelect = {
   ...baseSelect,
   isActive: true,
@@ -162,7 +167,6 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
     isPublished,
     isFeatured = false,
     coverImageId,
-    isActive,
   } = req.body as UpdatePostModel;
 
   const meta = {
@@ -249,7 +253,6 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
           content,
           isFeatured,
           isPublished,
-          isActive,
           slug,
           updatedById: authorId,
           publishDate:
@@ -367,6 +370,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const meta = { ip: req.ip, method: req.method, url: req.url };
+
   try {
     const isAdmin = req.user?.role === "ADMIN";
     const {
@@ -374,59 +378,75 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       tags,
       pageIndex = "0",
       pageSize = "10",
-    } = req.query as SearchPostsModel;
+      isFeatured,
+    } = req.query as unknown as SearchPostsModel;
 
     const trimmedTerm = term?.trim();
     const index = Math.max(parseInt(pageIndex) - 1 || 0, 0);
     const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
+
+    const searchIsFeatured =
+      isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
 
     const searchMeta = {
       ...meta,
       term: trimmedTerm,
       pageIndex: index + 1,
       pageSize: size,
+      isFeatured: searchIsFeatured,
     };
 
     logger.info(searchMeta, "Searching for posts.");
 
-    type PostSearchWhere = {
-      OR?: (
-        | { title: { contains: string }; excerpt?: undefined }
-        | { excerpt: { contains: string }; title?: undefined }
-      )[];
-      PostTag?: {
+    const where: Prisma.PostWhereInput = {};
+
+    if (tags?.length) {
+      where.PostTag = {
         some: {
           tag: {
-            id: {
-              in: string[];
-            };
-          };
-        };
+            AND: {
+              id: { in: tags },
+              isActive: true,
+            },
+          },
+        },
       };
-    };
-    const where: PostSearchWhere = {};
-    if (tags?.length) {
-      where.PostTag = { some: { tag: { id: { in: tags } } } };
     }
-    if (trimmedTerm) {
-      where.OR = [
-        { title: { contains: trimmedTerm } },
-        { excerpt: { contains: trimmedTerm } },
-      ];
+
+    const keywordFilter = trimmedTerm
+      ? [
+          { title: { contains: trimmedTerm } },
+          { excerpt: { contains: trimmedTerm } },
+        ]
+      : [];
+
+    if (searchIsFeatured === true) {
+      where.isFeatured = true;
+      if (keywordFilter.length) {
+        where.AND = [{ OR: keywordFilter }, { isFeatured: true }];
+        delete where.isFeatured; // not needed, included in AND
+      }
+    } else if (searchIsFeatured === false) {
+      where.isFeatured = false;
+      if (keywordFilter.length) {
+        where.AND = [{ OR: keywordFilter }, { isFeatured: false }];
+        delete where.isFeatured;
+      }
+    } else if (keywordFilter.length) {
+      where.OR = keywordFilter;
     }
 
     const select = isAdmin ? adminSelect : baseSelect;
-    const count = await db.post.count({
-      where,
-      take: size,
-      skip: index * size,
-    });
-    const foundPosts = await db.post.findMany({
-      where,
-      skip: index * size,
-      take: size,
-      select: { ...select, content: false },
-    });
+
+    const [count, foundPosts] = await Promise.all([
+      db.post.count({ where }),
+      db.post.findMany({
+        where,
+        skip: index * size,
+        take: size,
+        select: { ...select, content: false },
+      }),
+    ]);
 
     logger.info(searchMeta, "Found posts!");
 
@@ -440,7 +460,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       },
     });
   } catch (error) {
-    logger.warn({ error }, "Unable to find posts.");
+    logger.warn({ ...meta, error }, "Unable to find posts.");
     next(error);
   }
 };
