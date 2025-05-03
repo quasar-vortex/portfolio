@@ -85,6 +85,11 @@ const deleteFileByIdHandler: AuthenticatedRequestHandler = async (
   };
   logger.info(meta, "Deleting File!");
   try {
+    const foundFile = await db.file.findUnique({ where: { id: fileId } });
+    if (!foundFile) {
+      res.status(200).json({ message: "File has been deleted." });
+      return;
+    }
     if (!isAdmin)
       throw new HttpError({
         status: "NOT_AUTHORIZED",
@@ -125,6 +130,11 @@ const getFileByIdHandler: AuthenticatedRequestHandler = async (
       where,
       select: isAdmin ? adminSelect : baseSelect,
     });
+    if (!foundFile)
+      throw new HttpError({
+        status: "NOT_FOUND",
+        message: "File could not be find!",
+      });
     logger.info(meta, "File was found");
     res
       .status(200)
@@ -143,13 +153,12 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
   const userId = req.user!.id;
   const role = req.user!.role;
   const isAdmin = role == "ADMIN";
-  const meta = {
+  const baseMeta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
     userId,
   };
-  logger.info(meta, "Finding Files!");
   try {
     const {
       name,
@@ -161,21 +170,14 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
     const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
     const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
 
-    logger.info(
-      { ...meta, term: trimmedTerm, pageIndex: index + 1, pageSize: size },
-      "Searching for files."
-    );
-
     const where: { originalName?: { contains: string }; isActive?: boolean } =
       {};
 
     if (trimmedTerm) where.originalName = { contains: trimmedTerm };
     if (!isAdmin) where.isActive = true;
     const select = isAdmin ? adminSelect : baseSelect;
-    const count = await db.file.count({
+    const totalCount = await db.file.count({
       where,
-      take: size,
-      skip: index * size,
     });
     const foundFiles = await db.file.findMany({
       where,
@@ -183,16 +185,19 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
       take: size,
       skip: index * size,
     });
+    const totalPages = Math.max(1, Math.ceil(totalCount / size));
 
-    logger.info({ ...meta, count: count }, "Files found!");
+    const meta = {
+      pageIndex: index + 1,
+      pageSize: size,
+      totalPages,
+      totalCount,
+    };
+    logger.info({ ...baseMeta, ...meta }, "Files found!");
     res.status(200).json({
       message: "Files found successfully!",
       data: foundFiles,
-      meta: {
-        pageSize: size,
-        pageIndex: index + 1,
-        totalPages: Math.ceil(count / size),
-      },
+      meta,
     });
   } catch (error) {
     logger.warn({ error }, "Unable to retrieve files");

@@ -69,7 +69,9 @@ const createPostHandler: AuthenticatedRequestHandler = async (
         message: "Must be an admin to author a post.",
       });
     }
-
+    const existingPost = await db.post.findUnique({ where: { title } });
+    if (existingPost)
+      throw new HttpError({ status: "BAD_REQUEST", message: "Title in use!" });
     if (coverImageId) {
       const foundImageFile = await db.file.findUnique({
         where: { id: coverImageId },
@@ -111,31 +113,36 @@ const createPostHandler: AuthenticatedRequestHandler = async (
       where: { isFeatured: true },
     });
 
-    const newPost = await db.post.create({
-      data: {
-        title,
-        content,
-        slug,
-        excerpt,
-        authorId,
-        publishDate: isPublished ? new Date().toISOString() : null,
-        ...(coverImageId && { coverImageId }),
-        PostTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
-      },
-      select: adminSelect,
-    });
-    if (featuredPosts.length === 3 && isFeatured) {
-      const oldestPostId = [...featuredPosts].sort(
-        (a, b) =>
-          new Date(a.publishDate!).getTime() -
-          new Date(b.publishDate!).getTime()
-      )[0].id;
+    const newPost = await db.$transaction(async (tx) => {
+      if (featuredPosts.length === 3 && isFeatured) {
+        const oldestPostId = [...featuredPosts].sort(
+          (a, b) =>
+            new Date(a.publishDate!).getTime() -
+            new Date(b.publishDate!).getTime()
+        )[0].id;
 
-      await db.post.update({
-        where: { id: oldestPostId },
-        data: { isFeatured: false },
+        await tx.post.update({
+          where: { id: oldestPostId },
+          data: { isFeatured: false },
+        });
+      }
+      return await tx.post.create({
+        data: {
+          title,
+          content,
+          slug,
+          excerpt,
+          authorId,
+          publishDate: isPublished ? new Date() : null,
+          ...(coverImageId && { coverImageId }),
+          PostTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
+          isFeatured,
+          isPublished,
+          coverImageId,
+        },
+        select: adminSelect,
       });
-    }
+    });
 
     logger.info(
       { ...meta, postId: newPost.id, title: newPost.title },
@@ -195,7 +202,14 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
         message: "Post to update was not found!",
       });
     }
-
+    if (existingPost.title !== title) {
+      const newTitlePost = await db.post.findUnique({ where: { title } });
+      if (newTitlePost)
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: "Post title in use!",
+        });
+    }
     if (coverImageId) {
       const foundImageFile = await db.file.findUnique({
         where: { id: coverImageId },
@@ -245,6 +259,19 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
         data: tags.map((t) => ({ postId, tagId: t })),
       });
 
+      if (featuredPosts.length === 3 && isFeatured) {
+        const oldestPostId = [...featuredPosts].sort(
+          (a, b) =>
+            new Date(a.publishDate!).getTime() -
+            new Date(b.publishDate!).getTime()
+        )[0].id;
+
+        await tx.post.update({
+          where: { id: oldestPostId },
+          data: { isFeatured: false },
+        });
+      }
+
       return await tx.post.update({
         where: { id: postId },
         data: {
@@ -255,28 +282,14 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
           isPublished,
           slug,
           updatedById: authorId,
-          publishDate:
-            !existingPost.isPublished && isPublished
-              ? new Date().toISOString()
-              : existingPost.publishDate,
+          publishDate: isPublished
+            ? existingPost.publishDate ?? new Date()
+            : null,
           coverImageId,
         },
         select: adminSelect,
       });
     });
-
-    if (featuredPosts.length === 3 && isFeatured) {
-      const oldestPostId = [...featuredPosts].sort(
-        (a, b) =>
-          new Date(a.publishDate!).getTime() -
-          new Date(b.publishDate!).getTime()
-      )[0].id;
-
-      await db.post.update({
-        where: { id: oldestPostId },
-        data: { isFeatured: false },
-      });
-    }
 
     logger.info(
       { ...meta, postId: updatedPost.id, title: updatedPost.title },
@@ -375,8 +388,8 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     const isAdmin = req.user?.role === "ADMIN";
     const {
       term,
-      tags,
-      pageIndex = "0",
+      tags = [],
+      pageIndex = "1",
       pageSize = "10",
       isFeatured,
     } = req.query as unknown as SearchPostsModel;
@@ -387,16 +400,6 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
 
     const searchIsFeatured =
       isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
-
-    const searchMeta = {
-      ...meta,
-      term: trimmedTerm,
-      pageIndex: index + 1,
-      pageSize: size,
-      isFeatured: searchIsFeatured,
-    };
-
-    logger.info(searchMeta, "Searching for posts.");
 
     const where: Prisma.PostWhereInput = {};
 
@@ -424,7 +427,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       where.isFeatured = true;
       if (keywordFilter.length) {
         where.AND = [{ OR: keywordFilter }, { isFeatured: true }];
-        delete where.isFeatured; // not needed, included in AND
+        delete where.isFeatured;
       }
     } else if (searchIsFeatured === false) {
       where.isFeatured = false;
@@ -448,6 +451,15 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       }),
     ]);
 
+    const searchMeta = {
+      ...meta,
+      pageIndex: index + 1,
+      pageSize: size,
+      totalPages: Math.max(1, Math.ceil(count / size)),
+      totalCount: count,
+      isFeatured: searchIsFeatured,
+    };
+
     logger.info(searchMeta, "Found posts!");
 
     res.status(200).json({
@@ -456,7 +468,9 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       meta: {
         pageSize: size,
         pageIndex: index + 1,
-        totalPages: Math.ceil(count / size),
+        totalPages: Math.max(1, Math.ceil(count / size)),
+        totalCount: count,
+        isFeatured: searchIsFeatured,
       },
     });
   } catch (error) {
@@ -465,7 +479,6 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-// Set post to inactive flag
 const deletePostHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -484,17 +497,23 @@ const deletePostHandler: AuthenticatedRequestHandler = async (
         status: "NOT_AUTHORIZED",
         message: "Must be admin to delete post",
       });
-    // post tags are deleted on cascade
-    await db.post.update({ where: { id: postId }, data: { isActive: true } });
-    logger.info(meta, "Post deleted!");
-    return res.status(200).json({ message: "Post was deleted!" });
+    const foundPost = await db.post.findUnique({ where: { id: postId } });
+    const completedDeleted = () => {
+      logger.info(meta, "Post deleted!");
+      res.status(200).json({ message: "Post was deleted!" });
+    };
+    if (!foundPost) {
+      completedDeleted();
+      return;
+    }
+    await db.post.update({ where: { id: postId }, data: { isActive: false } });
+    completedDeleted();
   } catch (error) {
     logger.warn({ error }, "Unable to delete post.");
     next(error);
   }
 };
 
-// Remove oldest featured post and add new one if count exceeds 3
 const setPostFeatured: AuthenticatedRequestHandler = async (req, res, next) => {
   const postId = req.params.postId;
   const userId = req.user!.id;
@@ -508,23 +527,31 @@ const setPostFeatured: AuthenticatedRequestHandler = async (req, res, next) => {
         status: "NOT_AUTHORIZED",
         message: "Must be admin to feature a post.",
       });
-
+    const foundPost = await db.post.findUnique({ where: { id: postId } });
+    if (!foundPost)
+      throw new HttpError({ status: "NOT_FOUND", message: "Post not found!" });
     const featuredPosts = await db.post.findMany({
       where: { isFeatured: true },
     });
-    await db.post.update({ where: { id: postId }, data: { isFeatured: true } });
-    if (featuredPosts.length === 3) {
-      const oldestPostId = [...featuredPosts].sort(
-        (a, b) =>
-          new Date(a.publishDate!).getTime() -
-          new Date(b.publishDate!).getTime()
-      )[0].id;
 
-      await db.post.update({
-        where: { id: oldestPostId },
-        data: { isFeatured: false },
+    await db.$transaction(async (tx) => {
+      if (featuredPosts.length === 3) {
+        const oldestPostId = [...featuredPosts].sort(
+          (a, b) =>
+            new Date(a.publishDate!).getTime() -
+            new Date(b.publishDate!).getTime()
+        )[0].id;
+
+        await tx.post.update({
+          where: { id: oldestPostId },
+          data: { isFeatured: false },
+        });
+      }
+      await tx.post.update({
+        where: { id: postId },
+        data: { isFeatured: true },
       });
-    }
+    });
     logger.info(meta, "Post is now featured!");
     res.status(200).json({ message: "Post was set as featured!" });
   } catch (error) {

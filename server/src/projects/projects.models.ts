@@ -12,6 +12,7 @@ const createProjectModel = z.object({
     coverImageId: z.string().optional(),
     isPublished: z.boolean(),
     isFeatured: z.boolean(),
+
     tags: z.array(z.string()),
     codeUrl: z.string().optional(),
     liveUrl: z.string().optional(),
@@ -28,6 +29,9 @@ const updateProjectModel = z.object({
     isFeatured: true,
     isPublished: true,
     tags: true,
+    content: true,
+    codeUrl: true,
+    liveUrl: true,
   }),
 });
 

@@ -4,7 +4,7 @@ import { User } from "../generated/prisma";
 import logger from "../logger";
 import { AuthenticatedRequestHandler } from "../types";
 import argon from "argon2";
-import { SearchUsersModel } from "./users.models";
+import { SearchUsersModel, UpdateUserModel } from "./users.models";
 
 const baseUserSelect = {
   id: true,
@@ -31,6 +31,7 @@ const updateUserProfileHandler: AuthenticatedRequestHandler = async (
   res,
   next
 ) => {
+  const isAdmin = req.user!.role === "ADMIN";
   const toUpdateUserId = req.params.userId;
   const signedInUserId = req.user!.id;
   const meta = {
@@ -43,52 +44,89 @@ const updateUserProfileHandler: AuthenticatedRequestHandler = async (
   try {
     logger.info(meta, "Request to update user");
 
+    if (!isAdmin && signedInUserId !== toUpdateUserId)
+      throw new HttpError({
+        status: "FORBIDDEN",
+        message: "Not allowed to update another's profile!",
+      });
     const {
       email,
-      password,
+      currentPassword,
       firstName,
       lastName,
       newPassword,
       role,
       bio,
       avatarFileId,
-    } = req.body;
+    } = req.body as UpdateUserModel;
     const payload: Partial<User> = {
       email,
       firstName,
       lastName,
-      role,
       avatarFileId,
       bio,
     };
+
     const foundUser = await db.user.findUnique({
       where: { id: toUpdateUserId },
     });
+
     if (!foundUser)
       throw new HttpError({
         status: "NOT_FOUND",
         message: "User was not found to update!",
       });
-    if (email) {
+    if (email && foundUser.email !== email) {
+      const existing = await db.user.findUnique({ where: { email } });
+      if (existing)
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: `Email in use: ${email}`,
+        });
       payload.email = email;
     }
     if (newPassword) {
-      if (newPassword !== password)
+      if (!currentPassword)
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: "Must include current password to update to a new one!",
+        });
+      if (newPassword === currentPassword)
         throw new HttpError({
           status: "BAD_REQUEST",
           message: "Old and new password may not match.",
         });
-      const isPassValid = await argon.verify(password, foundUser.passwordHash);
+      const isPassValid = await argon.verify(
+        currentPassword,
+        foundUser.passwordHash
+      );
       if (!isPassValid)
         throw new HttpError({
-          status: "NOT_AUTHORIZED",
+          status: "BAD_REQUEST",
           message: "Incorrect password.",
         });
       payload.passwordHash = await argon.hash(newPassword);
     }
+    if (isAdmin && role) {
+      payload.role = role;
+    }
+    if (avatarFileId && avatarFileId !== foundUser.avatarFileId) {
+      const foundFile = await db.file.findUnique({
+        where: { id: avatarFileId },
+      });
+      if (!foundFile)
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: `Avatar file not found: ${avatarFileId}`,
+        });
+    }
     const updatedUser = await db.user.update({
       where: { id: toUpdateUserId },
-      data: { ...payload, dateUpdated: new Date().toISOString() },
+      data: {
+        ...payload,
+        dateUpdated: new Date(),
+        updatedById: signedInUserId,
+      },
       select: baseUserSelect,
     });
     const message = "User was updated successfully";
@@ -141,7 +179,7 @@ const getManyUsersHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const signedInUserId = req.user?.id;
-  const meta = {
+  const baseMeta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
@@ -185,21 +223,21 @@ const getManyUsersHandler: AuthenticatedRequestHandler = async (
       skip: index * size,
     });
 
-    const userCount = await db.user.count({
+    const totalCount = await db.user.count({
       where,
-      take: size,
-      skip: index * size,
     });
-
-    logger.info(meta, "Users found successfully!");
+    const totalPages = Math.max(1, Math.ceil(totalCount / size));
+    const meta = {
+      pageIndex: index + 1,
+      pageSize: size,
+      totalPages,
+      totalCount,
+    };
+    logger.info({ ...baseMeta, ...meta }, "Users found successfully!");
     res.status(200).json({
       message: "Users found successfully!",
       data: foundUsers,
-      meta: {
-        pageSize: size,
-        pageIndex: index + 1,
-        totalPages: Math.ceil(userCount / size),
-      },
+      meta,
     });
   } catch (error) {
     logger.warn({ error }, "Unable to find users.");

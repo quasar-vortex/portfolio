@@ -5,7 +5,7 @@ type UpdateUserModel = z.infer<typeof updateUserModel>["body"];
 const updateUserModel = z.object({
   params: z.object({ userId: z.string() }),
   body: z.object({
-    firsName: baseUseModel.shape.firstName,
+    firstName: baseUseModel.shape.firstName,
     lastName: baseUseModel.shape.lastName,
     email: baseUseModel.shape.email,
     role: z.union([z.literal("ADMIN"), z.literal("USER")]).optional(),
@@ -17,7 +17,7 @@ const updateUserModel = z.object({
       .string()
       .max(250, { message: "Bio cannot exceeed 250 characters." })
       .optional(),
-    password: baseUseModel.shape.password.optional(),
+    currentPassword: baseUseModel.shape.password.optional(),
     newPassword: baseUseModel.shape.password.optional(),
   }),
 });

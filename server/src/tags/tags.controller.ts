@@ -63,12 +63,16 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
   res,
   next
 ) => {
-  const meta = { ip: req.ip, method: req.method, url: req.url };
+  const meta = {
+    ip: req.ip,
+    method: req.method,
+    url: req.url,
+  };
   try {
     const role = req.user?.role;
     const {
       name,
-      pageIndex = "0",
+      pageIndex = "1",
       pageSize = "10",
     } = req.query as unknown as SearchTagsModel;
 
@@ -85,7 +89,7 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
     if (trimmedTerm) where.name = { contains: trimmedTerm };
     if (role !== "ADMIN") where.isActive = true;
 
-    const count = await db.tag.count({ where, take: size, skip: index * size });
+    const count = await db.tag.count({ where });
     const foundTags = await db.tag.findMany({
       where,
       take: size,
@@ -93,14 +97,24 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       select: role === "ADMIN" ? adminSelect : baseSelect,
     });
 
-    logger.info({ ...meta }, "Tags Successfully Found");
+    logger.info(
+      {
+        ...meta,
+        pageIndex: index + 1,
+        pageSize: size,
+        totalPages: Math.max(1, Math.ceil(count / size)),
+        totalCount: count,
+      },
+      "Tags Successfully Found"
+    );
     res.status(200).json({
       message: "Tags found successfully!",
       data: foundTags,
       meta: {
         pageSize: size,
         pageIndex: index + 1,
-        totalPages: Math.ceil(count / size),
+        totalPages: Math.max(1, Math.ceil(count / size)),
+        totalCount: count,
       },
     });
   } catch (error) {
@@ -138,6 +152,22 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
       });
     }
     const { name } = req.body as UpdateTagModel;
+    const foundTag = await db.tag.findUnique({ where: { id: tagId } });
+    if (!foundTag)
+      throw new HttpError({
+        status: "NOT_FOUND",
+        message: "TAG NOT FOUND!",
+      });
+
+    if (name !== foundTag.name) {
+      const nameInUse = await db.tag.findUnique({ where: { name } });
+      if (nameInUse) {
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: `Tag name ${name} is in use.`,
+        });
+      }
+    }
     const updatedTag = await db.tag.update({
       where: { id: tagId },
       data: { name },
@@ -148,6 +178,7 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
         authorId: true,
       },
     });
+
     logger.info(meta, "Tag updated successfully.");
     res
       .status(200)

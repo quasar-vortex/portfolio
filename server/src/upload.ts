@@ -47,6 +47,10 @@ const upload = multer({
     key: (req, file, cb) => {
       cb(null, uuid());
     },
+    acl: "public-read",
+    contentType(req, file, callback) {
+      callback(null, file.mimetype);
+    },
   }),
   fileFilter: (req, file, cb) => {
     if (fileTypes.includes(file.mimetype)) cb(null, true);
