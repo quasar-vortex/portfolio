@@ -36,6 +36,7 @@ app.use("/api/v1/projecs", projectsRouter);
 
 app.use(errorMiddleware);
 
+/* 
 // Testing linode connection and creds
 if (process.argv[2] === "test" || NODE_ENV === "development") {
   const testFile = {
@@ -70,6 +71,7 @@ if (process.argv[2] === "test" || NODE_ENV === "development") {
   fileTest();
 }
 
+*/
 const main = async () => {
   try {
     await db.$connect();

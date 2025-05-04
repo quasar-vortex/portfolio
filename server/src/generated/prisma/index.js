@@ -306,7 +306,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "mysql://developer:D3V_T!Me@192.168.56.220:3306/portfolio?"
+        "value": "mysql://developer:D3V_T!Me@192.168.56.202:3306/portfolio?"
       }
     }
   },
