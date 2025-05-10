@@ -25,7 +25,7 @@ model File {
   size         Int
   url          String    @unique @db.VarChar(200)
   objectKey    String    @unique @db.VarChar(36)
-  uploader     User      @relation("file-uploader", fields: [userId], references: [id])
+  uploader     User      @relation("file-uploader", fields: [userId], references: [id], onDelete: Cascade)
   fileType     FileType  @default(IMAGE)
   dateUploaded DateTime  @default(now())
   dateUpdated  DateTime? @updatedAt
@@ -52,7 +52,7 @@ model User {
   passwordHash   String    @db.VarChar(255)
   registeredDate DateTime  @default(now())
   lastLoginDate  DateTime?
-  refreshToken   String?   @unique
+  refreshToken   String?   @unique @db.VarChar(500)
   role           Role      @default(USER)
   bio            String?   @db.VarChar(250)
   avatarFile     File?     @relation("avatar-file", fields: [avatarFileId], references: [id], onDelete: Cascade)
@@ -66,19 +66,16 @@ model User {
   File           File[]    @relation("file-uploader")
   PostUpdater    Post[]    @relation("post-updater")
   ProjectUpdater Project[] @relation("project-updater")
-  Tag            Tag[]
-  FileU          File[]    @relation("file-updater")
-  User           User[]    @relation("user-updater")
+
+  FileU File[] @relation("file-updater")
+  User  User[] @relation("user-updater")
 }
 
 model Tag {
   id         String       @id @default(uuid())
   name       String       @unique @db.VarChar(50)
-  author     User         @relation(fields: [authorId], references: [id])
   PostTag    PostTag[]
   ProjectTag ProjectTag[]
-  authorId   String
-  isActive   Boolean      @default(true)
 }
 
 model Post {
@@ -129,7 +126,7 @@ model Project {
   createdDate  DateTime     @default(now())
   updatedDate  DateTime?    @updatedAt
   isActive     Boolean      @default(true)
-  author       User         @relation("project-author", fields: [authorId], references: [id])
+  author       User         @relation("project-author", fields: [authorId], references: [id], onDelete: Cascade)
   authorId     String
   codeUrl      String?      @db.VarChar(150)
   liveUrl      String?      @db.VarChar(150)

@@ -9,7 +9,7 @@ const baseSelect = {
 
   name: true,
 };
-const adminSelect = { ...baseSelect, isActive: true, authorId: true };
+const adminSelect = { ...baseSelect };
 const createNewTagHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -44,7 +44,7 @@ const createNewTagHandler: AuthenticatedRequestHandler = async (
     }
 
     const newTag = await db.tag.create({
-      data: { name, authorId: signedInId },
+      data: { name },
     });
 
     logger.info({ ...meta }, "New Tag Created");
@@ -173,9 +173,7 @@ const updateTagByIdHandler: AuthenticatedRequestHandler = async (
       data: { name },
       select: {
         id: true,
-        isActive: true,
         name: true,
-        authorId: true,
       },
     });
 
@@ -247,9 +245,7 @@ const getTagByNameHandler: AuthenticatedRequestHandler = async (
       where,
       select: {
         id: true,
-        isActive: true,
         name: true,
-        authorId: true,
       },
     });
     if (!foundTag) {
@@ -304,7 +300,7 @@ const deleteTagByIdHandler: AuthenticatedRequestHandler = async (
       });
     }
 
-    await db.tag.update({ where: { id: tagId }, data: { isActive: false } });
+    await db.tag.delete({ where: { id: tagId } });
     logger.info(meta, "Tag was deactivated (soft deleted).");
     res.status(200).json({ data: foundTag });
   } catch (error) {

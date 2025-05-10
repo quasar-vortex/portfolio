@@ -24,7 +24,6 @@ const baseProjectSelect = {
   liveUrl: true,
   content: true,
   ProjectTag: {
-    where: { tag: { isActive: true } },
     include: { tag: { select: { id: true, name: true } } },
   },
 };
@@ -75,7 +74,7 @@ const createProjectHandler: AuthenticatedRequestHandler = async (
       });
     const newProject = await db.$transaction(async (tx) => {
       const foundTags = await tx.tag.findMany({
-        where: { id: { in: tags }, isActive: true },
+        where: { id: { in: tags } },
       });
       // Verify tag Ids
       if (foundTags.length !== tags.length) {
@@ -168,7 +167,7 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
     }
     const updatedProject = await db.$transaction(async (tx) => {
       const foundTags = await tx.tag.findMany({
-        where: { id: { in: tags }, isActive: true },
+        where: { id: { in: tags } },
       });
       // Verify tag Ids
       if (foundTags.length !== tags.length) {

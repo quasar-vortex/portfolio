@@ -16,12 +16,23 @@ const baseSelect = {
   excerpt: true,
   content: true,
   slug: true,
-  coverImageId: true,
-  authorId: true,
   publishDate: true,
   PostTag: {
-    where: { tag: { isActive: true } },
     include: { tag: { select: { id: true, name: true } } },
+  },
+  author: {
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      avatarFile: { select: { id: true, url: true } },
+    },
+  },
+  coverImage: {
+    select: {
+      id: true,
+      url: true,
+    },
   },
 };
 
@@ -94,7 +105,6 @@ const createPostHandler: AuthenticatedRequestHandler = async (
     const foundTagCount = await db.tag.count({
       where: {
         AND: {
-          isActive: true,
           id: { in: tags },
         },
       },
@@ -232,7 +242,6 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
     const foundTagCount = await db.tag.count({
       where: {
         AND: {
-          isActive: true,
           id: { in: tags },
         },
       },
@@ -409,7 +418,6 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
           tag: {
             AND: {
               id: { in: tags },
-              isActive: true,
             },
           },
         },
@@ -447,7 +455,10 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
         where,
         skip: index * size,
         take: size,
-        select: { ...select, content: false },
+        select: {
+          ...select,
+          content: false,
+        },
       }),
     ]);
 

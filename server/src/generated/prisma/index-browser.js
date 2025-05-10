@@ -150,9 +150,7 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.TagScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  authorId: 'authorId',
-  isActive: 'isActive'
+  name: 'name'
 };
 
 exports.Prisma.PostScalarFieldEnum = {
@@ -234,8 +232,7 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
 
 exports.Prisma.TagOrderByRelevanceFieldEnum = {
   id: 'id',
-  name: 'name',
-  authorId: 'authorId'
+  name: 'name'
 };
 
 exports.Prisma.PostOrderByRelevanceFieldEnum = {

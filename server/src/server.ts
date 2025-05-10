@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { APP_PORT, NODE_ENV, s3Config } from "./env";
+import { APP_PORT } from "./env";
 import { pinoHttp } from "pino-http";
 import logger from "./logger";
 import { db } from "./db";
@@ -10,10 +10,7 @@ import { tagsRouter } from "./tags/tags.routes";
 import { postsRouter } from "./posts/posts.routes";
 import { uploadsRouter } from "./uploads/uploads.routes";
 import { usersRouter } from "./users/users.routes";
-import { deleteFileByKey, s3 } from "./upload";
-import path from "path";
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { readFile } from "fs/promises";
+
 import { projectsRouter } from "./projects/projects.routes";
 
 const app = express();

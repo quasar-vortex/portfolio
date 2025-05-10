@@ -1442,7 +1442,6 @@ export namespace Prisma {
     File: number
     PostUpdater: number
     ProjectUpdater: number
-    Tag: number
     FileU: number
     User: number
   }
@@ -1453,7 +1452,6 @@ export namespace Prisma {
     File?: boolean | UserCountOutputTypeCountFileArgs
     PostUpdater?: boolean | UserCountOutputTypeCountPostUpdaterArgs
     ProjectUpdater?: boolean | UserCountOutputTypeCountProjectUpdaterArgs
-    Tag?: boolean | UserCountOutputTypeCountTagArgs
     FileU?: boolean | UserCountOutputTypeCountFileUArgs
     User?: boolean | UserCountOutputTypeCountUserArgs
   }
@@ -1502,13 +1500,6 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountProjectUpdaterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountTagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TagWhereInput
   }
 
   /**
@@ -3013,7 +3004,6 @@ export namespace Prisma {
     File?: boolean | User$FileArgs<ExtArgs>
     PostUpdater?: boolean | User$PostUpdaterArgs<ExtArgs>
     ProjectUpdater?: boolean | User$ProjectUpdaterArgs<ExtArgs>
-    Tag?: boolean | User$TagArgs<ExtArgs>
     FileU?: boolean | User$FileUArgs<ExtArgs>
     User?: boolean | User$UserArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -3047,7 +3037,6 @@ export namespace Prisma {
     File?: boolean | User$FileArgs<ExtArgs>
     PostUpdater?: boolean | User$PostUpdaterArgs<ExtArgs>
     ProjectUpdater?: boolean | User$ProjectUpdaterArgs<ExtArgs>
-    Tag?: boolean | User$TagArgs<ExtArgs>
     FileU?: boolean | User$FileUArgs<ExtArgs>
     User?: boolean | User$UserArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -3063,7 +3052,6 @@ export namespace Prisma {
       File: Prisma.$FilePayload<ExtArgs>[]
       PostUpdater: Prisma.$PostPayload<ExtArgs>[]
       ProjectUpdater: Prisma.$ProjectPayload<ExtArgs>[]
-      Tag: Prisma.$TagPayload<ExtArgs>[]
       FileU: Prisma.$FilePayload<ExtArgs>[]
       User: Prisma.$UserPayload<ExtArgs>[]
     }
@@ -3429,7 +3417,6 @@ export namespace Prisma {
     File<T extends User$FileArgs<ExtArgs> = {}>(args?: Subset<T, User$FileArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     PostUpdater<T extends User$PostUpdaterArgs<ExtArgs> = {}>(args?: Subset<T, User$PostUpdaterArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ProjectUpdater<T extends User$ProjectUpdaterArgs<ExtArgs> = {}>(args?: Subset<T, User$ProjectUpdaterArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    Tag<T extends User$TagArgs<ExtArgs> = {}>(args?: Subset<T, User$TagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     FileU<T extends User$FileUArgs<ExtArgs> = {}>(args?: Subset<T, User$FileUArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     User<T extends User$UserArgs<ExtArgs> = {}>(args?: Subset<T, User$UserArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -3976,30 +3963,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.Tag
-   */
-  export type User$TagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Tag
-     */
-    select?: TagSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Tag
-     */
-    omit?: TagOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TagInclude<ExtArgs> | null
-    where?: TagWhereInput
-    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
-    cursor?: TagWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
-  }
-
-  /**
    * User.FileU
    */
   export type User$FileUArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4079,22 +4042,16 @@ export namespace Prisma {
   export type TagMinAggregateOutputType = {
     id: string | null
     name: string | null
-    authorId: string | null
-    isActive: boolean | null
   }
 
   export type TagMaxAggregateOutputType = {
     id: string | null
     name: string | null
-    authorId: string | null
-    isActive: boolean | null
   }
 
   export type TagCountAggregateOutputType = {
     id: number
     name: number
-    authorId: number
-    isActive: number
     _all: number
   }
 
@@ -4102,22 +4059,16 @@ export namespace Prisma {
   export type TagMinAggregateInputType = {
     id?: true
     name?: true
-    authorId?: true
-    isActive?: true
   }
 
   export type TagMaxAggregateInputType = {
     id?: true
     name?: true
-    authorId?: true
-    isActive?: true
   }
 
   export type TagCountAggregateInputType = {
     id?: true
     name?: true
-    authorId?: true
-    isActive?: true
     _all?: true
   }
 
@@ -4196,8 +4147,6 @@ export namespace Prisma {
   export type TagGroupByOutputType = {
     id: string
     name: string
-    authorId: string
-    isActive: boolean
     _count: TagCountAggregateOutputType | null
     _min: TagMinAggregateOutputType | null
     _max: TagMaxAggregateOutputType | null
@@ -4220,9 +4169,6 @@ export namespace Prisma {
   export type TagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    authorId?: boolean
-    isActive?: boolean
-    author?: boolean | UserDefaultArgs<ExtArgs>
     PostTag?: boolean | Tag$PostTagArgs<ExtArgs>
     ProjectTag?: boolean | Tag$ProjectTagArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
@@ -4233,13 +4179,10 @@ export namespace Prisma {
   export type TagSelectScalar = {
     id?: boolean
     name?: boolean
-    authorId?: boolean
-    isActive?: boolean
   }
 
-  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "authorId" | "isActive", ExtArgs["result"]["tag"]>
+  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    author?: boolean | UserDefaultArgs<ExtArgs>
     PostTag?: boolean | Tag$PostTagArgs<ExtArgs>
     ProjectTag?: boolean | Tag$ProjectTagArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
@@ -4248,15 +4191,12 @@ export namespace Prisma {
   export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Tag"
     objects: {
-      author: Prisma.$UserPayload<ExtArgs>
       PostTag: Prisma.$PostTagPayload<ExtArgs>[]
       ProjectTag: Prisma.$ProjectTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
-      authorId: string
-      isActive: boolean
     }, ExtArgs["result"]["tag"]>
     composites: {}
   }
@@ -4597,7 +4537,6 @@ export namespace Prisma {
    */
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     PostTag<T extends Tag$PostTagArgs<ExtArgs> = {}>(args?: Subset<T, Tag$PostTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ProjectTag<T extends Tag$ProjectTagArgs<ExtArgs> = {}>(args?: Subset<T, Tag$ProjectTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -4631,8 +4570,6 @@ export namespace Prisma {
   interface TagFieldRefs {
     readonly id: FieldRef<"Tag", 'String'>
     readonly name: FieldRef<"Tag", 'String'>
-    readonly authorId: FieldRef<"Tag", 'String'>
-    readonly isActive: FieldRef<"Tag", 'Boolean'>
   }
     
 
@@ -9125,9 +9062,7 @@ export namespace Prisma {
 
   export const TagScalarFieldEnum: {
     id: 'id',
-    name: 'name',
-    authorId: 'authorId',
-    isActive: 'isActive'
+    name: 'name'
   };
 
   export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
@@ -9236,8 +9171,7 @@ export namespace Prisma {
 
   export const TagOrderByRelevanceFieldEnum: {
     id: 'id',
-    name: 'name',
-    authorId: 'authorId'
+    name: 'name'
   };
 
   export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
@@ -9471,7 +9405,6 @@ export namespace Prisma {
     File?: FileListRelationFilter
     PostUpdater?: PostListRelationFilter
     ProjectUpdater?: ProjectListRelationFilter
-    Tag?: TagListRelationFilter
     FileU?: FileListRelationFilter
     User?: UserListRelationFilter
   }
@@ -9498,7 +9431,6 @@ export namespace Prisma {
     File?: FileOrderByRelationAggregateInput
     PostUpdater?: PostOrderByRelationAggregateInput
     ProjectUpdater?: ProjectOrderByRelationAggregateInput
-    Tag?: TagOrderByRelationAggregateInput
     FileU?: FileOrderByRelationAggregateInput
     User?: UserOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
@@ -9529,7 +9461,6 @@ export namespace Prisma {
     File?: FileListRelationFilter
     PostUpdater?: PostListRelationFilter
     ProjectUpdater?: ProjectListRelationFilter
-    Tag?: TagListRelationFilter
     FileU?: FileListRelationFilter
     User?: UserListRelationFilter
   }, "id" | "email" | "refreshToken">
@@ -9580,9 +9511,6 @@ export namespace Prisma {
     NOT?: TagWhereInput | TagWhereInput[]
     id?: StringFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
-    authorId?: StringFilter<"Tag"> | string
-    isActive?: BoolFilter<"Tag"> | boolean
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
     PostTag?: PostTagListRelationFilter
     ProjectTag?: ProjectTagListRelationFilter
   }
@@ -9590,9 +9518,6 @@ export namespace Prisma {
   export type TagOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    authorId?: SortOrder
-    isActive?: SortOrder
-    author?: UserOrderByWithRelationInput
     PostTag?: PostTagOrderByRelationAggregateInput
     ProjectTag?: ProjectTagOrderByRelationAggregateInput
     _relevance?: TagOrderByRelevanceInput
@@ -9604,9 +9529,6 @@ export namespace Prisma {
     AND?: TagWhereInput | TagWhereInput[]
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
-    authorId?: StringFilter<"Tag"> | string
-    isActive?: BoolFilter<"Tag"> | boolean
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
     PostTag?: PostTagListRelationFilter
     ProjectTag?: ProjectTagListRelationFilter
   }, "id" | "name">
@@ -9614,8 +9536,6 @@ export namespace Prisma {
   export type TagOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    authorId?: SortOrder
-    isActive?: SortOrder
     _count?: TagCountOrderByAggregateInput
     _max?: TagMaxOrderByAggregateInput
     _min?: TagMinOrderByAggregateInput
@@ -9627,8 +9547,6 @@ export namespace Prisma {
     NOT?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Tag"> | string
     name?: StringWithAggregatesFilter<"Tag"> | string
-    authorId?: StringWithAggregatesFilter<"Tag"> | string
-    isActive?: BoolWithAggregatesFilter<"Tag"> | boolean
   }
 
   export type PostWhereInput = {
@@ -10079,7 +9997,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -10104,7 +10021,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -10129,7 +10045,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -10154,7 +10069,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -10211,8 +10125,6 @@ export namespace Prisma {
   export type TagCreateInput = {
     id?: string
     name: string
-    isActive?: boolean
-    author: UserCreateNestedOneWithoutTagInput
     PostTag?: PostTagCreateNestedManyWithoutTagInput
     ProjectTag?: ProjectTagCreateNestedManyWithoutTagInput
   }
@@ -10220,8 +10132,6 @@ export namespace Prisma {
   export type TagUncheckedCreateInput = {
     id?: string
     name: string
-    authorId: string
-    isActive?: boolean
     PostTag?: PostTagUncheckedCreateNestedManyWithoutTagInput
     ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutTagInput
   }
@@ -10229,8 +10139,6 @@ export namespace Prisma {
   export type TagUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    author?: UserUpdateOneRequiredWithoutTagNestedInput
     PostTag?: PostTagUpdateManyWithoutTagNestedInput
     ProjectTag?: ProjectTagUpdateManyWithoutTagNestedInput
   }
@@ -10238,8 +10146,6 @@ export namespace Prisma {
   export type TagUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     PostTag?: PostTagUncheckedUpdateManyWithoutTagNestedInput
     ProjectTag?: ProjectTagUncheckedUpdateManyWithoutTagNestedInput
   }
@@ -10247,21 +10153,16 @@ export namespace Prisma {
   export type TagCreateManyInput = {
     id?: string
     name: string
-    authorId: string
-    isActive?: boolean
   }
 
   export type TagUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TagUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PostCreateInput = {
@@ -10878,17 +10779,7 @@ export namespace Prisma {
     none?: FileWhereInput
   }
 
-  export type TagListRelationFilter = {
-    every?: TagWhereInput
-    some?: TagWhereInput
-    none?: TagWhereInput
-  }
-
   export type FileOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type TagOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -10988,22 +10879,16 @@ export namespace Prisma {
   export type TagCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    authorId?: SortOrder
-    isActive?: SortOrder
   }
 
   export type TagMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    authorId?: SortOrder
-    isActive?: SortOrder
   }
 
   export type TagMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    authorId?: SortOrder
-    isActive?: SortOrder
   }
 
   export type PostOrderByRelevanceInput = {
@@ -11428,13 +11313,6 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
-  export type TagCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput> | TagCreateWithoutAuthorInput[] | TagUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutAuthorInput | TagCreateOrConnectWithoutAuthorInput[]
-    createMany?: TagCreateManyAuthorInputEnvelope
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-  }
-
   export type FileCreateNestedManyWithoutUpdatedByInput = {
     create?: XOR<FileCreateWithoutUpdatedByInput, FileUncheckedCreateWithoutUpdatedByInput> | FileCreateWithoutUpdatedByInput[] | FileUncheckedCreateWithoutUpdatedByInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUpdatedByInput | FileCreateOrConnectWithoutUpdatedByInput[]
@@ -11482,13 +11360,6 @@ export namespace Prisma {
     connectOrCreate?: ProjectCreateOrConnectWithoutUpdatedByInput | ProjectCreateOrConnectWithoutUpdatedByInput[]
     createMany?: ProjectCreateManyUpdatedByInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-  }
-
-  export type TagUncheckedCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput> | TagCreateWithoutAuthorInput[] | TagUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutAuthorInput | TagCreateOrConnectWithoutAuthorInput[]
-    createMany?: TagCreateManyAuthorInputEnvelope
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
   export type FileUncheckedCreateNestedManyWithoutUpdatedByInput = {
@@ -11599,20 +11470,6 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
-  export type TagUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput> | TagCreateWithoutAuthorInput[] | TagUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutAuthorInput | TagCreateOrConnectWithoutAuthorInput[]
-    upsert?: TagUpsertWithWhereUniqueWithoutAuthorInput | TagUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: TagCreateManyAuthorInputEnvelope
-    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    update?: TagUpdateWithWhereUniqueWithoutAuthorInput | TagUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: TagUpdateManyWithWhereWithoutAuthorInput | TagUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
-  }
-
   export type FileUpdateManyWithoutUpdatedByNestedInput = {
     create?: XOR<FileCreateWithoutUpdatedByInput, FileUncheckedCreateWithoutUpdatedByInput> | FileCreateWithoutUpdatedByInput[] | FileUncheckedCreateWithoutUpdatedByInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUpdatedByInput | FileCreateOrConnectWithoutUpdatedByInput[]
@@ -11711,20 +11568,6 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
-  export type TagUncheckedUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput> | TagCreateWithoutAuthorInput[] | TagUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutAuthorInput | TagCreateOrConnectWithoutAuthorInput[]
-    upsert?: TagUpsertWithWhereUniqueWithoutAuthorInput | TagUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: TagCreateManyAuthorInputEnvelope
-    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    update?: TagUpdateWithWhereUniqueWithoutAuthorInput | TagUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: TagUpdateManyWithWhereWithoutAuthorInput | TagUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
-  }
-
   export type FileUncheckedUpdateManyWithoutUpdatedByNestedInput = {
     create?: XOR<FileCreateWithoutUpdatedByInput, FileUncheckedCreateWithoutUpdatedByInput> | FileCreateWithoutUpdatedByInput[] | FileUncheckedCreateWithoutUpdatedByInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUpdatedByInput | FileCreateOrConnectWithoutUpdatedByInput[]
@@ -11753,12 +11596,6 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutTagInput = {
-    create?: XOR<UserCreateWithoutTagInput, UserUncheckedCreateWithoutTagInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTagInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type PostTagCreateNestedManyWithoutTagInput = {
     create?: XOR<PostTagCreateWithoutTagInput, PostTagUncheckedCreateWithoutTagInput> | PostTagCreateWithoutTagInput[] | PostTagUncheckedCreateWithoutTagInput[]
     connectOrCreate?: PostTagCreateOrConnectWithoutTagInput | PostTagCreateOrConnectWithoutTagInput[]
@@ -11785,14 +11622,6 @@ export namespace Prisma {
     connectOrCreate?: ProjectTagCreateOrConnectWithoutTagInput | ProjectTagCreateOrConnectWithoutTagInput[]
     createMany?: ProjectTagCreateManyTagInputEnvelope
     connect?: ProjectTagWhereUniqueInput | ProjectTagWhereUniqueInput[]
-  }
-
-  export type UserUpdateOneRequiredWithoutTagNestedInput = {
-    create?: XOR<UserCreateWithoutTagInput, UserUncheckedCreateWithoutTagInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTagInput
-    upsert?: UserUpsertWithoutTagInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTagInput, UserUpdateWithoutTagInput>, UserUncheckedUpdateWithoutTagInput>
   }
 
   export type PostTagUpdateManyWithoutTagNestedInput = {
@@ -12314,7 +12143,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -12338,7 +12166,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -12368,7 +12195,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
 
@@ -12392,7 +12218,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
@@ -12420,7 +12245,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -12444,7 +12268,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -12581,7 +12404,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -12605,7 +12427,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -12641,7 +12462,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
 
@@ -12665,7 +12485,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
@@ -12836,7 +12655,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
   }
 
@@ -12860,7 +12678,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
@@ -13095,32 +12912,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type TagCreateWithoutAuthorInput = {
-    id?: string
-    name: string
-    isActive?: boolean
-    PostTag?: PostTagCreateNestedManyWithoutTagInput
-    ProjectTag?: ProjectTagCreateNestedManyWithoutTagInput
-  }
-
-  export type TagUncheckedCreateWithoutAuthorInput = {
-    id?: string
-    name: string
-    isActive?: boolean
-    PostTag?: PostTagUncheckedCreateNestedManyWithoutTagInput
-    ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutTagInput
-  }
-
-  export type TagCreateOrConnectWithoutAuthorInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput>
-  }
-
-  export type TagCreateManyAuthorInputEnvelope = {
-    data: TagCreateManyAuthorInput | TagCreateManyAuthorInput[]
-    skipDuplicates?: boolean
-  }
-
   export type FileCreateWithoutUpdatedByInput = {
     id?: string
     originalName: string
@@ -13182,7 +12973,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -13206,7 +12996,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -13295,7 +13084,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
   }
 
@@ -13319,7 +13107,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
@@ -13420,32 +13207,6 @@ export namespace Prisma {
     data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutUpdatedByInput>
   }
 
-  export type TagUpsertWithWhereUniqueWithoutAuthorInput = {
-    where: TagWhereUniqueInput
-    update: XOR<TagUpdateWithoutAuthorInput, TagUncheckedUpdateWithoutAuthorInput>
-    create: XOR<TagCreateWithoutAuthorInput, TagUncheckedCreateWithoutAuthorInput>
-  }
-
-  export type TagUpdateWithWhereUniqueWithoutAuthorInput = {
-    where: TagWhereUniqueInput
-    data: XOR<TagUpdateWithoutAuthorInput, TagUncheckedUpdateWithoutAuthorInput>
-  }
-
-  export type TagUpdateManyWithWhereWithoutAuthorInput = {
-    where: TagScalarWhereInput
-    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutAuthorInput>
-  }
-
-  export type TagScalarWhereInput = {
-    AND?: TagScalarWhereInput | TagScalarWhereInput[]
-    OR?: TagScalarWhereInput[]
-    NOT?: TagScalarWhereInput | TagScalarWhereInput[]
-    id?: StringFilter<"Tag"> | string
-    name?: StringFilter<"Tag"> | string
-    authorId?: StringFilter<"Tag"> | string
-    isActive?: BoolFilter<"Tag"> | boolean
-  }
-
   export type FileUpsertWithWhereUniqueWithoutUpdatedByInput = {
     where: FileWhereUniqueInput
     update: XOR<FileUpdateWithoutUpdatedByInput, FileUncheckedUpdateWithoutUpdatedByInput>
@@ -13476,59 +13237,6 @@ export namespace Prisma {
   export type UserUpdateManyWithWhereWithoutUpdatedByInput = {
     where: UserScalarWhereInput
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutUpdatedByInput>
-  }
-
-  export type UserCreateWithoutTagInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    email: string
-    passwordHash: string
-    registeredDate?: Date | string
-    lastLoginDate?: Date | string | null
-    refreshToken?: string | null
-    role?: $Enums.Role
-    bio?: string | null
-    isActive?: boolean
-    dateUpdated?: Date | string | null
-    avatarFile?: FileCreateNestedOneWithoutUserInput
-    updatedBy?: UserCreateNestedOneWithoutUserInput
-    PostAuthor?: PostCreateNestedManyWithoutAuthorInput
-    ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
-    File?: FileCreateNestedManyWithoutUploaderInput
-    PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
-    ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    FileU?: FileCreateNestedManyWithoutUpdatedByInput
-    User?: UserCreateNestedManyWithoutUpdatedByInput
-  }
-
-  export type UserUncheckedCreateWithoutTagInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    email: string
-    passwordHash: string
-    registeredDate?: Date | string
-    lastLoginDate?: Date | string | null
-    refreshToken?: string | null
-    role?: $Enums.Role
-    bio?: string | null
-    avatarFileId?: string | null
-    isActive?: boolean
-    updatedById?: string | null
-    dateUpdated?: Date | string | null
-    PostAuthor?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
-    File?: FileUncheckedCreateNestedManyWithoutUploaderInput
-    PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
-    ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
-    User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
-  }
-
-  export type UserCreateOrConnectWithoutTagInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutTagInput, UserUncheckedCreateWithoutTagInput>
   }
 
   export type PostTagCreateWithoutTagInput = {
@@ -13565,65 +13273,6 @@ export namespace Prisma {
   export type ProjectTagCreateManyTagInputEnvelope = {
     data: ProjectTagCreateManyTagInput | ProjectTagCreateManyTagInput[]
     skipDuplicates?: boolean
-  }
-
-  export type UserUpsertWithoutTagInput = {
-    update: XOR<UserUpdateWithoutTagInput, UserUncheckedUpdateWithoutTagInput>
-    create: XOR<UserCreateWithoutTagInput, UserUncheckedCreateWithoutTagInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutTagInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutTagInput, UserUncheckedUpdateWithoutTagInput>
-  }
-
-  export type UserUpdateWithoutTagInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
-    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    avatarFile?: FileUpdateOneWithoutUserNestedInput
-    updatedBy?: UserUpdateOneWithoutUserNestedInput
-    PostAuthor?: PostUpdateManyWithoutAuthorNestedInput
-    ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
-    File?: FileUpdateManyWithoutUploaderNestedInput
-    PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
-    ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    FileU?: FileUpdateManyWithoutUpdatedByNestedInput
-    User?: UserUpdateManyWithoutUpdatedByNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutTagInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
-    registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
-    dateUpdated?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    PostAuthor?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
-    File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
-    PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
-    ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
-    User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type PostTagUpsertWithWhereUniqueWithoutTagInput = {
@@ -13730,7 +13379,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -13754,7 +13402,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -13783,7 +13430,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -13807,7 +13453,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -13908,7 +13553,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -13932,7 +13576,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -13967,7 +13610,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -13991,7 +13633,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14054,16 +13695,12 @@ export namespace Prisma {
   export type TagCreateWithoutPostTagInput = {
     id?: string
     name: string
-    isActive?: boolean
-    author: UserCreateNestedOneWithoutTagInput
     ProjectTag?: ProjectTagCreateNestedManyWithoutTagInput
   }
 
   export type TagUncheckedCreateWithoutPostTagInput = {
     id?: string
     name: string
-    authorId: string
-    isActive?: boolean
     ProjectTag?: ProjectTagUncheckedCreateNestedManyWithoutTagInput
   }
 
@@ -14131,16 +13768,12 @@ export namespace Prisma {
   export type TagUpdateWithoutPostTagInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    author?: UserUpdateOneRequiredWithoutTagNestedInput
     ProjectTag?: ProjectTagUpdateManyWithoutTagNestedInput
   }
 
   export type TagUncheckedUpdateWithoutPostTagInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     ProjectTag?: ProjectTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
@@ -14200,7 +13833,6 @@ export namespace Prisma {
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -14224,7 +13856,6 @@ export namespace Prisma {
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
     ProjectUpdater?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -14253,7 +13884,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectCreateNestedManyWithoutAuthorInput
     File?: FileCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagCreateNestedManyWithoutAuthorInput
     FileU?: FileCreateNestedManyWithoutUpdatedByInput
     User?: UserCreateNestedManyWithoutUpdatedByInput
   }
@@ -14277,7 +13907,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedCreateNestedManyWithoutAuthorInput
     File?: FileUncheckedCreateNestedManyWithoutUploaderInput
     PostUpdater?: PostUncheckedCreateNestedManyWithoutUpdatedByInput
-    Tag?: TagUncheckedCreateNestedManyWithoutAuthorInput
     FileU?: FileUncheckedCreateNestedManyWithoutUpdatedByInput
     User?: UserUncheckedCreateNestedManyWithoutUpdatedByInput
   }
@@ -14378,7 +14007,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14402,7 +14030,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14437,7 +14064,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUpdateManyWithoutAuthorNestedInput
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14461,7 +14087,6 @@ export namespace Prisma {
     ProjectAuthor?: ProjectUncheckedUpdateManyWithoutAuthorNestedInput
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14528,16 +14153,12 @@ export namespace Prisma {
   export type TagCreateWithoutProjectTagInput = {
     id?: string
     name: string
-    isActive?: boolean
-    author: UserCreateNestedOneWithoutTagInput
     PostTag?: PostTagCreateNestedManyWithoutTagInput
   }
 
   export type TagUncheckedCreateWithoutProjectTagInput = {
     id?: string
     name: string
-    authorId: string
-    isActive?: boolean
     PostTag?: PostTagUncheckedCreateNestedManyWithoutTagInput
   }
 
@@ -14609,16 +14230,12 @@ export namespace Prisma {
   export type TagUpdateWithoutProjectTagInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    author?: UserUpdateOneRequiredWithoutTagNestedInput
     PostTag?: PostTagUpdateManyWithoutTagNestedInput
   }
 
   export type TagUncheckedUpdateWithoutProjectTagInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     PostTag?: PostTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
@@ -14691,7 +14308,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14715,7 +14331,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
@@ -14921,12 +14536,6 @@ export namespace Prisma {
     authorId: string
     codeUrl?: string | null
     liveUrl?: string | null
-  }
-
-  export type TagCreateManyAuthorInput = {
-    id?: string
-    name: string
-    isActive?: boolean
   }
 
   export type FileCreateManyUpdatedByInput = {
@@ -15215,28 +14824,6 @@ export namespace Prisma {
     liveUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type TagUpdateWithoutAuthorInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    PostTag?: PostTagUpdateManyWithoutTagNestedInput
-    ProjectTag?: ProjectTagUpdateManyWithoutTagNestedInput
-  }
-
-  export type TagUncheckedUpdateWithoutAuthorInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    PostTag?: PostTagUncheckedUpdateManyWithoutTagNestedInput
-    ProjectTag?: ProjectTagUncheckedUpdateManyWithoutTagNestedInput
-  }
-
-  export type TagUncheckedUpdateManyWithoutAuthorInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
   export type FileUpdateWithoutUpdatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
@@ -15301,7 +14888,6 @@ export namespace Prisma {
     File?: FileUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUpdateManyWithoutAuthorNestedInput
     FileU?: FileUpdateManyWithoutUpdatedByNestedInput
     User?: UserUpdateManyWithoutUpdatedByNestedInput
   }
@@ -15325,7 +14911,6 @@ export namespace Prisma {
     File?: FileUncheckedUpdateManyWithoutUploaderNestedInput
     PostUpdater?: PostUncheckedUpdateManyWithoutUpdatedByNestedInput
     ProjectUpdater?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
-    Tag?: TagUncheckedUpdateManyWithoutAuthorNestedInput
     FileU?: FileUncheckedUpdateManyWithoutUpdatedByNestedInput
     User?: UserUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
