@@ -12,17 +12,29 @@ import { Prisma } from "../generated/prisma";
 
 const baseProjectSelect = {
   id: true,
-  authorId: true,
   title: true,
   slug: true,
   description: true,
   isFeatured: true,
   isPublished: true,
-  coverImageId: true,
   publishDate: true,
   codeUrl: true,
   liveUrl: true,
   content: true,
+  author: {
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      avatarFile: { select: { id: true, url: true } },
+    },
+  },
+  coverImage: {
+    select: {
+      id: true,
+      url: true,
+    },
+  },
   ProjectTag: {
     include: { tag: { select: { id: true, name: true } } },
   },
