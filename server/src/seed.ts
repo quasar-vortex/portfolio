@@ -98,6 +98,49 @@ async function main() {
       });
     }
   }
+
+  // Create projects
+  for (let i = 0; i < 15; i++) {
+    const author = users[i % users.length];
+    const cover = await db.file.create({
+      data: {
+        originalName: faker.system.commonFileName("jpg"),
+        size: faker.number.int({ min: 1000, max: 50000 }),
+        url: faker.image.urlLoremFlickr({ category: "nature" }),
+        objectKey: faker.string.uuid(),
+        fileType: FileType.IMAGE,
+        uploader: { connect: { id: author.id } },
+      },
+    });
+
+    const project = await db.project.create({
+      data: {
+        title: faker.lorem.sentence(),
+        slug: faker.lorem.slug(),
+        description: faker.lorem.sentences(2),
+        content: faker.lorem.paragraphs(3),
+        isPublished: i % 2 === 0,
+        isFeatured: i % 3 === 0,
+        publishDate: new Date(),
+        authorId: author.id,
+        coverImageId: cover.id,
+        codeUrl: faker.internet.url(),
+        liveUrl: faker.internet.url(),
+      },
+    });
+
+    const tagCount = faker.number.int({ min: 1, max: 3 });
+    const usedTags = faker.helpers.arrayElements(tags, tagCount);
+
+    for (const tag of usedTags) {
+      await db.projectTag.create({
+        data: {
+          projectId: project.id,
+          tagId: tag.id,
+        },
+      });
+    }
+  }
 }
 
 main()

@@ -373,6 +373,13 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
       message: "Found Projects Successfully!",
       meta,
     });
+
+    type PaginationMeta = {
+      pageIndex: number;
+      pageSize: number;
+      totalPages: number;
+      totalCount: number;
+    };
   } catch (error) {
     logger.warn({ error }, "Unable to find projects!");
     next(error);

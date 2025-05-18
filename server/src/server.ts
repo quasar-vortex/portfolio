@@ -29,7 +29,7 @@ app.use("/api/v1/tags", tagsRouter);
 app.use("/api/v1/posts", postsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
 app.use("/api/v1/users", usersRouter);
-app.use("/api/v1/projecs", projectsRouter);
+app.use("/api/v1/projects", projectsRouter);
 
 app.use(errorMiddleware);
 
