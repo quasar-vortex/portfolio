@@ -41,7 +41,7 @@ const searchProjectsModel = z.object({
     term: z.string().optional(),
     pageIndex: z.string().optional(),
     pageSize: z.string().optional(),
-    tags: z.array(z.string()),
+    tags: z.string().optional(),
     // query is string unlike body which is boolean
     isFeatured: z.union([z.literal("false"), z.literal("true")]).optional(),
   }),

@@ -397,7 +397,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     const isAdmin = req.user?.role === "ADMIN";
     const {
       term,
-      tags = [],
+      tags,
       pageIndex = "1",
       pageSize = "10",
       isFeatured,
@@ -417,7 +417,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
         some: {
           tag: {
             AND: {
-              id: { in: tags },
+              id: { in: tags.split(",") },
             },
           },
         },

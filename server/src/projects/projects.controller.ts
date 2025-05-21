@@ -312,7 +312,7 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
     const isAdmin = req.user?.role === "ADMIN";
     const {
       term,
-      tags = [],
+      tags,
       isFeatured,
       pageIndex = "1",
       pageSize = "10",
@@ -330,8 +330,8 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
         { description: { contains: trimmedTerm } },
       ];
     }
-    if (tags.length) {
-      where.ProjectTag = { some: { tagId: { in: tags } } };
+    if (tags?.length) {
+      where.ProjectTag = { some: { tagId: { in: tags.split(",") } } };
     }
     if (searchIsFeatured) {
       where.isFeatured = true;
