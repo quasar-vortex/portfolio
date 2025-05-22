@@ -15,7 +15,10 @@ import { Container } from "@/components/shared/container";
 import { CustomLink } from "./customlink";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { useOutsideClick } from "@/app/utils/useOutsideClick";
+import { useOutsideClick } from "@/app/useOutsideClick";
+import { FaSignOutAlt } from "react-icons/fa";
+import SignOut from "./SignOut";
+import { useAuthStore } from "@/app/providers/storeProvider";
 
 const links = [
   {
@@ -52,6 +55,7 @@ const MobileMenu = ({
   isOpen: boolean;
   toggleClosed: () => void;
 }) => {
+  const { user } = useAuthStore();
   const ref = useOutsideClick(toggleClosed);
   return (
     <>
@@ -90,6 +94,11 @@ const MobileMenu = ({
                 </li>
               );
             })}
+            {user && (
+              <li>
+                <SignOut />
+              </li>
+            )}
           </ul>
         </div>
       </div>
@@ -97,6 +106,7 @@ const MobileMenu = ({
   );
 };
 const Header = () => {
+  const { user } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -150,6 +160,11 @@ const Header = () => {
                 </li>
               );
             })}
+            {user && (
+              <li>
+                <SignOut />
+              </li>
+            )}
           </ul>
         </nav>
       </Container>

@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 type ContainerProps = {
   children: ReactNode;
   className?: string;
-  noPadding?: false;
+  noPadding?: boolean;
 };
 const Container = ({
   children,

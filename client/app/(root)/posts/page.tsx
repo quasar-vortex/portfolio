@@ -1,4 +1,4 @@
-import { getPaginatedPosts } from "@/app/utils/queries";
+import { getPaginatedPosts } from "@/lib/api";
 import PaginatedPostGrid from "@/components/posts/PaginatedPostGrid";
 import Section from "@/components/shared/section";
 import {

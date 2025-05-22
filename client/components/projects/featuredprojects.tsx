@@ -5,7 +5,7 @@ import { ProjectCard } from "../shared/projectcard";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";
-import { getFeaturedProjects } from "@/app/utils/queries";
+import { getFeaturedProjects } from "@/lib/api";
 import { Card } from "../ui/card";
 
 type PaginationMeta = {

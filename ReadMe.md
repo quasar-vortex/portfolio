@@ -1,21 +1,33 @@
-## Portfolio FrontEnd
+## 🖥 Frontend
+
+The frontend is built with **Next.js (App Router)** using **TypeScript** and **Tailwind CSS**, styled with **shadcn/ui** components (plus custom styling).
+
+Key features:
+
+- **React Query** for data fetching and caching
+- **React Hook Form** for form management
+- **Server Actions** (used only for the contact form)
+- API integration for all other data interactions
+- Prefetching and hydration for project/post listings and featured content
 
 ![Portfolio](./port.png)
 
+---
+
 ## 🧠 Portfolio Backend API
 
-This is the backend REST API for the Portfolio Platform. It manages users, projects, uploads, and authentication using Node.js, Express.js, Prisma, PostgreSQL, and AWS S3 (or equivalent).
+This backend REST API powers the Portfolio Platform, managing users, projects, uploads, posts, tags, and authentication.
 
-### 🧩 Tech Stack
+Built with:
 
 - Node.js + Express.js
 - TypeScript
 - PostgreSQL (via Prisma ORM)
-- JWT Authentication (access + refresh tokens)
+- JWT (access + refresh tokens)
 - Argon2 password hashing
-- AWS S3 or compatible object storage
-- Zod validation
-- Multer for file uploads
+- AWS S3 / Linode object storage
+- Zod for validation
+- Multer for uploads
 - Pino for structured logging
 
 ---
@@ -24,12 +36,12 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/auth`
 
-| Method | Route       | Description             | Auth Required |
-| ------ | ----------- | ----------------------- | ------------- |
-| POST   | `/register` | Register a new user     | No            |
-| POST   | `/login`    | Log in with credentials | No            |
-| GET    | `/refresh`  | Get new access token    | Yes (cookie)  |
-| GET    | `/logoff`   | Log out                 | Yes           |
+| Method | Route       | Description          | Auth Required |
+| ------ | ----------- | -------------------- | ------------- |
+| POST   | `/register` | Register a new user  | No            |
+| POST   | `/login`    | Log in               | No            |
+| GET    | `/refresh`  | Refresh access token | Yes (cookie)  |
+| GET    | `/logoff`   | Log out              | Yes           |
 
 ---
 
@@ -37,14 +49,14 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/projects`
 
-| Method | Route         | Description           | Auth         |
-| ------ | ------------- | --------------------- | ------------ |
-| POST   | `/`           | Create project        | Admin only   |
-| PUT    | `/:projectId` | Update project        | Admin only   |
-| DELETE | `/:projectId` | Deactivate project    | Admin only   |
-| GET    | `/`           | List projects (paged) | Public       |
-| GET    | `/:projectId` | Get project by ID     | Public/Admin |
-| GET    | `/slug/:slug` | Get project by slug   | Public/Admin |
+| Method | Route         | Description         | Auth         |
+| ------ | ------------- | ------------------- | ------------ |
+| POST   | `/`           | Create project      | Admin only   |
+| PUT    | `/:projectId` | Update project      | Admin only   |
+| DELETE | `/:projectId` | Deactivate project  | Admin only   |
+| GET    | `/`           | List projects       | Public       |
+| GET    | `/:projectId` | Get project by ID   | Public/Admin |
+| GET    | `/slug/:slug` | Get project by slug | Public/Admin |
 
 ---
 
@@ -52,22 +64,21 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/posts`
 
-| Method | Route         | Description            | Auth         |
-| ------ | ------------- | ---------------------- | ------------ |
-| POST   | `/`           | Create new post        | Admin only   |
-| PUT    | `/:postId`    | Update post            | Admin only   |
-| DELETE | `/:postId`    | Soft delete post       | Admin only   |
-| GET    | `/`           | List posts (paginated) | Public       |
-| GET    | `/:postId`    | Get post by ID         | Public/Admin |
-| GET    | `/slug/:slug` | Get post by slug       | Public/Admin |
+| Method | Route         | Description      | Auth         |
+| ------ | ------------- | ---------------- | ------------ |
+| POST   | `/`           | Create post      | Admin only   |
+| PUT    | `/:postId`    | Update post      | Admin only   |
+| DELETE | `/:postId`    | Soft delete post | Admin only   |
+| GET    | `/`           | List posts       | Public       |
+| GET    | `/:postId`    | Get post by ID   | Public/Admin |
+| GET    | `/slug/:slug` | Get post by slug | Public/Admin |
 
 **Notes**:
 
-- `content` must be HTML or markdown string
-- `coverImageId` is optional and must reference a valid uploaded file
+- `content` must be HTML or Markdown
+- `coverImageId` must point to an uploaded file
 - `tags` is an array of tag IDs
-- `isPublished` and `isFeatured` are boolean flags
-- Pagination supports `pageIndex`, `pageSize`, `term`, `tags`, and `isFeatured`
+- Supports pagination and filters (`pageIndex`, `pageSize`, `term`, `tags`, `isFeatured`)
 
 ---
 
@@ -75,19 +86,13 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/tags`
 
-| Method | Route     | Description          | Auth         |
-| ------ | --------- | -------------------- | ------------ |
-| POST   | `/`       | Create a tag         | Admin only   |
-| PUT    | `/:tagId` | Update tag name      | Admin only   |
-| DELETE | `/:tagId` | Deactivate tag       | Admin only   |
-| GET    | `/`       | List all active tags | Public       |
-| GET    | `/:tagId` | Get tag by ID        | Public/Admin |
-
-**Notes**:
-
-- Tags are referenced by ID in posts and projects
-- Tag names must be unique and are case-insensitive
-- Deactivating a tag prevents it from being shown but does not delete it from existing posts/projects
+| Method | Route     | Description      | Auth       |
+| ------ | --------- | ---------------- | ---------- |
+| POST   | `/`       | Create tag       | Admin only |
+| PUT    | `/:tagId` | Update tag       | Admin only |
+| DELETE | `/:tagId` | Deactivate tag   | Admin only |
+| GET    | `/`       | List active tags | Public     |
+| GET    | `/:tagId` | Get tag by ID    | Public     |
 
 ---
 
@@ -95,15 +100,15 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/uploads`
 
-| Method | Route      | Description        | Auth       |
-| ------ | ---------- | ------------------ | ---------- |
-| POST   | `/`        | Upload image file  | Admin only |
-| GET    | `/:fileId` | Get file by ID     | Public     |
-| GET    | `/`        | List files (paged) | Admin only |
-| DELETE | `/:fileId` | Soft delete file   | Admin only |
+| Method | Route      | Description         | Auth       |
+| ------ | ---------- | ------------------- | ---------- |
+| POST   | `/`        | Upload image file   | Admin only |
+| GET    | `/:fileId` | Get file metadata   | Public     |
+| GET    | `/`        | List uploaded files | Admin only |
+| DELETE | `/:fileId` | Soft delete file    | Admin only |
 
-- Uploads use `multipart/form-data` with the file field named `image`
-- Files are stored in object storage and logged in the database
+- Uses `multipart/form-data` with a file field named `image`
+- Files are stored in S3-compatible object storage
 
 ---
 
@@ -111,50 +116,43 @@ This is the backend REST API for the Portfolio Platform. It manages users, proje
 
 **Base Route**: `/api/v1/users`
 
-| Method | Route      | Description                   | Auth         |
-| ------ | ---------- | ----------------------------- | ------------ |
-| PUT    | `/:userId` | Update profile or password    | Owner/Admin  |
-| GET    | `/:userId` | Get user profile              | Public/Admin |
-| GET    | `/`        | List users (searchable)       | Admin only   |
-| DELETE | `/:userId` | Deactivate user + all content | Admin only   |
+| Method | Route      | Description               | Auth         |
+| ------ | ---------- | ------------------------- | ------------ |
+| PUT    | `/:userId` | Update profile            | Owner/Admin  |
+| GET    | `/:userId` | Get user info             | Public/Admin |
+| GET    | `/`        | List users                | Admin only   |
+| DELETE | `/:userId` | Deactivate user + content | Admin only   |
 
 ---
 
 ### 🛡 Roles
 
-- **USER**: Can update own profile, view public data
-- **ADMIN**: Full access (users, projects, uploads)
+- `USER`: can update own profile and view public data
+- `ADMIN`: full access (users, posts, projects, uploads)
 
 ---
 
 ### 🔄 Pagination & Search
 
-- Supports `pageIndex` and `pageSize` for pagination
-- Supports filtering by `term`, `tags`, `name`, and user fields
+- `pageIndex` and `pageSize` supported
+- Filterable by `term`, `tags`, `name`, `email`, etc.
 
 ---
 
 ### ✅ Validation
 
-- All inputs validated with Zod
-- Passwords must be 8–16 characters and include one letter, one number, and one special character
+- Input validation via Zod
+- Passwords must be 8–16 characters with at least one letter, number, and special character
 
 ---
 
 ### 📝 Logging
 
-- Structured logging using Pino
-- Request logs include IP, method, route, and user ID
+- Uses Pino for structured logging
+- Logs include method, route, IP, and user ID
 
 ---
 
-### 🧪 Local Development
-
-#### 1. Install dependencies
-
-Here’s the corrected, copyable Markdown section with proper formatting:
-
-````md
 ### 🧪 Local Development
 
 #### 1. Install dependencies
@@ -162,11 +160,10 @@ Here’s the corrected, copyable Markdown section with proper formatting:
 ```bash
 npm install
 ```
-````
 
 #### 2. Set up environment
 
-Create a `.env` file in the root directory with the following content:
+Create a `.env` file in the root with:
 
 ```
 DATABASE_URL=postgres://user:pass@localhost:5432/db
@@ -201,5 +198,5 @@ npm run dev
 
 ### 📬 Contact
 
-Maintained by Jeremy Barber
+Maintained by **Jeremy Barber**
 [LinkedIn](https://linkedin.com/in/jeremydanielbarber)

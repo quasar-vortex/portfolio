@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";
 import { PostCard } from "../shared/postcard";
-import { getFeaturedPosts } from "@/app/utils/queries";
+import { getFeaturedPosts } from "@/lib/api";
 
 export type PostTag = {
   postId: string;

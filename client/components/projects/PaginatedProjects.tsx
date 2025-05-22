@@ -9,7 +9,7 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { getPaginatedProjects, queryParamBuilder } from "@/app/utils/queries";
+import { getPaginatedProjects, queryParamBuilder } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

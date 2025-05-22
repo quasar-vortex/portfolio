@@ -11,7 +11,7 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { getPaginatedPosts, queryParamBuilder } from "@/app/utils/queries";
+import { getPaginatedPosts, queryParamBuilder } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-query";
 import Link from "next/link";
 import React from "react";
-import { getFeaturedPosts, getFeaturedProjects } from "../utils/queries";
+import { getFeaturedPosts, getFeaturedProjects } from "../../lib/api";
 
 const HomePage = async () => {
   const { hero, about, skills } = siteData;
