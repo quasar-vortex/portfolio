@@ -9,7 +9,7 @@ import {
 } from "../ui/card";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Post } from "../posts/featuredposts";
+import { Post } from "./featuredposts";
 import Image from "next/image";
 import { Button } from "../ui/button";
 

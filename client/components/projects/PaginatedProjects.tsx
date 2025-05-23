@@ -15,7 +15,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { Project, ProjectCard } from "../shared/projectcard";
+import { Project, ProjectCard } from "./projectcard";
 
 const PaginatedProjectsGrid = () => {
   const router = useRouter();

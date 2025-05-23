@@ -137,7 +137,7 @@ const LoginPage = () => {
       const { user, accessToken } = data as LoginResponse;
       setUser({ user, accessToken, createdAt: Date.now() });
       reset();
-      router.replace("/dash");
+      router.push("/dash");
     } catch (error) {
       toast.error("Something Went Wrong With Login", { position: "top-right" });
       console.log(error);

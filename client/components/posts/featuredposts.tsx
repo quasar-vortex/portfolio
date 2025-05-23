@@ -4,7 +4,7 @@ import { API_URL } from "@/lib/constants";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";
-import { PostCard } from "../shared/postcard";
+import { PostCard } from "./postcard";
 import { getFeaturedPosts } from "@/lib/api";
 
 export type PostTag = {

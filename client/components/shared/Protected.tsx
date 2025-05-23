@@ -8,7 +8,10 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
   const router = useRouter();
   useEffect(() => {
-    if (!user || (user && user.role !== "ADMIN")) {
+    if (user && user.role !== "ADMIN") {
+      redirect("/");
+    }
+    if (!user) {
       redirect("/login");
     }
   }, [user, router]);

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ProjectCard } from "../shared/projectcard";
+import { ProjectCard } from "./projectcard";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";

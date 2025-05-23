@@ -8,7 +8,7 @@ import {
   MailIcon,
   MenuIcon,
   XIcon,
-  UserIcon,
+  LogInIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/shared/container";
@@ -16,7 +16,7 @@ import { CustomLink } from "./customlink";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { useOutsideClick } from "@/app/useOutsideClick";
-import { FaSignOutAlt } from "react-icons/fa";
+
 import SignOut from "./SignOut";
 import { useAuthStore } from "@/app/providers/storeProvider";
 
@@ -40,11 +40,6 @@ const links = [
     label: "Contact",
     icon: MailIcon,
     href: "/contact",
-  },
-  {
-    label: "Admin",
-    icon: UserIcon,
-    href: "/login",
   },
 ];
 
@@ -94,6 +89,19 @@ const MobileMenu = ({
                 </li>
               );
             })}
+            {!user && (
+              <li>
+                <Button
+                  asChild
+                  className="bg-indigo-500 cursor-pointer text-white hover:bg-indigo-600 duration-200"
+                >
+                  <Link href="/login">
+                    <LogInIcon />
+                    <span>Sign In</span>
+                  </Link>
+                </Button>
+              </li>
+            )}
             {user && (
               <li>
                 <SignOut />
@@ -163,6 +171,19 @@ const Header = () => {
             {user && (
               <li>
                 <SignOut />
+              </li>
+            )}
+            {!user && (
+              <li>
+                <Button
+                  asChild
+                  className="bg-indigo-500 cursor-pointer text-white hover:bg-indigo-600 duration-200"
+                >
+                  <Link href="/login">
+                    <LogInIcon />
+                    <span>Sign In</span>
+                  </Link>
+                </Button>
               </li>
             )}
           </ul>

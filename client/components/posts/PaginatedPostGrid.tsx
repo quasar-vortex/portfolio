@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Post } from "@/components/posts/featuredposts";
-import { PostCard } from "@/components/shared/postcard";
+import { PostCard } from "@/components/posts/postcard";
 import { Card } from "@/components/ui/card";
 import {
   Pagination,
