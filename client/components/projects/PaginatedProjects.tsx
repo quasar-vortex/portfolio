@@ -71,15 +71,29 @@ const PaginatedProjectsGrid = () => {
   }, [data]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setCanUpdate(true);
-    }, 500);
-    if (canUpdate) {
-      setTerm(storedTerm);
-      setPageSize(10);
-      setPageIndex(1);
+    const ind = searchParams.get("pageIndex");
+    const index = (ind && parseInt(ind)) || 1;
+    if (index !== pageIndex) {
+      setPageIndex(index);
     }
-  }, [storedTerm, canUpdate]);
+
+    const size = searchParams.get("pageSize");
+    const sizeVal = (size && parseInt(size)) || 10;
+    if (sizeVal !== pageSize) {
+      setPageSize(sizeVal);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (storedTerm !== term) {
+        setTerm(storedTerm);
+        setPageIndex(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [storedTerm]);
 
   useEffect(() => {
     router.replace(
@@ -95,11 +109,11 @@ const PaginatedProjectsGrid = () => {
     <>
       <div className="mb-6 border-b-2 border-gray-300 pb-6">
         <input
+          type="text"
+          value={storedTerm}
           onChange={(e) => {
-            setCanUpdate(false);
             setStoredTerm(e.target.value);
           }}
-          type="text"
           className="outline-none rounded-sm text-lg border border-gray-300 focus:border-gray-500 duration-200 w-full p-2"
         />
       </div>

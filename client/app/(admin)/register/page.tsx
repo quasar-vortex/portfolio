@@ -24,8 +24,14 @@ import { Fields, loginSchema, passwordRegex, pMessage } from "../login/page";
 const registerSchema = loginSchema
   .pick({ email: true, password: true })
   .extend({
-    firstName: z.string().min(2).max(20),
-    lastName: z.string().min(2).max(20),
+    firstName: z
+      .string()
+      .min(2, "First name must be at least 2 characters.")
+      .max(20, "First name cannot exceed 20 characters."),
+    lastName: z
+      .string()
+      .min(2, "Last name must be at least 2 characters.")
+      .max(20, "Last name cannot exceed 20 characters."),
     confirmPassword: z.string().regex(passwordRegex, { message: pMessage }),
   })
   .refine(({ password, confirmPassword }) => password === confirmPassword, {
