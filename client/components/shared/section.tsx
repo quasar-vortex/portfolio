@@ -18,7 +18,7 @@ const Section = ({
   containerClass = "",
 }: Props) => {
   return (
-    <section className={`${bgGray && "bg-gray-100"} py-20 ${wrapperClass}`}>
+    <section className={`${bgGray && "bg-gray-100"} py-12 ${wrapperClass}`}>
       <Container className={containerClass}>
         {title && (
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-blue-600">

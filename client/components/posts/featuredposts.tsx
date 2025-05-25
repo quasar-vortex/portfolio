@@ -6,6 +6,9 @@ import Link from "next/link";
 import Section from "../shared/section";
 import { PostCard } from "./postcard";
 import { getFeaturedPosts } from "@/lib/api";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import Spinner from "../shared/Spinner";
+import { Card } from "../ui/card";
 
 export type PostTag = {
   postId: string;
@@ -62,13 +65,34 @@ const FeaturedPosts = ({ bgGray }: { bgGray?: boolean }) => {
     queryFn: getFeaturedPosts,
   });
 
-  if (isPending) return "Loading...";
-  if (error) return "Error: " + error.message;
-
   return (
     <Section bgGray={bgGray} title="Featured Posts">
+      {error && (
+        <Alert className="mb-6 text-red-600 font-bold shadow-md">
+          <AlertTitle>
+            <h4 className="font-bold text-lg sm:text-xl">
+              Unable to Load Posts
+            </h4>
+          </AlertTitle>
+          {error?.message && (
+            <AlertDescription>{error.message}</AlertDescription>
+          )}
+        </Alert>
+      )}
+
       <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {(data as FeaturedPostResponse).data?.slice(0, 3).map((post: Post) => (
+        {isPending &&
+          !data &&
+          Array(3)
+            .fill(null)
+            .map((item, idx) => (
+              <li key={idx}>
+                <Card className="min-h-[max(500px,calc(1/3*100vh))] skeleton-card">
+                  <div></div>
+                </Card>
+              </li>
+            ))}
+        {(data as FeaturedPostResponse)?.data?.slice(0, 3).map((post: Post) => (
           <li key={post.id}>
             <PostCard {...post} />
           </li>

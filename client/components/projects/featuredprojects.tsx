@@ -7,6 +7,7 @@ import Link from "next/link";
 import Section from "../shared/section";
 import { getFeaturedProjects } from "@/lib/api";
 import { Card } from "../ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 type PaginationMeta = {
   pageIndex: number;
@@ -51,18 +52,27 @@ const FeaturedProjects = ({ bgGray }: { bgGray?: boolean }) => {
     queryFn: getFeaturedProjects,
   });
 
-  if (isPending) return "Loading...";
-
-  if (error) return "An error has occurred: " + error.message;
   return (
     <Section bgGray={bgGray} title="Featured Projects">
+      {error && (
+        <Alert className="mb-6 text-red-600 font-bold shadow-md">
+          <AlertTitle>
+            <h4 className="font-bold text-lg sm:text-xl">
+              Unable to Load Projects
+            </h4>
+          </AlertTitle>
+          {error?.message && (
+            <AlertDescription>{error.message}</AlertDescription>
+          )}
+        </Alert>
+      )}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data?.data.slice(0, 3).map((item: Project) => {
           return <ProjectCard key={item.id} {...item} />;
         })}
         {isPending &&
           !data &&
-          Array(10)
+          Array(3)
             .fill(null)
             .map((item, idx) => (
               <Card

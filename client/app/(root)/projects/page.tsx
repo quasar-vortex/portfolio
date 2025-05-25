@@ -1,5 +1,4 @@
-import { getPaginatedPosts, getPaginatedProjects } from "@/lib/api";
-import PaginatedPostGrid from "@/components/posts/PaginatedPostGrid";
+import { getPaginatedProjects } from "@/lib/api";
 import PaginatedProjectsGrid from "@/components/projects/PaginatedProjects";
 import Section from "@/components/shared/section";
 import {
@@ -9,13 +8,21 @@ import {
 } from "@tanstack/react-query";
 import React from "react";
 
-const ProjectListPage = async () => {
+const ProjectListPage = async ({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) => {
   const queryClient = new QueryClient();
 
+  const term = searchParams.term || "";
+  const pageIndex = parseInt(searchParams.pageIndex || "1");
+  const pageSize = parseInt(searchParams.pageSize || "10");
+
   await queryClient.prefetchQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", pageIndex, pageSize, term],
     queryFn: () =>
-      getPaginatedProjects({ term: "", pageIndex: 1, pageSize: 10, tags: [] }),
+      getPaginatedProjects({ term, pageIndex, pageSize, tags: [] }),
   });
 
   return (

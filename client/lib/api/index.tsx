@@ -28,7 +28,7 @@ export function queryParamBuilder({
   tags,
 }: PostSearchParams) {
   let parts = [];
-  if (term) parts.push(`term=${term}`);
+  parts.push(`term=${term}`);
   parts.push(`pageSize=${pageSize}`);
   parts.push(`pageIndex=${pageIndex}`);
   if (tags) parts.push(`tags=${tags.join(",")}`);

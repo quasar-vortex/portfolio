@@ -9,6 +9,7 @@ import {
   MenuIcon,
   XIcon,
   LogInIcon,
+  Grid,
 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/shared/container";
@@ -19,6 +20,7 @@ import { useOutsideClick } from "@/app/useOutsideClick";
 
 import SignOut from "./SignOut";
 import { useAuthStore } from "@/app/providers/storeProvider";
+import ProfileDrop from "./ProfileDrop";
 
 const links = [
   {
@@ -90,7 +92,7 @@ const MobileMenu = ({
               );
             })}
             {!user && (
-              <li>
+              <li onClick={toggleClosed}>
                 <Button
                   asChild
                   className="bg-indigo-500 cursor-pointer text-white hover:bg-indigo-600 duration-200"
@@ -102,9 +104,10 @@ const MobileMenu = ({
                 </Button>
               </li>
             )}
+
             {user && (
-              <li>
-                <SignOut />
+              <li onClick={toggleClosed}>
+                <ProfileDrop />
               </li>
             )}
           </ul>
@@ -168,11 +171,7 @@ const Header = () => {
                 </li>
               );
             })}
-            {user && (
-              <li>
-                <SignOut />
-              </li>
-            )}
+
             {!user && (
               <li>
                 <Button
@@ -184,6 +183,12 @@ const Header = () => {
                     <span>Sign In</span>
                   </Link>
                 </Button>
+              </li>
+            )}
+
+            {user && (
+              <li>
+                <ProfileDrop />
               </li>
             )}
           </ul>

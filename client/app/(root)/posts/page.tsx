@@ -8,13 +8,20 @@ import {
 } from "@tanstack/react-query";
 import React from "react";
 
-const PostListingPage = async () => {
+const PostListingPage = async ({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) => {
   const queryClient = new QueryClient();
 
+  const term = searchParams.term || "";
+  const pageIndex = parseInt(searchParams.pageIndex || "1");
+  const pageSize = parseInt(searchParams.pageSize || "10");
+
   await queryClient.prefetchQuery({
-    queryKey: ["posts"],
-    queryFn: () =>
-      getPaginatedPosts({ term: "", pageIndex: 1, pageSize: 10, tags: [] }),
+    queryKey: ["posts", pageIndex, pageSize, term],
+    queryFn: () => getPaginatedPosts({ term, pageIndex, pageSize, tags: [] }),
   });
 
   return (

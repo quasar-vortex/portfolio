@@ -7,7 +7,7 @@ import * as usersController from "./users.controller";
 export const usersRouter = Router();
 
 usersRouter
-  .put(
+  .patch(
     "/:userId",
     authMiddleware,
     valMiddleware(updateUserModel),

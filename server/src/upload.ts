@@ -53,7 +53,7 @@ const upload = multer({
     },
   }),
   fileFilter: (req, file, cb) => {
-    if (fileTypes.includes(file.mimetype)) cb(null, true);
+    if (fileTypes.includes(file.mimetype)) return cb(null, true);
     cb(
       new HttpError({
         status: "BAD_REQUEST",

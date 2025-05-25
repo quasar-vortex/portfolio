@@ -4,6 +4,7 @@ import Protected from "@/components/shared/Protected";
 import { ReactNode } from "react";
 
 const navLinks = [
+  { href: "/dash/", label: "Dash Home" },
   { href: "/dash/posts", label: "Manage Posts" },
   { href: "/dash/tags", label: "Manage Tags" },
   { href: "/dash/users", label: "Manage Users" },

@@ -10,7 +10,6 @@ uploadsRouter
   .post(
     "/",
     authMiddleware,
-    roleMiddleware("ADMIN"),
     upload.single("image"),
     uploadsController.uploadFileHandler
   )
