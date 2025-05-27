@@ -5,9 +5,9 @@ import { ProjectCard } from "./projectcard";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";
-import { getFeaturedProjects } from "@/lib/api";
 import { Card } from "../ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import api from "@/lib/api";
 
 type PaginationMeta = {
   pageIndex: number;
@@ -46,10 +46,12 @@ type Project = {
     };
   }>;
 };
+
 const FeaturedProjects = ({ bgGray }: { bgGray?: boolean }) => {
   const { isPending, error, data } = useQuery({
     queryKey: ["featuredProjects"],
-    queryFn: getFeaturedProjects,
+    queryFn: async () =>
+      api.projectService.getManyProjects({ isFeatured: true }),
   });
 
   return (

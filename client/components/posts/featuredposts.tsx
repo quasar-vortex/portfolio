@@ -1,68 +1,19 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { API_URL } from "@/lib/constants";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Section from "../shared/section";
 import { PostCard } from "./postcard";
-import { getFeaturedPosts } from "@/lib/api";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import Spinner from "../shared/Spinner";
 import { Card } from "../ui/card";
+import api from "@/lib/api";
+import { FeaturedPostResponse, Post } from "@/lib/types";
 
-export type PostTag = {
-  postId: string;
-  tagId: string;
-  tag: {
-    id: string;
-    name: string;
-  };
-};
-
-export type Author = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  avatarFile: {
-    id: string;
-    url: string;
-  };
-};
-
-export type CoverImage = {
-  id: string;
-  url: string;
-};
-
-export type Post = {
-  id: string;
-  title: string;
-  excerpt: string;
-  slug: string;
-  publishDate: string;
-  PostTag: PostTag[];
-  author: Author;
-  coverImage: CoverImage;
-};
-
-export type PostMeta = {
-  pageSize: number;
-  pageIndex: number;
-  totalPages: number;
-  totalCount: number;
-  isFeatured: boolean;
-};
-
-export type FeaturedPostResponse = {
-  data: Post[];
-  message: string;
-  meta: PostMeta;
-};
-
+const { postService } = api;
 const FeaturedPosts = ({ bgGray }: { bgGray?: boolean }) => {
   const { isPending, error, data } = useQuery({
     queryKey: ["featuredPosts"],
-    queryFn: getFeaturedPosts,
+    queryFn: async () => postService.searchPosts({ isFeatured: true }),
   });
 
   return (

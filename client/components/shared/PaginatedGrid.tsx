@@ -9,7 +9,6 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { queryParamBuilder } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,10 +19,13 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 type PaginatedGridProps = {
   queryFn: (params: {
-    term?: string;
-    pageSize: number;
-    pageIndex: number;
     tags?: string[];
+    isFeatured?: boolean;
+    term?: string | undefined;
+    pageIndex?: number;
+    pageSize?: number;
+    sortOrder?: "asc" | "desc";
+    sortKey?: "title" | "publishDate";
   }) => Promise<any>;
   queryKey: string;
   errorTitle: string;
@@ -70,11 +72,12 @@ const PaginatedGrid = ({
   useEffect(() => {
     if (!hasInitialized) return;
 
-    const newUrl = `${pathname}${queryParamBuilder({
+    const newUrl = `${pathname}?${new URLSearchParams({
       pageIndex,
       pageSize,
       term,
-    })}`;
+      tags: [],
+    } as unknown as Record<string, string>)}`;
 
     const currentUrl = window.location.pathname + window.location.search;
     if (newUrl !== currentUrl) {

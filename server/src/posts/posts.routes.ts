@@ -17,6 +17,18 @@ postsRouter
     valMiddleware(createPostModel),
     postController.createPostHandler
   )
+  .patch(
+    "/:postId/feature",
+    authMiddleware,
+    roleMiddleware("ADMIN"),
+    postController.togglePostFeatured
+  )
+  .patch(
+    "/:postId/publish",
+    authMiddleware,
+    roleMiddleware("ADMIN"),
+    postController.togglePostPublished
+  )
   .put(
     "/:postId",
     authMiddleware,
@@ -32,10 +44,4 @@ postsRouter
     authMiddleware,
     roleMiddleware("ADMIN"),
     postController.deletePostHandler
-  )
-  .put(
-    "/:postId/feature",
-    authMiddleware,
-    roleMiddleware("ADMIN"),
-    postController.updatePostHandler
   );

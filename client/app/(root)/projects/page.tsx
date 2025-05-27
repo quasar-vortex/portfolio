@@ -1,6 +1,6 @@
-import { getPaginatedProjects } from "@/lib/api";
 import PaginatedProjectsGrid from "@/components/projects/PaginatedProjects";
 import Section from "@/components/shared/section";
+import api from "@/lib/api";
 import {
   dehydrate,
   HydrationBoundary,
@@ -22,7 +22,12 @@ const ProjectListPage = async ({
   await queryClient.prefetchQuery({
     queryKey: ["projects", pageIndex, pageSize, term],
     queryFn: () =>
-      getPaginatedProjects({ term, pageIndex, pageSize, tags: [] }),
+      api.projectService.getManyProjects({
+        term,
+        pageIndex,
+        pageSize,
+        tags: [],
+      }),
   });
 
   return (

@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-query";
 import Link from "next/link";
 import React from "react";
-import { getFeaturedPosts, getFeaturedProjects } from "../../lib/api";
+import api from "@/lib/api";
 
 const HomePage = async () => {
   const { hero, about, skills } = siteData;
@@ -22,12 +22,13 @@ const HomePage = async () => {
 
   await queryClient.prefetchQuery({
     queryKey: ["featuredPosts"],
-    queryFn: getFeaturedPosts,
+    queryFn: async () => api.postService.searchPosts({ isFeatured: true }),
   });
 
   await queryClient.prefetchQuery({
     queryKey: ["featuredProjects"],
-    queryFn: getFeaturedProjects,
+    queryFn: async () =>
+      api.projectService.getManyProjects({ isFeatured: true }),
   });
 
   return (

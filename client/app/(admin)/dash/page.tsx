@@ -1,18 +1,16 @@
 "use client";
-import { Post } from "@/components/posts/featuredposts";
-import { PostCard } from "@/components/posts/postcard";
+
 import PostsTable from "@/components/posts/PostsTable";
-import { Project } from "@/components/projects/projectcard";
 import ProjectsTable from "@/components/projects/ProjectsTable";
-import Protected from "@/components/shared/Protected";
+
 import Spinner from "@/components/shared/Spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFeaturedPosts, getFeaturedProjects } from "@/lib/api";
+
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React from "react";
+import api from "@/lib/api";
 
 const DashBoard = () => {
   const {
@@ -21,7 +19,7 @@ const DashBoard = () => {
     data: featuredPosts,
   } = useQuery({
     queryKey: ["featuredPosts"],
-    queryFn: getFeaturedPosts,
+    queryFn: async () => api.postService.searchPosts({ isFeatured: true }),
   });
   const {
     isPending: projectsPending,
@@ -29,7 +27,8 @@ const DashBoard = () => {
     data: featuredProjects,
   } = useQuery({
     queryKey: ["featuredProjects"],
-    queryFn: getFeaturedProjects,
+    queryFn: async () =>
+      api.projectService.getManyProjects({ isFeatured: true }),
   });
 
   return (

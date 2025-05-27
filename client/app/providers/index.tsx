@@ -11,7 +11,6 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryProvider>
       <AuthStoreProvider>
         {children}
-
         <Toaster />
       </AuthStoreProvider>
     </QueryProvider>

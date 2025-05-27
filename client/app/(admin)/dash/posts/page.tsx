@@ -3,10 +3,11 @@
 import PaginatedTable, {
   TableColumn,
 } from "@/components/shared/PaginatedTable";
-import { getPosts } from "@/lib/api";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Post } from "@/components/posts/featuredposts";
+import { Post } from "@/lib/types";
+import api from "@/lib/api";
 
 const columns: TableColumn<Post>[] = [
   { key: "title", header: "Title" },
@@ -29,7 +30,7 @@ export default function ManagePostsPage() {
       </div>
       <PaginatedTable<Post>
         queryKey="managePosts"
-        queryFn={(params) => getPosts(false, params)}
+        queryFn={async (params) => api.postService.searchPosts(params)}
         columns={columns}
         actions={(post) => (
           <div className="flex gap-2">

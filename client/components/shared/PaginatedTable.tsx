@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import useDebouncedValue from "@/app/hooks/useDebouncedValue";
-import { queryParamBuilder } from "@/lib/api";
+
 import { Button } from "../ui/button";
 import {
   Pagination,
@@ -79,11 +79,12 @@ function PaginatedTable<T>({
   useEffect(() => {
     if (!hasInitialized) return;
 
-    const newUrl = `${pathname}${queryParamBuilder({
+    const newUrl = `${pathname}?${new URLSearchParams({
       pageIndex,
       pageSize,
       term,
-    })}`;
+      tags: [],
+    } as unknown as Record<string, string>)}`;
     const currentUrl = window.location.pathname + window.location.search;
     if (newUrl !== currentUrl) {
       router.replace(newUrl);

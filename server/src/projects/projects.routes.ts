@@ -14,6 +14,18 @@ projectsRouter
   .get("/", projectsController.getManyProjectsHandler)
   .get("/slug/:slug", projectsController.getProjectByIdHandler)
   .get("/:projectId", projectsController.getProjectByIdHandler)
+  .patch(
+    "/:projectId/feature",
+    authMiddleware,
+    roleMiddleware("ADMIN"),
+    projectsController.toggleProjectFeatured
+  )
+  .patch(
+    "/:projectId/publish",
+    authMiddleware,
+    roleMiddleware("ADMIN"),
+    projectsController.toggleProjectPublished
+  )
   .put(
     "/:projectId",
     authMiddleware,
@@ -26,4 +38,5 @@ projectsRouter
     roleMiddleware("ADMIN"),
     projectsController.deleteProjectByIdHandler
   );
+
 export { projectsRouter };

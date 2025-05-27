@@ -64,21 +64,28 @@ Built with:
 
 **Base Route**: `/api/v1/posts`
 
-| Method | Route         | Description      | Auth         |
-| ------ | ------------- | ---------------- | ------------ |
-| POST   | `/`           | Create post      | Admin only   |
-| PUT    | `/:postId`    | Update post      | Admin only   |
-| DELETE | `/:postId`    | Soft delete post | Admin only   |
-| GET    | `/`           | List posts       | Public       |
-| GET    | `/:postId`    | Get post by ID   | Public/Admin |
-| GET    | `/slug/:slug` | Get post by slug | Public/Admin |
+| Method | Route                     | Description              | Auth         |
+| ------ | ------------------------- | ------------------------ | ------------ |
+| POST   | `/`                       | Create post              | Admin only   |
+| PUT    | `/:postId`                | Update post              | Admin only   |
+| DELETE | `/:postId`                | Soft delete post         | Admin only   |
+| GET    | `/`                       | List posts               | Public       |
+| GET    | `/:postId`                | Get post by ID           | Public/Admin |
+| GET    | `/slug/:slug`             | Get post by slug         | Public/Admin |
+| PATCH  | `/:postId/toggle-feature` | Toggle post as featured  | Admin only   |
+| PATCH  | `/:postId/toggle-publish` | Toggle post as published | Admin only   |
 
 **Notes**:
 
-- `content` must be HTML or Markdown
-- `coverImageId` must point to an uploaded file
+- `content` HTML from tiptap editor
+- `coverImageId` must point to a valid uploaded file
 - `tags` is an array of tag IDs
-- Supports pagination and filters (`pageIndex`, `pageSize`, `term`, `tags`, `isFeatured`)
+- `GET /` supports pagination and filters:
+  - `pageIndex`, `pageSize` – for pagination
+  - `term` – keyword search in title/excerpt
+  - `tags` – comma-separated tag IDs
+  - `isFeatured` – `"true"` or `"false"`
+  - `sortKey`, `sortOrder` – for sorting results (e.g. `publishDate` or `title`)
 
 ---
 

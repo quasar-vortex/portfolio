@@ -1,80 +1,16 @@
-import { API_URL } from "@/lib/constants";
-
-export const getPosts = async (isFeatured?: boolean, p?: PostSearchParams) => {
-  let url = `${API_URL}/posts/`;
-
-  if (p) {
-    const { pageIndex, pageSize, tags, term } = p!;
-    url += queryParamBuilder({ pageIndex, pageSize, tags, term });
+import * as postService from "./posts";
+import * as projectService from "./projects";
+export const handleResponse = async (res: Response) => {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Request failed");
   }
-  if (isFeatured && p) url += "&isFeatured=true";
-  if (isFeatured && !p) url += "isFeatured=true";
-
-  return fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  }).then((res) => res.json());
-};
-export const getFeaturedPosts = () =>
-  fetch(`${API_URL}/posts/?isFeatured=true`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  }).then((res) => res.json());
-export const getFeaturedProjects = async () => {
-  return fetch(API_URL + "/projects/?isFeatured=true", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((r) => r.json());
+  return res.json();
 };
 
-export type PostSearchParams = {
-  term?: string;
-  pageSize: number;
-  pageIndex: number;
-  tags?: string[];
-};
-export function queryParamBuilder({
-  term,
-  pageSize,
-  pageIndex,
-  tags,
-}: PostSearchParams) {
-  let parts = [];
-  parts.push(`term=${term}`);
-  parts.push(`pageSize=${pageSize}`);
-  parts.push(`pageIndex=${pageIndex}`);
-  if (tags) parts.push(`tags=${tags.join(",")}`);
-  return `?${parts.join("&")}`;
-}
+export const authHeaders = (token: string) => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+});
 
-export const getPaginatedPosts = ({
-  pageIndex,
-  pageSize,
-  term,
-  tags,
-}: PostSearchParams) =>
-  fetch(
-    API_URL +
-      `/posts/${queryParamBuilder({ pageIndex, pageSize, term, tags })}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    }
-  ).then((res) => res.json());
-
-export const getPaginatedProjects = ({
-  pageIndex,
-  pageSize,
-  term,
-  tags,
-}: PostSearchParams) =>
-  fetch(
-    API_URL +
-      `/projects/${queryParamBuilder({ pageIndex, pageSize, term, tags })}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    }
-  ).then((res) => res.json());
+export default { postService, projectService };
