@@ -17,11 +17,12 @@ import { ReactNode } from "react";
 export type BaseField<T extends FieldValues> = {
   name: Path<T>;
   placeholder: string;
-  type: "text" | "email" | "tel" | "password" | "textarea";
+  type: "text" | "email" | "tel" | "password" | "textarea" | "checkbox";
   label: string;
   value?: string | null;
+  checked?: boolean;
 };
-export type Fields<T extends FieldValues> = (BaseField<T> | BaseField<T>[])[];
+export type Fields<T extends FieldValues> = BaseField<T>[];
 
 type FormProps<T extends FieldValues> = {
   schema: ZodTypeAny;
@@ -38,7 +39,7 @@ function Form<T extends FieldValues>({
   fields,
   onSubmit,
   children,
-  btnText = "Submit",
+  btnText = "",
   title,
   description,
 }: FormProps<T>) {
@@ -51,7 +52,11 @@ function Form<T extends FieldValues>({
     mode: "onTouched",
     defaultValues: fields.reduce((a, c) => {
       //@ts-ignore
-      return { ...a, [c.name]: c.value || "" };
+      return {
+        ...a,
+        //@ts-ignore
+        [c.name]: c.type === "checkbox" ? (c.value ? 1 : 0) : c.value || "",
+      };
     }, {} as any),
   });
 
@@ -61,25 +66,52 @@ function Form<T extends FieldValues>({
 
     return (
       <div key={field.name} className="flex-1">
-        <label htmlFor={fieldId} className="text-gray-600 block mb-2">
-          {field.label}
-        </label>
-        {field.type === "textarea" ? (
-          <textarea
-            {...register(field.name)}
-            id={fieldId}
-            rows={8}
-            placeholder={field.placeholder}
-            className="resize-y w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
-          />
-        ) : (
-          <input
-            {...register(field.name)}
-            id={fieldId}
-            type={field.type}
-            placeholder={field.placeholder}
-            className="w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
-          />
+        {field.type === "textarea" && (
+          <>
+            <label htmlFor={fieldId} className="text-gray-600 block mb-2">
+              {field.label}
+            </label>
+            <textarea
+              {...register(field.name)}
+              id={fieldId}
+              rows={8}
+              placeholder={field.placeholder}
+              className="resize-y w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
+            />
+          </>
+        )}
+        {["text", "email", "password"].includes(field.type) && (
+          <>
+            <label htmlFor={fieldId} className="text-gray-600 block mb-2">
+              {field.label}
+            </label>
+            <input
+              {...register(field.name)}
+              id={fieldId}
+              type={field.type}
+              placeholder={field.placeholder}
+              className="w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
+            />
+          </>
+        )}
+        {field.type === "checkbox" && (
+          <>
+            <div className="flex gap-3 items-center">
+              <label
+                htmlFor={fieldId}
+                className="text-gray-600 whitespace-nowrap block"
+              >
+                {field.label}
+              </label>
+              <input
+                {...register(field.name)}
+                id={fieldId}
+                type={field.type}
+                placeholder={field.placeholder}
+                className=" border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
+              />
+            </div>
+          </>
         )}
         {error && (
           <span className="text-red-600 font-bold text-sm">
@@ -88,18 +120,6 @@ function Form<T extends FieldValues>({
         )}
       </div>
     );
-  };
-
-  const renderFields = (field: Fields<T>[number], index: number) => {
-    if (Array.isArray(field)) {
-      const rowKey = field.map((f) => f.name).join("-");
-      return (
-        <div key={rowKey} className="flex gap-3">
-          {field.map(renderField)}
-        </div>
-      );
-    }
-    return renderField(field);
   };
 
   if (title || description)
@@ -118,13 +138,13 @@ function Form<T extends FieldValues>({
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {fields.map((field, index) => renderFields(field, index))}
+              {fields.map(renderField)}
               <div className="flex w-full justify-center">
                 <Button
                   size="lg"
                   className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
                 >
-                  {btnText}
+                  {btnText || "Submit"}
                 </Button>
               </div>
             </form>
@@ -136,15 +156,19 @@ function Form<T extends FieldValues>({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {fields.map((field, index) => renderFields(field, index))}
-      <div className="flex w-full justify-center">
-        <Button
-          size="lg"
-          className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
-        >
-          {btnText}
-        </Button>
-      </div>
+      {fields.map(renderField)}
+      {children && !btnText ? (
+        children
+      ) : (
+        <div className="flex w-full justify-center">
+          <Button
+            size="lg"
+            className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
+          >
+            {btnText || "Submit"}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

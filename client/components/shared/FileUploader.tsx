@@ -40,7 +40,7 @@ const FileUploader = ({
             className="rounded-full h-32 w-32"
             height={200}
             width={200}
-            alt="Avatar Upload"
+            alt="Upload"
             src={content}
           />
         </div>

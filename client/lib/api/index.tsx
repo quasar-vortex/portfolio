@@ -1,11 +1,25 @@
 import { API_URL } from "@/lib/constants";
 
-export const getFeaturedPosts = async () => {
-  return fetch(API_URL + "/posts?isFeatured=true", {
+export const getPosts = async (isFeatured?: boolean, p?: PostSearchParams) => {
+  let url = `${API_URL}/posts/`;
+
+  if (p) {
+    const { pageIndex, pageSize, tags, term } = p!;
+    url += queryParamBuilder({ pageIndex, pageSize, tags, term });
+  }
+  if (isFeatured && p) url += "&isFeatured=true";
+  if (isFeatured && !p) url += "isFeatured=true";
+
+  return fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   }).then((res) => res.json());
 };
+export const getFeaturedPosts = () =>
+  fetch(`${API_URL}/posts/?isFeatured=true`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }).then((res) => res.json());
 export const getFeaturedProjects = async () => {
   return fetch(API_URL + "/projects/?isFeatured=true", {
     method: "GET",

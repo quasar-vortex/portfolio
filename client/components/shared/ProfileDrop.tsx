@@ -36,11 +36,6 @@ const ProfileDrop = () => {
           <Link href="/account">Account</Link>
         </DropdownMenuItem>
 
-        {user!.role === "ADMIN" && (
-          <DropdownMenuItem asChild>
-            <Link href="/dash">Admin</Link>
-          </DropdownMenuItem>
-        )}
         <DropdownMenuItem asChild>
           <SignOut />
         </DropdownMenuItem>

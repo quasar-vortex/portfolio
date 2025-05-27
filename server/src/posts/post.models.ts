@@ -50,6 +50,8 @@ const searchPostsModel = z.object({
     tags: z.string().optional(),
     // query is string unlike body which is boolean
     isFeatured: z.union([z.literal("false"), z.literal("true")]).optional(),
+    sortOrder: z.union([z.literal("asc"), z.literal("desc")]).optional(),
+    sortKey: z.union([z.literal("publishDate"), z.literal("title")]).optional(),
   }),
 });
 export {

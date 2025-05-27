@@ -29,20 +29,18 @@ const refinedSchema = registerSchema.refine(
 
 type RegisterSchema = z.infer<typeof registerSchema>;
 export const registerFields: Fields<RegisterSchema> = [
-  [
-    {
-      name: "firstName",
-      label: "First Name",
-      placeholder: "Enter your first name...",
-      type: "text",
-    },
-    {
-      name: "lastName",
-      label: "Last Name",
-      placeholder: "Enter your last name...",
-      type: "text",
-    },
-  ],
+  {
+    name: "firstName",
+    label: "First Name",
+    placeholder: "Enter your first name...",
+    type: "text",
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    placeholder: "Enter your last name...",
+    type: "text",
+  },
   {
     name: "email",
     label: "Email",
@@ -97,10 +95,10 @@ const RegisterPage = () => {
     >
       <div className="flex justify-center">
         <Link
-          href="/register"
+          href="/login"
           className="underline text-gray-700 hover:text-gray-900 duration-200"
         >
-          Need an account?
+          Have an account?
         </Link>
       </div>
     </Form>

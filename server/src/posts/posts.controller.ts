@@ -45,8 +45,6 @@ const adminSelect = {
   updatedDate: true,
   updatedById: true,
 };
-
-const MAX_FEATURED_POSTS = 3;
 const createPostHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -401,53 +399,53 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       pageIndex = "1",
       pageSize = "10",
       isFeatured,
+      sortOrder,
+      sortKey,
     } = req.query as unknown as SearchPostsModel;
 
     const trimmedTerm = term?.trim();
     const index = Math.max(parseInt(pageIndex) - 1 || 0, 0);
     const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
+    const select = isAdmin ? adminSelect : baseSelect;
 
+    // Sorting
+    const order: "asc" | "desc" = sortOrder === "asc" ? "asc" : "desc";
+    const key: string = sortKey || "publishDate";
+
+    // isFeatured
     const searchIsFeatured =
       isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
 
+    // conditions
     const where: Prisma.PostWhereInput = {};
+    const andConditions: Prisma.PostWhereInput[] = [];
 
     if (tags?.length) {
       where.PostTag = {
         some: {
           tag: {
-            AND: {
-              id: { in: tags.split(",") },
-            },
+            id: { in: tags.split(",") },
           },
         },
       };
     }
 
-    const keywordFilter = trimmedTerm
-      ? [
+    if (trimmedTerm) {
+      andConditions.push({
+        OR: [
           { title: { contains: trimmedTerm } },
           { excerpt: { contains: trimmedTerm } },
-        ]
-      : [];
-
-    if (searchIsFeatured === true) {
-      where.isFeatured = true;
-      if (keywordFilter.length) {
-        where.AND = [{ OR: keywordFilter }, { isFeatured: true }];
-        delete where.isFeatured;
-      }
-    } else if (searchIsFeatured === false) {
-      where.isFeatured = false;
-      if (keywordFilter.length) {
-        where.AND = [{ OR: keywordFilter }, { isFeatured: false }];
-        delete where.isFeatured;
-      }
-    } else if (keywordFilter.length) {
-      where.OR = keywordFilter;
+        ],
+      });
     }
 
-    const select = isAdmin ? adminSelect : baseSelect;
+    if (searchIsFeatured !== undefined) {
+      andConditions.push({ isFeatured: searchIsFeatured });
+    }
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
+    }
 
     const [count, foundPosts] = await Promise.all([
       db.post.count({ where }),
@@ -455,6 +453,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
         where,
         skip: index * size,
         take: size,
+        orderBy: { [key]: order },
         select: {
           ...select,
           content: false,
@@ -462,11 +461,12 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       }),
     ]);
 
+    const totalPages = Math.max(1, Math.ceil(count / size));
     const searchMeta = {
       ...meta,
       pageIndex: index + 1,
       pageSize: size,
-      totalPages: Math.max(1, Math.ceil(count / size)),
+      totalPages,
       totalCount: count,
       isFeatured: searchIsFeatured,
     };
@@ -476,13 +476,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     res.status(200).json({
       data: foundPosts,
       message: "Found posts!",
-      meta: {
-        pageSize: size,
-        pageIndex: index + 1,
-        totalPages: Math.max(1, Math.ceil(count / size)),
-        totalCount: count,
-        isFeatured: searchIsFeatured,
-      },
+      meta: searchMeta,
     });
   } catch (error) {
     logger.warn({ ...meta, error }, "Unable to find posts.");
@@ -525,29 +519,53 @@ const deletePostHandler: AuthenticatedRequestHandler = async (
   }
 };
 
-const setPostFeatured: AuthenticatedRequestHandler = async (req, res, next) => {
+const togglePostFeatured: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const postId = req.params.postId;
   const userId = req.user!.id;
   const isAdmin = req.user!.role === "ADMIN";
   const meta = { ip: req.ip, method: req.method, url: req.url, postId, userId };
-  try {
-    logger.info(meta, "Setting post as featured!");
 
-    if (!isAdmin)
+  try {
+    logger.info(meta, "Toggling post as featured");
+
+    if (!isAdmin) {
       throw new HttpError({
         status: "NOT_AUTHORIZED",
-        message: "Must be admin to feature a post.",
+        message: "Must be admin to toggle featured posts.",
       });
+    }
+
     const foundPost = await db.post.findUnique({ where: { id: postId } });
-    if (!foundPost)
+
+    if (!foundPost) {
       throw new HttpError({ status: "NOT_FOUND", message: "Post not found!" });
+    }
+
+    const isCurrentlyFeatured = foundPost.isFeatured;
+    // turn off
+    if (isCurrentlyFeatured) {
+      await db.post.update({
+        where: { id: postId },
+        data: { isFeatured: false },
+      });
+
+      logger.info(meta, "Post unfeatured.");
+      return res.status(200).json({ message: "Post unfeatured." });
+    }
+
+    // enable as featured
     const featuredPosts = await db.post.findMany({
       where: { isFeatured: true },
     });
 
     await db.$transaction(async (tx) => {
-      if (featuredPosts.length === 3) {
-        const oldestPostId = [...featuredPosts].sort(
+      if (featuredPosts.length >= 3) {
+        // Unfeature the oldest featured post
+        const oldestPostId = featuredPosts.sort(
           (a, b) =>
             new Date(a.publishDate!).getTime() -
             new Date(b.publishDate!).getTime()
@@ -558,15 +576,64 @@ const setPostFeatured: AuthenticatedRequestHandler = async (req, res, next) => {
           data: { isFeatured: false },
         });
       }
+
       await tx.post.update({
         where: { id: postId },
         data: { isFeatured: true },
       });
     });
-    logger.info(meta, "Post is now featured!");
-    res.status(200).json({ message: "Post was set as featured!" });
+
+    logger.info(meta, "Post featured.");
+    res.status(200).json({ message: "Post featured." });
   } catch (error) {
-    logger.warn({ error }, "Unable to feature post.");
+    logger.warn({ error, meta }, "Error toggling post.");
+    next(error);
+  }
+};
+
+const togglePostPublished: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const postId = req.params.postId;
+  const userId = req.user!.id;
+  const isAdmin = req.user!.role === "ADMIN";
+  const meta = { ip: req.ip, method: req.method, url: req.url, postId, userId };
+
+  try {
+    logger.info(meta, "Toggling post published status");
+
+    if (!isAdmin) {
+      throw new HttpError({
+        status: "NOT_AUTHORIZED",
+        message: "Must be admin to toggle published status.",
+      });
+    }
+
+    const foundPost = await db.post.findUnique({ where: { id: postId } });
+
+    if (!foundPost) {
+      throw new HttpError({ status: "NOT_FOUND", message: "Post not found!" });
+    }
+
+    const newStatus = !foundPost.isPublished;
+    const shouldSetPublishDate = !foundPost.isPublished && newStatus;
+
+    await db.post.update({
+      where: { id: postId },
+      data: {
+        isPublished: newStatus,
+        publishDate: shouldSetPublishDate ? new Date() : null,
+      },
+    });
+
+    logger.info(meta, `Post ${newStatus ? "published" : "unpublished"}.`);
+    res.status(200).json({
+      message: `Post successfully ${newStatus ? "published" : "unpublished"}.`,
+    });
+  } catch (error) {
+    logger.warn({ error, meta }, "Error toggling published status.");
     next(error);
   }
 };
@@ -578,5 +645,6 @@ export {
   getPostBySlugHandler,
   getManyPostsHandler,
   deletePostHandler,
-  setPostFeatured,
+  togglePostFeatured,
+  togglePostPublished,
 };

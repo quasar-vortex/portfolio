@@ -10,6 +10,7 @@ import {
   XIcon,
   LogInIcon,
   Grid,
+  HammerIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/shared/container";
@@ -105,6 +106,19 @@ const MobileMenu = ({
               </li>
             )}
 
+            {user && user.role === "ADMIN" && (
+              <li onClick={toggleClosed}>
+                <CustomLink
+                  activeClassName="flex gap-1  items-center text-blue-500 duration-200 hover:text-gray-blue-400 font-semibold text-sm"
+                  className="flex  gap-1 items-center text-gray-700 duration-200 hover:text-blue-700 font-semibold text-sm"
+                  href={"/dash"}
+                >
+                  <HammerIcon />
+                  <span>Admin</span>
+                </CustomLink>
+              </li>
+            )}
+
             {user && (
               <li onClick={toggleClosed}>
                 <ProfileDrop />
@@ -183,6 +197,19 @@ const Header = () => {
                     <span>Sign In</span>
                   </Link>
                 </Button>
+              </li>
+            )}
+
+            {user && user.role === "ADMIN" && (
+              <li>
+                <CustomLink
+                  activeClassName="flex flex-col items-center text-blue-500 duration-200 hover:text-gray-blue-400 font-semibold text-sm"
+                  className="flex flex-col items-center text-gray-700 duration-200 hover:text-blue-700 font-semibold text-sm"
+                  href={"/dash"}
+                >
+                  <HammerIcon />
+                  <span>Admin</span>
+                </CustomLink>
               </li>
             )}
 

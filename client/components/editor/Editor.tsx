@@ -1,0 +1,215 @@
+"use client";
+
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { Button } from "../ui/button";
+import Heading from "@tiptap/extension-heading";
+import Paragraph from "@tiptap/extension-paragraph";
+import List from "@tiptap/extension-bullet-list";
+import ListItem from "@tiptap/extension-list-item";
+import Code from "@tiptap/extension-code";
+import Quote from "@tiptap/extension-blockquote";
+
+const CustomHeader = Heading.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: "font-bold",
+        renderHTML: (attr) => ({ class: attr.class }),
+      },
+    };
+  },
+  renderHTML({ node, HTMLAttributes }) {
+    const l = this.options.levels.includes(node.attrs.level)
+      ? node.attrs.level
+      : this.options.levels[0];
+    const levelClass = {
+      2: "text-2xl sm:text-3xl font-bold",
+      3: "text-xl sm:text-2xl font-bold",
+      4: "text-lg sm:text-xl font-bold",
+    };
+    return [
+      `h${l}`,
+      { ...HTMLAttributes, class: levelClass[l as keyof typeof levelClass] },
+      0,
+    ];
+  },
+});
+const CustomParagraph = Paragraph.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: "text-gray-700",
+        renderHTML: (attr) => ({ class: attr.class }),
+      },
+    };
+  },
+});
+
+const CustomQuote = Quote.extend({
+  addAttributes() {
+    return {
+      class: {
+        default: "border-l-4 border-gray-400 pl-4 italic text-gray-700",
+        renderHTML: (attrs) => ({ class: attrs.class }),
+      },
+    };
+  },
+});
+
+const CustomList = List.extend({
+  addAttributes() {
+    return {
+      class: {
+        default: "list-disk  text-gray-800",
+        renderHTML: (attrs) => ({ class: attrs.class }),
+      },
+    };
+  },
+});
+const CustomListItem = ListItem.extend({
+  addAttributes() {
+    return {
+      class: {
+        default: "pl-4 text-gray-800",
+        renderHTML: (attrs) => ({ class: attrs.class }),
+      },
+    };
+  },
+});
+const CustomCode = Code.extend({
+  addAttributes() {
+    return {
+      class: {
+        default:
+          "bg-gray-900 text-green-300 font-mono text-sm p-4 rounded-md overflow-auto",
+        renderHTML: (attrs) => ({ class: attrs.class }),
+      },
+    };
+  },
+});
+const MenuBar = ({ editor }: { editor: Editor }) => {
+  if (!editor) return null;
+
+  return (
+    <div className="flex gap-3 border-b-0 flex-wrap border-2 border-gray-300 rounded-t-sm p-2 ">
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().setParagraph().run()}
+        className={editor.isActive("paragraph") ? "is-active" : ""}
+      >
+        P
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
+      >
+        H2
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={editor.isActive("heading", { level: 3 }) ? "is-active" : ""}
+      >
+        H3
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+        className={editor.isActive("heading", { level: 4 }) ? "is-active" : ""}
+      >
+        H4
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={editor.isActive("bold") ? "is-active" : ""}
+      >
+        Bold
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={editor.isActive("italic") ? "is-active" : ""}
+      >
+        Italic
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={editor.isActive("bulletList") ? "is-active" : ""}
+      >
+        List
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        className={editor.isActive("codeBlock") ? "is-active" : ""}
+      >
+        Code
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        className={editor.isActive("blockquote") ? "is-active" : ""}
+      >
+        Quote
+      </Button>
+    </div>
+  );
+};
+
+type CustomEditorProps = {
+  initialContent: string;
+  onSave: (content: string) => void;
+};
+const CustomEditor = ({ initialContent, onSave }: CustomEditorProps) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+        paragraph: false,
+        bulletList: false,
+        codeBlock: false,
+        blockquote: false,
+      }),
+      CustomCode,
+      CustomList,
+      CustomHeader.configure({ levels: [2, 3, 4] }),
+      CustomParagraph,
+      CustomQuote,
+      CustomListItem,
+    ],
+    content: initialContent,
+  });
+  const handleSave = () => {
+    if (editor) {
+      onSave(editor.getHTML());
+    }
+  };
+  if (!editor) return null;
+  return (
+    <div>
+      <div className="mb-6 ">
+        <MenuBar editor={editor} />
+        <EditorContent
+          className=" overflow-hidden [&>*]:py-6 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
+          editor={editor}
+        />
+      </div>
+      <Button
+        type="button"
+        size="lg"
+        className="bg-blue-500 hover:bg-blue-600 duration-200 text-lg cursor-pointer"
+        onClick={handleSave}
+      >
+        Save
+      </Button>
+    </div>
+  );
+};
+
+export default CustomEditor;
