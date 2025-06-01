@@ -7,16 +7,22 @@ import { SearchFilesModel } from "./uploads.models";
 
 type ExpressFile = S3UploadedFile & Express.Multer.File;
 
-const baseSelect = { id: true, url: true, fileType: true };
-const adminSelect = {
-  ...baseSelect,
+export const userFileSelect = {
+  id: true,
+  url: true,
+  fileType: true,
+  dateUploaded: true,
+  dateUpdated: true,
+  originalName: true,
+  userId: true,
+};
+export const adminFileSelect = {
+  ...userFileSelect,
   isActive: true,
   objectKey: true,
   originalName: true,
   size: true,
   userId: true,
-  dateUploaded: true,
-  dateUpdated: true,
 };
 const uploadFileHandler: AuthenticatedRequestHandler = async (
   req,
@@ -55,7 +61,7 @@ const uploadFileHandler: AuthenticatedRequestHandler = async (
         fileType: "IMAGE",
         userId,
       },
-      select: isAdmin ? adminSelect : baseSelect,
+      select: isAdmin ? adminFileSelect : userFileSelect,
     });
 
     const message = "File has been uploaded";
@@ -128,7 +134,7 @@ const getFileByIdHandler: AuthenticatedRequestHandler = async (
     if (!isAdmin) where.isActive = true;
     const foundFile = await db.file.findUnique({
       where,
-      select: isAdmin ? adminSelect : baseSelect,
+      select: isAdmin ? adminFileSelect : userFileSelect,
     });
     if (!foundFile)
       throw new HttpError({
@@ -164,6 +170,8 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
       name,
       pageIndex = "0",
       pageSize = "10",
+      sortKey,
+      sortOrder,
     } = req.query as unknown as SearchFilesModel;
 
     const trimmedTerm = name?.trim();
@@ -175,7 +183,7 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
 
     if (trimmedTerm) where.originalName = { contains: trimmedTerm };
     if (!isAdmin) where.isActive = true;
-    const select = isAdmin ? adminSelect : baseSelect;
+    const select = isAdmin ? adminFileSelect : userFileSelect;
     const totalCount = await db.file.count({
       where,
     });
@@ -184,6 +192,13 @@ const getManyFilesHandler: AuthenticatedRequestHandler = async (
       select,
       take: size,
       skip: index * size,
+      // if sortkey and sortorder pased then check
+      ...(sortKey &&
+        sortOrder && {
+          orderBy: {
+            [sortKey === "name" ? "originalName" : sortKey]: sortOrder,
+          },
+        }),
     });
     const totalPages = Math.max(1, Math.ceil(totalCount / size));
 

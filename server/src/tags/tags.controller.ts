@@ -6,7 +6,6 @@ import { AuthenticatedRequestHandler } from "../types";
 
 const baseSelect = {
   id: true,
-
   name: true,
 };
 const adminSelect = { ...baseSelect };
@@ -71,12 +70,12 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
   try {
     const role = req.user?.role;
     const {
-      name,
+      name = undefined,
       pageIndex = "1",
       pageSize = "10",
     } = req.query as unknown as SearchTagsModel;
 
-    const trimmedTerm = name?.trim();
+    const trimmedTerm = (name && name !== "" && name.trim()) || undefined;
     const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
     const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
 
@@ -85,9 +84,8 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       "Searching for tags."
     );
 
-    const where: { name?: { contains: string }; isActive?: boolean } = {};
+    const where: { name?: { contains: string } } = {};
     if (trimmedTerm) where.name = { contains: trimmedTerm };
-    if (role !== "ADMIN") where.isActive = true;
 
     const count = await db.tag.count({ where });
     const foundTags = await db.tag.findMany({
@@ -201,7 +199,7 @@ const getTagByIdHandler: AuthenticatedRequestHandler = async (
 
   logger.info(meta, "Request to get tag by Id.");
   try {
-    const where = isAdmin ? { id: tagId } : { id: tagId, isActive: true };
+    const where = { id: tagId };
 
     const foundTag = await db.tag.findUnique({
       where,
@@ -237,9 +235,7 @@ const getTagByNameHandler: AuthenticatedRequestHandler = async (
 
   logger.info(meta, "Request to get tag by name.");
   try {
-    const where = isAdmin
-      ? { name: tagName }
-      : { name: tagName, isActive: true };
+    const where = { name: tagName };
 
     const foundTag = await db.tag.findUnique({
       where,

@@ -2,23 +2,16 @@
 
 import { registerSchema } from "@/app/(admin)/register/page";
 import { useAuthStore } from "@/app/providers/storeProvider";
-import { User } from "@/app/store";
-import FileUploader from "@/components/shared/FileUploader";
-import Form, { Fields } from "@/components/shared/form";
+import { Container } from "@/components/shared/container";
+import { Fields } from "@/components/shared/form";
 import Section from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { API_URL } from "@/lib/constants";
 import { capitalize } from "@/lib/utils/index";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Link from "next/link";
 import React, { useState } from "react";
 import { FiPenTool } from "react-icons/fi";
-import { toast } from "sonner";
+
 import { z } from "zod";
 
 const upateUserSchema = registerSchema
@@ -63,183 +56,51 @@ const registerFields: Fields<UpdateUserSchema> = [
 ];
 
 const AccountPage = () => {
-  const [shouldDeleteAvatar, setShouldDeleteAvatar] = useState(false);
-  const [file, setFile] = useState<null | File>(null);
   const [editProfile, setEditProfile] = useState(false);
-  const { user, setUser, accessToken, createdAt } = useAuthStore();
-  const { firstName, lastName, avatarFile, bio, email, role } = user!;
-  const toggleEditMode = () => setEditProfile((p) => !p);
+  const { user, setUser } = useAuthStore();
+  const { firstName, lastName, avatarFile, bio, role } = user!;
 
-  const handleProfileUpdate = async ({
-    firstName,
-    lastName,
-    email,
-    bio,
-  }: Pick<UpdateUserSchema, "email" | "firstName" | "lastName" | "bio">) => {
-    try {
-      let aFile = avatarFile;
-
-      // 1. Delete avatar
-      if (shouldDeleteAvatar && aFile) {
-        await fetch(`${API_URL}/uploads/${aFile.id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "same-origin",
-        });
-        aFile = null;
-      }
-
-      // 2. Upload new avatar if provided
-      if (file) {
-        const formData = new FormData();
-        formData.append("image", file);
-
-        const uploaded = await fetch(`${API_URL}/uploads`, {
-          method: "POST",
-          credentials: "same-origin",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const result = await uploaded.json();
-        aFile = result.data;
-      }
-
-      // 3. Send update
-      const res = await fetch(`${API_URL}/users/${user!.id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "same-origin",
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          bio,
-          avatarFileId: aFile?.id,
-        }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to update user");
-      }
-
-      // 4. Update zustand store
-      const p: { user: User; accessToken: string } = {
-        user: { ...user!, email, firstName, lastName, bio, avatarFile: aFile },
-        accessToken: accessToken!,
-      };
-      setUser({ user: p.user, accessToken: p.accessToken, createdAt });
-      setEditProfile(false);
-    } catch (err: any) {
-      toast.error("Something went wrong", { position: "top-left" });
-      console.error(err);
-    }
-  };
-
-  const handleFileChange = (f: File) => setFile(f);
   return (
-    <Section>
-      <Card className="mx-auto max-w-lg">
-        <CardHeader className="flex justify-between items-center">
+    <>
+      <header>
+        <Container className="flex justify-between ">
           <h1 className="text-2xl font-bold sm:text-3xl">Account Settings</h1>
-          <Button onClick={toggleEditMode} className="cursor-pointer">
-            <FiPenTool />
+          <Button asChild className="cursor-pointer">
+            <Link href="/account/edit">
+              <FiPenTool />
+            </Link>
           </Button>
-        </CardHeader>
-        <CardContent>
-          {editProfile && avatarFile && (
-            <div className="flex gap-3 mb-6 items-end">
-              <Avatar>
-                <AvatarImage
-                  className="size-32 rounded-full"
-                  src={avatarFile?.url}
-                  alt="avatar"
-                />
-                <AvatarFallback>
-                  <div className="size-32 bg-gray-700 rounded-full"></div>
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                onClick={() => setShouldDeleteAvatar((p) => !p)}
-                className={` duration-200 cursor-pointer ${
-                  shouldDeleteAvatar && "bg-red-600 hover:bg-red-700"
-                }`}
-              >
-                {shouldDeleteAvatar
-                  ? "Avatar will be deleted (click to prevent)"
-                  : "Click to delete avatar"}
-              </Button>
-            </div>
-          )}
-          {editProfile && !avatarFile && (
-            <FileUploader onFileUpload={handleFileChange} />
-          )}
-          {!editProfile && (
-            <>
-              <div className="mb-6 flex gap-3 items-center">
-                <Avatar>
-                  <AvatarImage
-                    className="size-24 rounded-full"
-                    src={avatarFile?.url}
-                    alt="avatar"
-                  />
-                  <AvatarFallback>
-                    <div className="size-24 bg-gray-700 rounded-full"></div>
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-gray-700 text-lg sm:text-xl font-bold">
-                    {capitalize(firstName)} {capitalize(lastName)}{" "}
-                  </p>
-                  <p className=" text-gray-500">{capitalize(role)}</p>
-                  <span className="text-sm text-gray-500">{email}</span>
-                </div>
-              </div>
-              <p className="text-gray-700">
-                {bio || `You currently don't have a bio to display.`}
-              </p>
-            </>
-          )}
-          {editProfile && (
-            <Form
-              fields={registerFields.map((item) => {
-                let value = undefined;
-                if (!Array.isArray(item)) {
-                  if (item.name === "bio") value = bio;
-                  if (item.name === "firstName") value = firstName;
-                  if (item.name === "lastName") value = lastName;
-                  if (item.name === "email") value = email;
-                  return { ...item, value };
-                }
-                return item;
-              })}
-              onSubmit={handleProfileUpdate}
-              btnText="Upate Profile"
-              schema={upateUserSchema}
+        </Container>
+      </header>
+      <Section wrapperPadding={false}>
+        <div className="flex gap-6 items-center mb-6">
+          <Avatar>
+            <AvatarImage
+              className="size-24 sm:size-32 rounded-full"
+              src={avatarFile?.url || ""}
             />
-          )}
-        </CardContent>
-        {editProfile && (
-          <CardFooter className="flex items-center justify-center">
-            <Button
-              onClick={toggleEditMode}
-              className="bg-red-600 hover:bg-red-700 duration-200 cursor-pointer"
-            >
-              Cancel
-            </Button>
-          </CardFooter>
-        )}
-      </Card>
-    </Section>
+            <AvatarFallback>
+              <div className="size-24 sm:size-32 rounded-full bg-slate-900 relative">
+                <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white whitespace-nowrap">
+                  No Image
+                </p>
+              </div>
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <span className="font-semibold text-gray-700 sm:text-lg">
+              {capitalize(role)}
+            </span>
+            <h4 className="font-bold text-lg sm:text-xl">
+              {capitalize(firstName)} {capitalize(lastName)}
+            </h4>
+          </div>
+        </div>
+        <p className="text-gray-700 font-semibold sm:text-lg">
+          {bio || "You currently don't have a bio to display"}
+        </p>
+      </Section>
+    </>
   );
 };
 

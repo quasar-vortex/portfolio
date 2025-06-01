@@ -109,3 +109,35 @@ export type SearchProjectsModel = {
   sortOrder?: "asc" | "desc";
   sortKey?: "title" | "publishDate";
 };
+
+export type DbFile = {
+  id: string;
+  url: string;
+  fileType: "IMAGE";
+  dateUploaded: Date;
+  dateUpdated: Date;
+  originalName: string;
+};
+
+export type AdminFile = DbFile & {
+  isActive: boolean;
+  objectKey: string;
+  size: number;
+  userId: string;
+};
+
+export type SearchFilesModel = {
+  name?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sortOrder?: "asc" | "desc";
+  sortKey?: "publishDate" | "name";
+};
+
+export type SearchTagsModel = {
+  name?: string | undefined;
+  pageIndex?: number | undefined;
+  pageSize?: number | undefined;
+};
+
+export type Tag = { id: string; name: string };

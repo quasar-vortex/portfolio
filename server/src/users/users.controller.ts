@@ -5,6 +5,8 @@ import logger from "../logger";
 import { AuthenticatedRequestHandler } from "../types";
 import argon from "argon2";
 import { SearchUsersModel, UpdateUserModel } from "./users.models";
+import { SearchFilesModel } from "../uploads/uploads.models";
+import { adminFileSelect, userFileSelect } from "../uploads/uploads.controller";
 
 const baseUserSelect = {
   id: true,
@@ -320,6 +322,81 @@ const deleteUserByIdHandler: AuthenticatedRequestHandler = async (
     next(error);
   }
 };
+const getUploadsByUserId: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const signedInUserId = req.user!.id;
+  const userId = req.params!.userId;
+  const baseMeta = {
+    ip: req.ip,
+    method: req.method,
+    url: req.url,
+    searchedUserId: userId,
+  };
+  try {
+    if (signedInUserId !== userId)
+      throw new HttpError({
+        status: "FORBIDDEN",
+        message: "May only access your own files.",
+      });
+    const {
+      name,
+      pageIndex = "0",
+      pageSize = "10",
+      sortKey,
+      sortOrder,
+    } = req.query as unknown as SearchFilesModel;
+
+    const trimmedTerm = name?.trim();
+    const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
+    const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
+
+    const where: {
+      userId: string;
+      originalName?: { contains: string };
+      isActive?: boolean;
+    } = { userId };
+
+    if (trimmedTerm) where.originalName = { contains: trimmedTerm };
+
+    const select = userFileSelect;
+    const totalCount = await db.file.count({
+      where,
+    });
+    const foundFiles = await db.file.findMany({
+      where,
+      select,
+      take: size,
+      skip: index * size,
+      // if sortkey and sortorder pased then check
+      ...(sortKey &&
+        sortOrder && {
+          orderBy: {
+            [sortKey === "name" ? "originalName" : sortKey]: sortOrder,
+          },
+        }),
+    });
+    const totalPages = Math.max(1, Math.ceil(totalCount / size));
+
+    const meta = {
+      pageIndex: index + 1,
+      pageSize: size,
+      totalPages,
+      totalCount,
+    };
+    logger.info({ ...baseMeta, ...meta }, "Files found!");
+    res.status(200).json({
+      message: "Files found successfully!",
+      data: foundFiles,
+      meta,
+    });
+  } catch (error) {
+    logger.warn({ error }, "Unable to retrieve files");
+    next(error);
+  }
+};
 
 export {
   baseUserSelect,
@@ -328,4 +405,5 @@ export {
   getUserByIdHandler,
   getManyUsersHandler,
   deleteUserByIdHandler,
+  getUploadsByUserId,
 };

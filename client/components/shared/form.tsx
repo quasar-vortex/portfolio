@@ -29,7 +29,7 @@ type FormProps<T extends FieldValues> = {
   fields: Fields<T>;
   onSubmit: (data: T) => void;
   btnText?: string;
-  children?: ReactNode;
+
   title?: string;
   description?: string;
 };
@@ -38,7 +38,7 @@ function Form<T extends FieldValues>({
   schema,
   fields,
   onSubmit,
-  children,
+
   btnText = "",
   title,
   description,
@@ -150,25 +150,21 @@ function Form<T extends FieldValues>({
             </form>
           </CardContent>
         </Card>
-        {children}
+        x
       </Section>
     );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
       {fields.map(renderField)}
-      {children && !btnText ? (
-        children
-      ) : (
-        <div className="flex w-full justify-center">
-          <Button
-            size="lg"
-            className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
-          >
-            {btnText || "Submit"}
-          </Button>
-        </div>
-      )}
+      <div className="flex w-full justify-center">
+        <Button
+          size="lg"
+          className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
+        >
+          {btnText || "Submit"}
+        </Button>
+      </div>
     </form>
   );
 }

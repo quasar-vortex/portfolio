@@ -1,6 +1,10 @@
 import { Router } from "express";
 import * as tagsController from "./tags.controller";
-import { authMiddleware, roleMiddleware } from "../middleware/auth.middleware";
+import {
+  authMiddleware,
+  optionalAuthMiddleware,
+  roleMiddleware,
+} from "../middleware/auth.middleware";
 import { valMiddleware } from "../middleware/validation.middleware";
 import { createTagModel, updateTagModel } from "./tags.models";
 /*
@@ -15,6 +19,12 @@ DELETE /:tagID - ADMIN Access
 export const tagsRouter = Router();
 
 tagsRouter
+  .get(
+    "/name/:tagName",
+    optionalAuthMiddleware,
+    tagsController.getTagByNameHandler
+  )
+  .get("/:tagId", optionalAuthMiddleware, tagsController.getTagByIdHandler)
   .get("/", tagsController.searchTagsHandler)
   .post(
     "/",
@@ -29,8 +39,6 @@ tagsRouter
     valMiddleware(updateTagModel),
     tagsController.updateTagByIdHandler
   )
-  .get("/:tagId", tagsController.getTagByIdHandler)
-  .get("/name/:tagName", tagsController.getTagByNameHandler)
   .delete(
     "/:tagId",
     authMiddleware,

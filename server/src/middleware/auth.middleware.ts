@@ -3,6 +3,7 @@ import { HttpError } from "../error";
 import { verifyUserToken } from "../auth/auth.utils";
 import logger from "../logger";
 import { Role } from "../generated/prisma";
+import { AuthenticatedRequestHandler } from "../types";
 
 // Helper to extract and validate a Bearer token
 function getBearerToken(header?: string): string {
@@ -24,7 +25,6 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
     const token = getBearerToken(req.headers.authorization);
     const { id, role } = await verifyUserToken("ACCESS", token);
 
-    // @ts-ignore: Global typing issue with user
     req.user = { id, role };
 
     return next();
@@ -39,14 +39,34 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const optionalAuthMiddleware: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const meta = { ip: req.ip, method: req.method, url: req.url };
+  logger.info(meta, "Verifying access token");
+
+  try {
+    const token = getBearerToken(req.headers.authorization);
+    const { id, role } = await verifyUserToken("ACCESS", token);
+
+    req.user = { id, role };
+
+    return next();
+  } catch (err: any) {
+    logger.info({ ...meta }, "Non-authenticated Request");
+    return next();
+  }
+};
+
 const roleMiddleware =
-  (requiredRole: Role): RequestHandler =>
+  (requiredRole: Role): AuthenticatedRequestHandler =>
   async (req, res, next) => {
     const meta = { ip: req.ip, method: req.method, url: req.url };
     logger.info(meta, `Checking for role ${requiredRole}`);
 
     try {
-      // @ts-ignore: Global typing issue with user
       const user = req.user;
       if (!user?.id || !user?.role) {
         throw new HttpError({

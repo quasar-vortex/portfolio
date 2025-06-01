@@ -1,5 +1,8 @@
 import * as postService from "./posts";
 import * as projectService from "./projects";
+import * as uploadService from "./uploads";
+import * as userService from "./users";
+
 export const handleResponse = async (res: Response) => {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -13,4 +16,4 @@ export const authHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
 });
 
-export default { postService, projectService };
+export default { postService, projectService, uploadService, userService };

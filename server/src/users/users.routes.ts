@@ -14,6 +14,7 @@ usersRouter
     usersController.updateUserProfileHandler
   )
   .get("/:userId", usersController.getUserByIdHandler)
+  .get("/:userId/uploads", authMiddleware, usersController.getUploadsByUserId)
   .get(
     "/",
     authMiddleware,
