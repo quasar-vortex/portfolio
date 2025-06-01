@@ -3,7 +3,7 @@ export type CreatePostModel = {
   excerpt: string;
   content: string;
   tags: string[];
-  isPublished: boolean;
+  isPublished?: boolean;
   isFeatured?: boolean;
   coverImageId?: string;
 };
@@ -61,6 +61,8 @@ export type Post = {
   PostTag: PostTag[];
   author: Author;
   coverImage: CoverImage;
+  isActive?: boolean;
+  isFeatured?: boolean;
 };
 
 export type PostMeta = {
@@ -141,3 +143,29 @@ export type SearchTagsModel = {
 };
 
 export type Tag = { id: string; name: string };
+
+type File = {
+  id: string;
+  url: string;
+};
+
+export type BasePost = {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  slug: string;
+  publishDate: Date | string;
+  PostTag: PostTag[];
+  author: Author;
+  coverImage: File | null;
+};
+
+export type AdminPost = BasePost & {
+  isActive: boolean;
+  isFeatured: boolean;
+  isPublished: boolean;
+  createdDate: Date | string;
+  updatedDate: Date | string;
+  updatedById: string | null;
+};

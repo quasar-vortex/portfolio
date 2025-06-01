@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import api from "@/lib/api";
@@ -28,8 +28,8 @@ const createPostModel = z.object({
     .max(250, "Excerpt cannot exceed 250 characters."),
 
   tags: z.array(z.string()),
-  isPublished: z.boolean(),
-  isFeatured: z.boolean(),
+  isPublished: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
   coverImageId: z.string().optional(),
 });
 const contentSchema = z
@@ -66,10 +66,19 @@ const postFields: Fields<CreatePostModel> = [
     checked: true,
   },
 ];
-const NewPostPage = () => {
+const EditPostPage = () => {
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const editor = useEditor({
+    extensions: editorExtensions,
+    content,
+  });
+
   const { accessToken } = useAuthStore();
   const qc = useQueryClient();
   const router = useRouter();
+  const params = useParams();
+  const { postId } = params;
+
   const goBack = () => {
     router.replace("/dash/posts");
   };
@@ -78,6 +87,8 @@ const NewPostPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    reset,
   } = useForm<Omit<CreatePostModel, "content">>({
     resolver: zodResolver(createPostModel),
     mode: "onTouched",
@@ -86,10 +97,38 @@ const NewPostPage = () => {
       title: "",
       tags: [],
       coverImageId: undefined,
-      isFeatured: false,
-      isPublished: false,
+      isFeatured: true,
+      isPublished: true,
     },
   });
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const post = await api.postService.getPostById(
+          postId as string,
+          accessToken!
+        );
+        const { data } = post;
+        setSelectedTags(data.PostTag.map((item) => item.tag));
+        reset({
+          title: data.title,
+          excerpt: data.excerpt,
+          coverImageId: data.coverImage?.id,
+          isFeatured: data.isFeatured,
+          isPublished: data.isPublished,
+          tags: data.PostTag.map((item) => item.tag.id),
+        });
+        editor?.commands.setContent(data.content);
+      } catch (error) {
+        console.error("Unable to get post details", error);
+        toast.error("Unable to get post details!");
+      }
+    }
+    if (postId) {
+      getData();
+    }
+  }, [postId, reset, accessToken, editor]);
 
   const renderField = (field: BaseField<CreatePostModel>) => {
     const fieldId = `field-${field.name}`;
@@ -138,7 +177,6 @@ const NewPostPage = () => {
                 {...register(field.name)}
                 id={fieldId}
                 type={field.type}
-                placeholder={field.placeholder}
                 className=" border border-gray-300 focus:border-gray-500 duration-200 outline-none  text-lg"
               />
             </div>
@@ -152,8 +190,6 @@ const NewPostPage = () => {
       </div>
     );
   };
-
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   const handleAddTag = (t: Tag) => {
     const foundTag = selectedTags.findIndex((item) => item.id === t.id);
@@ -171,14 +207,13 @@ const NewPostPage = () => {
     }
   };
 
-  const editor = useEditor({
-    extensions: editorExtensions,
-    content,
-  });
-
   const handlePostSubmit = async (d: CreatePostModel) => {
     try {
       const { title, excerpt, isFeatured, isPublished } = d;
+      if (isFeatured && !isPublished) {
+        toast.error("Post must be published to feature!");
+        return;
+      }
       const tags = selectedTags.map((item) => item.id);
       const coverImageId = undefined;
       const content = editor!.getHTML();
@@ -186,16 +221,18 @@ const NewPostPage = () => {
         title,
         excerpt,
         isFeatured,
-        isPublished,
+        isPublished: isPublished === undefined ? false : true,
         tags,
         coverImageId,
         content,
       };
-      const newPost = await api.postService.createPost(
+
+      await api.postService.updatePost(
+        postId as string,
         postPayload,
         accessToken!
       );
-      qc.invalidateQueries({ queryKey: ["posts", 1, 10, ""] });
+      qc.invalidateQueries({ queryKey: ["posts"] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
       return goBack();
     } catch (error) {
@@ -203,10 +240,7 @@ const NewPostPage = () => {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Something Went Wrong, Unable to Create Post!",
-        {
-          position: "top-left",
-        }
+          : "Something Went Wrong, Unable to Update Post!"
       );
     }
   };
@@ -214,7 +248,7 @@ const NewPostPage = () => {
   return (
     <section className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Create Post</h1>
+        <h1 className="text-3xl font-bold">Edit Post</h1>
         <Button className="cursor-pointer" onClick={goBack}>
           Back
         </Button>
@@ -246,7 +280,7 @@ const NewPostPage = () => {
             <div className="flex">{postFields.slice(2).map(renderField)}</div>
 
             <Button type="submit" className="mx-auto">
-              Create Post
+              Edit Post
             </Button>
           </form>
         </CardContent>
@@ -255,4 +289,4 @@ const NewPostPage = () => {
   );
 };
 
-export default NewPostPage;
+export default EditPostPage;

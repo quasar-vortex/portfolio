@@ -24,6 +24,7 @@ export type TableColumn<T> = {
 };
 
 type PaginatedTableProps<T> = {
+  simpleKey?: boolean;
   queryKey: string;
   queryFn: (params: {
     term?: string;
@@ -44,6 +45,7 @@ function PaginatedTable<T>({
   columns,
   actions,
   searchPlaceholder = "Search...",
+  simpleKey,
 }: PaginatedTableProps<T>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,7 +61,7 @@ function PaginatedTable<T>({
   const debouncedTerm = useDebouncedValue(storedTerm, 500);
 
   const { data, error, isPending } = useQuery({
-    queryKey: [queryKey, pageIndex, pageSize, term],
+    queryKey: simpleKey ? [queryKey] : [queryKey, pageIndex, pageSize, term],
     queryFn: () => queryFn({ term, pageIndex, pageSize }),
   });
 

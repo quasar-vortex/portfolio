@@ -6,7 +6,11 @@ import {
   searchPostsModel,
   updatePostModel,
 } from "./post.models";
-import { authMiddleware, roleMiddleware } from "../middleware/auth.middleware";
+import {
+  authMiddleware,
+  optionalAuthMiddleware,
+  roleMiddleware,
+} from "../middleware/auth.middleware";
 export const postsRouter = Router();
 
 postsRouter
@@ -36,9 +40,18 @@ postsRouter
     valMiddleware(updatePostModel),
     postController.updatePostHandler
   )
-  .get("/", valMiddleware(searchPostsModel), postController.getManyPostsHandler)
-  .get("/:postId", postController.getPostByIdHandler)
-  .get("/slug/:slug", postController.getPostBySlugHandler)
+  .get(
+    "/",
+    valMiddleware(searchPostsModel),
+    optionalAuthMiddleware,
+    postController.getManyPostsHandler
+  )
+  .get("/:postId", authMiddleware, postController.getPostByIdHandler)
+  .get(
+    "/slug/:slug",
+    optionalAuthMiddleware,
+    postController.getPostBySlugHandler
+  )
   .delete(
     "/:postId",
     authMiddleware,

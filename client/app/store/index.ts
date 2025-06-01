@@ -66,6 +66,7 @@ export const createAuthStore = (initState: AuthState = defaultInitState) => {
               1000 * 15 * 60 // 15 minutes
             ) {
               st?.clearUser?.();
+              window.location.href = "/login";
             }
           }
         },

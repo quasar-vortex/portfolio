@@ -84,13 +84,13 @@ const CustomCode = Code.extend({
     return {
       class: {
         default:
-          "bg-gray-900 text-green-300 font-mono text-sm p-4 rounded-md overflow-auto",
+          "bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre",
         renderHTML: (attrs) => ({ class: attrs.class }),
       },
     };
   },
 });
-const MenuBar = ({ editor }: { editor: Editor }) => {
+export const MenuBar = ({ editor }: { editor: Editor }) => {
   if (!editor) return null;
 
   return (
@@ -161,55 +161,18 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
     </div>
   );
 };
-
-type CustomEditorProps = {
-  initialContent: string;
-  onSave: (content: string) => void;
-};
-const CustomEditor = ({ initialContent, onSave }: CustomEditorProps) => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-        paragraph: false,
-        bulletList: false,
-        codeBlock: false,
-        blockquote: false,
-      }),
-      CustomCode,
-      CustomList,
-      CustomHeader.configure({ levels: [2, 3, 4] }),
-      CustomParagraph,
-      CustomQuote,
-      CustomListItem,
-    ],
-    content: initialContent,
-  });
-  const handleSave = () => {
-    if (editor) {
-      onSave(editor.getHTML());
-    }
-  };
-  if (!editor) return null;
-  return (
-    <div>
-      <div className="mb-6 ">
-        <MenuBar editor={editor} />
-        <EditorContent
-          className=" overflow-hidden [&>*]:py-6 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
-          editor={editor}
-        />
-      </div>
-      <Button
-        type="button"
-        size="lg"
-        className="bg-blue-500 hover:bg-blue-600 duration-200 text-lg cursor-pointer"
-        onClick={handleSave}
-      >
-        Save
-      </Button>
-    </div>
-  );
-};
-
-export default CustomEditor;
+export const editorExtensions = [
+  StarterKit.configure({
+    heading: false,
+    paragraph: false,
+    bulletList: false,
+    codeBlock: false,
+    blockquote: false,
+  }),
+  CustomCode,
+  CustomList,
+  CustomHeader.configure({ levels: [2, 3, 4] }),
+  CustomParagraph,
+  CustomQuote,
+  CustomListItem,
+];

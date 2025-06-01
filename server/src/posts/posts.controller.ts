@@ -142,7 +142,6 @@ const createPostHandler: AuthenticatedRequestHandler = async (
           excerpt,
           authorId,
           publishDate: isPublished ? new Date() : null,
-          ...(coverImageId && { coverImageId }),
           PostTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
           isFeatured,
           isPublished,
@@ -393,6 +392,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
 
   try {
     const isAdmin = req.user?.role === "ADMIN";
+    logger.info(`This use is ${!isAdmin && "NOT"} an Admin.`);
     const {
       term,
       tags,
@@ -446,6 +446,7 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     if (andConditions.length > 0) {
       where.AND = andConditions;
     }
+    where.isActive = true;
 
     const [count, foundPosts] = await Promise.all([
       db.post.count({ where }),

@@ -1,10 +1,18 @@
 import { authHeaders, handleResponse } from ".";
 import { API_URL } from "../constants";
-import { CreatePostModel, SearchPostsModel, UpdatePostModel } from "../types";
+import {
+  AdminPost,
+  CreatePostModel,
+  SearchPostsModel,
+  UpdatePostModel,
+} from "../types";
 
 const BASE_URL = `${API_URL}/posts`;
 
-export const createPost = async (payload: CreatePostModel, token: string) => {
+export const createPost = async (
+  payload: CreatePostModel,
+  token: string
+): Promise<{ data: AdminPost }> => {
   const res = await fetch(BASE_URL, {
     method: "POST",
     headers: authHeaders(token),
@@ -26,7 +34,10 @@ export const updatePost = async (
   return handleResponse(res);
 };
 
-export const getPostById = async (postId: string, token: string) => {
+export const getPostById = async (
+  postId: string,
+  token: string
+): Promise<{ data: AdminPost }> => {
   const res = await fetch(`${BASE_URL}/${postId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -40,20 +51,22 @@ export const getPostBySlug = async (slug: string) => {
   return handleResponse(res);
 };
 
-export const searchPosts = async (query: SearchPostsModel) => {
+export const searchPosts = async (query: SearchPostsModel, token?: string) => {
   const searchParams = new URLSearchParams(
     query as Record<string, string>
   ).toString();
-  const res = await fetch(`${BASE_URL}?${searchParams}`);
+  const res = await fetch(`${BASE_URL}?${searchParams}`, {
+    headers: token
+      ? authHeaders(token)
+      : { "Content-Type": "application/json" },
+  });
   return handleResponse(res);
 };
 
 export const deletePostById = async (postId: string, token: string) => {
   const res = await fetch(`${BASE_URL}/${postId}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(token),
   });
   return handleResponse(res);
 };

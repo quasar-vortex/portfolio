@@ -70,12 +70,12 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
   try {
     const role = req.user?.role;
     const {
-      name = undefined,
+      name = "",
       pageIndex = "1",
       pageSize = "10",
     } = req.query as unknown as SearchTagsModel;
 
-    const trimmedTerm = (name && name !== "" && name.trim()) || undefined;
+    const trimmedTerm = name && name !== "" && name.trim();
     const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
     const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
 
@@ -93,6 +93,7 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       take: size,
       skip: index * size,
       select: role === "ADMIN" ? adminSelect : baseSelect,
+      orderBy: { name: "desc" },
     });
 
     logger.info(
@@ -105,16 +106,18 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
       },
       "Tags Successfully Found"
     );
-    res.status(200).json({
-      message: "Tags found successfully!",
-      data: foundTags,
-      meta: {
-        pageSize: size,
-        pageIndex: index + 1,
-        totalPages: Math.max(1, Math.ceil(count / size)),
-        totalCount: count,
-      },
-    });
+    setTimeout(() => {
+      res.status(200).json({
+        message: "Tags found successfully!",
+        data: foundTags,
+        meta: {
+          pageSize: size,
+          pageIndex: index + 1,
+          totalPages: Math.max(1, Math.ceil(count / size)),
+          totalCount: count,
+        },
+      });
+    }, 3000);
   } catch (error) {
     logger.warn(
       { ...meta, error: error instanceof Error ? error.message : error },

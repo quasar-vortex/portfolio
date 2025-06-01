@@ -73,15 +73,16 @@ const LoginPage = () => {
   };
 
   return (
-    <Form<LoginSchema>
-      title="Login"
-      description="Login to account."
-      btnText="Login"
-      fields={fields}
-      schema={loginSchema}
-      onSubmit={handleLogin}
-    >
-      <div className="flex justify-center">
+    <div className="flex flex-col justify-center">
+      <Form
+        title="Login"
+        description="Login to account."
+        btnText="Login"
+        fields={fields}
+        schema={loginSchema}
+        onSubmit={handleLogin}
+      ></Form>
+      <div className="flex justify-center mb-24">
         <Link
           href="/register"
           className="underline text-gray-700 hover:text-gray-900 duration-200"
@@ -89,7 +90,7 @@ const LoginPage = () => {
           Need an account?
         </Link>
       </div>
-    </Form>
+    </div>
   );
 };
 

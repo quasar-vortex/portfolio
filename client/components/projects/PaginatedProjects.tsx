@@ -13,7 +13,7 @@ const PaginatedProjectsGrid = () => {
         return <ProjectCard key={item.id} {...item} />;
       }}
       errorTitle="Unable to load projects!"
-      queryFn={async (p) => api.postService.searchPosts(p)}
+      queryFn={async (p) => api.projectService.getManyProjects(p)}
       queryKey="projects"
     />
   );

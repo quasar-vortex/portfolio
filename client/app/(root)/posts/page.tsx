@@ -22,7 +22,7 @@ const PostListingPage = async ({
   await queryClient.prefetchQuery({
     queryKey: ["posts", pageIndex, pageSize, term],
     queryFn: () =>
-      api.projectService.getManyProjects({
+      api.postService.searchPosts({
         term,
         pageIndex,
         pageSize,

@@ -150,7 +150,6 @@ function Form<T extends FieldValues>({
             </form>
           </CardContent>
         </Card>
-        x
       </Section>
     );
 

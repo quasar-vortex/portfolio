@@ -49,6 +49,7 @@ export const optionalAuthMiddleware: RequestHandler = async (
 
   try {
     const token = getBearerToken(req.headers.authorization);
+    console.log(token);
     const { id, role } = await verifyUserToken("ACCESS", token);
 
     req.user = { id, role };

@@ -85,23 +85,26 @@ const RegisterPage = () => {
   };
 
   return (
-    <Form
-      title="Register Account"
-      description="Create a new account."
-      btnText="Register"
-      schema={refinedSchema}
-      fields={registerFields}
-      onSubmit={handleRegister}
-    >
-      <div className="flex justify-center">
-        <Link
-          href="/login"
-          className="underline text-gray-700 hover:text-gray-900 duration-200"
-        >
-          Have an account?
-        </Link>
+    <>
+      <div className="flex flex-col justify-center">
+        <Form
+          title="Register Account"
+          description="Create a new account."
+          btnText="Register"
+          schema={refinedSchema}
+          fields={registerFields}
+          onSubmit={handleRegister}
+        ></Form>
+        <div className="flex justify-center mb-24">
+          <Link
+            href="/login"
+            className="underline text-gray-700 hover:text-gray-900 duration-200"
+          >
+            Have an account?
+          </Link>
+        </div>
       </div>
-    </Form>
+    </>
   );
 };
 
