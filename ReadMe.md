@@ -1,3 +1,4 @@
+# Work In Progresss
 ## 🖥 Frontend
 
 The frontend is built with **Next.js (App Router)** using **TypeScript** and **Tailwind CSS**, styled with **shadcn/ui** components (plus custom styling).
