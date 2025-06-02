@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -14,6 +14,9 @@ import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/app/providers/storeProvider";
+import FileUploader from "@/components/shared/FileUploader";
+import Image from "next/image";
+import { FiX } from "react-icons/fi";
 const content =
   '<h2 class="text-2xl sm:text-3xl font-bold">Try Writing Something</h2><p class="text-gray-700"><strong>Anything at all</strong></p><p class="text-gray-700"></p><ul class="list-disk  text-gray-800"><li class="pl-4 text-gray-800"><p class="text-gray-700">here is a list of items</p></li><li class="pl-4 text-gray-800"><p class="text-gray-700">to review</p></li></ul><p class="text-gray-700"></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">function greeeting(user: string) {</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">alert(`Good Morning ${user}`)</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">}</code></p><p class="text-gray-700"></p><blockquote class="border-l-4 border-gray-400 pl-4 italic text-gray-700"><p class="text-gray-700">Here is a really awesome quote</p></blockquote>';
 type Tag = { id: string; name: string };
@@ -82,7 +85,10 @@ const EditPostPage = () => {
   const goBack = () => {
     router.replace("/dash/posts");
   };
-
+  const [postCoverImageFile, setPostCoverImageFile] = useState<File | null>(
+    null
+  );
+  const [imageUrl, setImageUrl] = useState("");
   const {
     register,
     handleSubmit,
@@ -103,13 +109,15 @@ const EditPostPage = () => {
   });
 
   useEffect(() => {
-    async function getData() {
+    (async function getData() {
       try {
         const post = await api.postService.getPostById(
           postId as string,
           accessToken!
         );
+
         const { data } = post;
+
         setSelectedTags(data.PostTag.map((item) => item.tag));
         reset({
           title: data.title,
@@ -119,15 +127,13 @@ const EditPostPage = () => {
           isPublished: data.isPublished,
           tags: data.PostTag.map((item) => item.tag.id),
         });
+        if (data.coverImage) setImageUrl(data.coverImage.url);
         editor?.commands.setContent(data.content);
       } catch (error) {
         console.error("Unable to get post details", error);
         toast.error("Unable to get post details!");
       }
-    }
-    if (postId) {
-      getData();
-    }
+    })();
   }, [postId, reset, accessToken, editor]);
 
   const renderField = (field: BaseField<CreatePostModel>) => {
@@ -209,13 +215,22 @@ const EditPostPage = () => {
 
   const handlePostSubmit = async (d: CreatePostModel) => {
     try {
+      let coverImageId = d.coverImageId;
+      if (postCoverImageFile) {
+        const fileFormData = new FormData();
+        fileFormData.set("image", postCoverImageFile);
+        const {
+          data: { id },
+        } = await api.uploadService.uploadNewFile(fileFormData, accessToken!);
+        coverImageId = id;
+      }
       const { title, excerpt, isFeatured, isPublished } = d;
       if (isFeatured && !isPublished) {
         toast.error("Post must be published to feature!");
         return;
       }
       const tags = selectedTags.map((item) => item.id);
-      const coverImageId = undefined;
+
       const content = editor!.getHTML();
       const postPayload = {
         title,
@@ -234,6 +249,7 @@ const EditPostPage = () => {
       );
       qc.invalidateQueries({ queryKey: ["posts"] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
+      if (isFeatured) qc.invalidateQueries({ queryKey: ["featuredPosts"] });
       return goBack();
     } catch (error) {
       console.error(error);
@@ -259,6 +275,26 @@ const EditPostPage = () => {
             onSubmit={handleSubmit(handlePostSubmit)}
             className="flex flex-col gap-4"
           >
+            {imageUrl ? (
+              <div className="flex justify-center flex-col gap-4 items-center">
+                <Image src={imageUrl} height={200} width={200} alt="cover" />
+                <Button
+                  onClick={() => {
+                    setImageUrl("");
+                  }}
+                  type="button"
+                  className="cursor-pointer bg-red-500 duration-200 hover:bg-red-600"
+                >
+                  <FiX /> Delete
+                </Button>
+              </div>
+            ) : (
+              <FileUploader
+                onFileUpload={(f) => {
+                  setPostCoverImageFile(f);
+                }}
+              />
+            )}
             {postFields.slice(0, 2).map(renderField)}
 
             {editor && (

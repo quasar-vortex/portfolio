@@ -10,13 +10,14 @@ import { tagsRouter } from "./tags/tags.routes";
 import { postsRouter } from "./posts/posts.routes";
 import { uploadsRouter } from "./uploads/uploads.routes";
 import { usersRouter } from "./users/users.routes";
-
+import cookieParser from "cookie-parser";
 import { projectsRouter } from "./projects/projects.routes";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: "*" }));
+app.use(cookieParser());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(pinoHttp({ logger }));
 

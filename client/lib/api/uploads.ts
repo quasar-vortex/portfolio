@@ -7,37 +7,43 @@ const baseUrl = `${API_URL}/uploads`;
 const uploadNewFile = async (
   f: FormData,
   token: string
-): Promise<DbFile | AdminFile> => {
-  const res = await fetch(baseUrl, {
-    method: "POST",
-    // form data, not json (why not using authHeaders)
-    headers: { Authorization: `Bearer ${token}` },
-    body: f,
-  });
-  return handleResponse(res);
+): Promise<{ data: DbFile | AdminFile }> => {
+  const res = async () =>
+    fetch(baseUrl, {
+      method: "POST",
+      // form data, not json (why not using authHeaders)
+      headers: { Authorization: `Bearer ${token}` },
+      body: f,
+    });
+  return await handleResponse(res);
 };
 
 const deleteFile = async (
   id: string,
   token: string
 ): Promise<{ message: string }> => {
-  const res = await fetch(baseUrl + "/" + id, {
-    method: "DELETE",
-    headers: authHeaders(token),
-  });
-  return handleResponse(res);
+  const res = async () =>
+    fetch(baseUrl + "/" + id, {
+      method: "DELETE",
+      headers: authHeaders(token),
+    });
+  return await handleResponse(res);
 };
 
-const getFileById = async (id: string): Promise<DbFile | AdminFile> => {
-  const res = await fetch(`${baseUrl}/${id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-  return handleResponse(res);
+const getFileById = async (
+  id: string
+): Promise<{ data: DbFile | AdminFile }> => {
+  const res = async () =>
+    fetch(`${baseUrl}/${id}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+  return await handleResponse(res);
 };
 
 const getManyFiles = async (
-  q: SearchFilesModel
+  q: SearchFilesModel,
+  token: string
 ): Promise<{
   data: (DbFile | AdminFile)[];
   message: string;
@@ -48,14 +54,12 @@ const getManyFiles = async (
     totalCount: number;
   };
 }> => {
-  const res = await fetch(
-    `${baseUrl}/?${new URLSearchParams(q as Record<string, string>)}`,
-    {
+  const res = async () =>
+    fetch(`${baseUrl}/?${new URLSearchParams(q as Record<string, string>)}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-    }
-  );
-  return handleResponse(res);
+    });
+  return await handleResponse(res);
 };
 
 export { uploadNewFile, deleteFile, getFileById, getManyFiles };

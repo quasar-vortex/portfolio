@@ -1,3 +1,5 @@
+import api from "@/lib/api";
+import { toast } from "sonner";
 import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
 export type User = {
@@ -35,18 +37,20 @@ export const defaultInitState: AuthState = {
   accessToken: null,
   createdAt: null,
 };
+
 export const createAuthStore = (initState: AuthState = defaultInitState) => {
   return createStore<AuthStoreState>()(
     persist(
       (set) => ({
         ...initState,
-        setUser: (p) =>
+        setUser: (p) => {
           set((st) => ({
             ...st,
             user: p.user,
             accessToken: p.accessToken,
             createdAt: Date.now(),
-          })),
+          }));
+        },
         clearUser: () =>
           set((st) => ({ user: null, accessToken: null, createdAt: null })),
       }),
@@ -63,14 +67,19 @@ export const createAuthStore = (initState: AuthState = defaultInitState) => {
           if (createdAt) {
             if (
               currentTime - (createdAt as unknown as number) >
-              1000 * 15 * 60 // 15 minutes
+              1000 * 14 * 60 // 14 minutes
             ) {
               st?.clearUser?.();
-              window.location.href = "/login";
             }
           }
         },
       }
     )
   );
+};
+
+export let authStoreRef: ReturnType<typeof createAuthStore> | null = null;
+
+export const setAuthStoreRef = (store: ReturnType<typeof createAuthStore>) => {
+  authStoreRef = store;
 };

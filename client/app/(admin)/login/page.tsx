@@ -31,7 +31,7 @@ export const baseUserModel = z.object({
 });
 export const loginSchema = baseUserModel.pick({ email: true, password: true });
 
-type LoginSchema = z.infer<typeof loginSchema>;
+export type LoginSchema = z.infer<typeof loginSchema>;
 const fields: Fields<LoginSchema> = [
   {
     name: "email",

@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { FiFile } from "react-icons/fi";
+import { FiFile, FiX } from "react-icons/fi";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const FileUploader = ({
   onFileUpload,
 }: {
-  onFileUpload: (f: File) => void;
+  onFileUpload: (f: File | null) => void;
 }) => {
   const [content, setContent] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -18,6 +19,10 @@ const FileUploader = ({
     e.preventDefault();
     const files = e.target.files;
     if (files && files[0]) {
+      if (!files[0].type.includes("image")) {
+        toast.error("Only Images Allowed!", { position: "top-right" });
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         setContent(e.target!.result as string);
@@ -45,10 +50,37 @@ const FileUploader = ({
           />
         </div>
       )}
-      <Button className="cursor-pointer" onClick={initFileUpload}>
-        <FiFile />
-        <span>Click to {content ? "Replace" : "Upload"}</span>
-      </Button>
+      {content ? (
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            className="cursor-pointer"
+            onClick={initFileUpload}
+          >
+            <FiFile />
+            <span>Click to Replace</span>
+          </Button>
+          <Button
+            onClick={() => {
+              onFileUpload(null);
+              setContent(null);
+            }}
+            type="button"
+            className="cursor-pointer bg-red-500 duration-200 hover:bg-red-600"
+          >
+            <FiX /> Delete
+          </Button>
+        </div>
+      ) : (
+        <Button
+          type="button"
+          className="cursor-pointer"
+          onClick={initFileUpload}
+        >
+          <FiFile />
+          <span>Click to Upload</span>
+        </Button>
+      )}
     </div>
   );
 };

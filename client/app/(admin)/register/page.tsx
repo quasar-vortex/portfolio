@@ -27,7 +27,7 @@ const refinedSchema = registerSchema.refine(
   }
 );
 
-type RegisterSchema = z.infer<typeof registerSchema>;
+export type RegisterSchema = z.infer<typeof registerSchema>;
 export const registerFields: Fields<RegisterSchema> = [
   {
     name: "firstName",

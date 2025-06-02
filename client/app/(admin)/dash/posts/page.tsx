@@ -6,15 +6,31 @@ import PaginatedTable, {
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Post } from "@/lib/types";
+import { CoverImage, Post } from "@/lib/types";
 import api from "@/lib/api";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { capitalize } from "@/lib/utils/index";
+import Image from "next/image";
 
 const columns: TableColumn<Post>[] = [
+  {
+    key: "coverImage",
+    header: "Cover Image",
+    render: (val) =>
+      val && (
+        <div className="w-24 h-24">
+          <Image
+            src={(val as CoverImage).url}
+            height={200}
+            width={200}
+            alt="cover"
+          />
+        </div>
+      ),
+  },
   {
     key: "title",
     header: "Title",
@@ -70,10 +86,16 @@ export default function ManagePostsPage() {
               onClick={async () => {
                 try {
                   await api.postService.deletePostById(post.id, accessToken!);
-
                   qc.invalidateQueries({
                     queryKey: ["managePosts"],
                   });
+                  qc.invalidateQueries({
+                    queryKey: ["posts"],
+                  });
+                  if (post.isFeatured)
+                    qc.invalidateQueries({
+                      queryKey: ["featuredPosts"],
+                    });
                 } catch (error) {
                   console.error(error);
                   toast.error("Unable to delete post!");

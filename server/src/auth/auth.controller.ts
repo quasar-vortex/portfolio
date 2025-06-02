@@ -129,6 +129,7 @@ export const loginUserHandler: RequestHandler = async (req, res, next) => {
 };
 export const refreshUserHandler: RequestHandler = async (req, res, next) => {
   const refreshToken = req.cookies?.refreshToken;
+
   const meta = {
     ip: req.ip,
     method: req.method,

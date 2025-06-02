@@ -14,7 +14,7 @@ export const signUserToken = (
   return jwt.sign(
     payload,
     type === "ACCESS" ? JWT_ACCESS_SECRET : JWT_REFRESH_SECRET,
-    { expiresIn: JWT_ACCESS_SECRET ? "15m" : "7d" }
+    { expiresIn: JWT_ACCESS_SECRET ? "30m" : "7d" }
   );
 };
 

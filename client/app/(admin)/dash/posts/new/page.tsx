@@ -14,8 +14,8 @@ import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/app/providers/storeProvider";
-const content =
-  '<h2 class="text-2xl sm:text-3xl font-bold">Try Writing Something</h2><p class="text-gray-700"><strong>Anything at all</strong></p><p class="text-gray-700"></p><ul class="list-disk  text-gray-800"><li class="pl-4 text-gray-800"><p class="text-gray-700">here is a list of items</p></li><li class="pl-4 text-gray-800"><p class="text-gray-700">to review</p></li></ul><p class="text-gray-700"></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">function greeeting(user: string) {</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">alert(`Good Morning ${user}`)</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">}</code></p><p class="text-gray-700"></p><blockquote class="border-l-4 border-gray-400 pl-4 italic text-gray-700"><p class="text-gray-700">Here is a really awesome quote</p></blockquote>';
+import FileUploader from "@/components/shared/FileUploader";
+const content = "<p>Write about something interesting...</p>";
 type Tag = { id: string; name: string };
 const createPostModel = z.object({
   title: z
@@ -74,6 +74,9 @@ const NewPostPage = () => {
     router.replace("/dash/posts");
   };
 
+  const [postCoverImageFile, setPostCoverImageFile] = useState<File | null>(
+    null
+  );
   const {
     register,
     handleSubmit,
@@ -178,9 +181,18 @@ const NewPostPage = () => {
 
   const handlePostSubmit = async (d: CreatePostModel) => {
     try {
+      let coverImageId = undefined;
+      if (postCoverImageFile) {
+        const fileFormData = new FormData();
+        fileFormData.set("image", postCoverImageFile);
+        const {
+          data: { id },
+        } = await api.uploadService.uploadNewFile(fileFormData, accessToken!);
+        coverImageId = id;
+      }
       const { title, excerpt, isFeatured, isPublished } = d;
       const tags = selectedTags.map((item) => item.id);
-      const coverImageId = undefined;
+
       const content = editor!.getHTML();
       const postPayload = {
         title,
@@ -197,6 +209,7 @@ const NewPostPage = () => {
       );
       qc.invalidateQueries({ queryKey: ["posts", 1, 10, ""] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
+      if (isFeatured) qc.invalidateQueries({ queryKey: ["featuredPosts"] });
       return goBack();
     } catch (error) {
       console.error(error);
@@ -225,6 +238,11 @@ const NewPostPage = () => {
             onSubmit={handleSubmit(handlePostSubmit)}
             className="flex flex-col gap-4"
           >
+            <FileUploader
+              onFileUpload={(f) => {
+                setPostCoverImageFile(f);
+              }}
+            />
             {postFields.slice(0, 2).map(renderField)}
 
             {editor && (

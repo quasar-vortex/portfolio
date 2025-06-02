@@ -1,7 +1,12 @@
 "use client";
 
-import { AuthStoreState, createAuthStore, initAuthStore } from "@/app/store";
-import { createContext, ReactNode, useContext, useRef } from "react";
+import {
+  AuthStoreState,
+  createAuthStore,
+  initAuthStore,
+  setAuthStoreRef,
+} from "@/app/store";
+import { createContext, ReactNode, useContext, useEffect, useRef } from "react";
 import { useStore } from "zustand";
 import { StoreApi } from "zustand/vanilla";
 
@@ -20,6 +25,10 @@ export const AuthStoreProvider = ({ children }: AuthStoreProviderProps) => {
     storeRef.current = createAuthStore(initAuthStore());
   }
 
+  useEffect(() => {
+    //@ts-ignore
+    setAuthStoreRef(storeRef.current);
+  }, []);
   return (
     <AuthStoreContext.Provider value={storeRef.current}>
       {children}

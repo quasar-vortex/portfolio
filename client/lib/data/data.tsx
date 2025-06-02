@@ -10,27 +10,25 @@ import {
   SiTailwindcss,
   SiLinux,
   SiNginx,
-  SiFirewalla,
   SiMikrotik,
 } from "react-icons/si";
-import { GrDocker, GrGithub } from "react-icons/gr";
+import { GrGithub } from "react-icons/gr";
 
 export const siteData = {
   hero: {
     name: "Jeremy Barber",
     titles: [
-      "Full-Stack Developer",
-      "Infrastructure-Aware Coder",
-      "Network Troubleshooter",
+      "Application Support Engineer",
+      "Infrastructure-Aware Developer",
       "Root Cause Analyst",
-      "Command Line Specialist",
-      "MySQL Database Admin",
-      "Linux Server Admin",
-      "Node.js + React Specialist",
+      "Linux & Networking Specialist",
+      "Command Line Expert",
+      "MySQL Troubleshooter",
+      "Full-Stack Problem Solver",
+      "Node.js + React Developer",
     ],
-
     description:
-      "Former tech support engineer turned full-stack developer, combining hands-on Linux expertise with a strong foundation in backend systems. Focused on building robust web apps using React, Node.js, and MySQL.",
+      "Application support engineer with full-stack development skills. I combine backend debugging and infrastructure knowledge to solve production issues and build reliable systems. Experienced with React, Node.js, MySQL, and Linux environments.",
     cta: {
       label: "View Projects",
       href: "/projects",
@@ -39,11 +37,12 @@ export const siteData = {
   about: {
     title: "About Me",
     content: `
-I'm a Fullstack Developer with a background in Linux systems, backend troubleshooting, and technical support for SaaS and on-premise platforms. After graduating from a fullstack coding bootcamp, I’ve spent the last few years working hands-on with production systems — writing and debugging SQL, managing VPNs and firewalls, configuring servers, and resolving real-world infrastructure issues.
+I'm an Application Support Engineer and Developer with a strong background in Linux systems, backend diagnostics, and supporting production environments for SaaS and on-premise platforms. After completing a full-stack coding bootcamp, I spent the past few years troubleshooting and resolving real-world issues such as database inconsistencies, VPN and firewall misconfigurations, broken APIs, and server outages.
 
-Now, I’m focused on software engineering — building clean, maintainable code with React, Node.js, TypeScript, and MySQL. I bring a rare blend of frontend development skills, backend logic, and deep technical troubleshooting experience. I'm confident navigating both codebases and command lines, and I'm ready to contribute to a team building meaningful, production-ready software.
-    `.trim(),
+My development work focuses on building clean and maintainable software using React, Node.js, TypeScript, and MySQL. I bring a hybrid perspective to engineering by writing code with an understanding of production behavior and by supporting systems under real pressure. Whether I'm building features or resolving tough support cases, I provide value across the entire application lifecycle.
+  `.trim(),
   },
+
   skills: [
     { label: "React.js", icon: SiReact },
     { label: "Next.js", icon: SiNextdotjs },
@@ -54,7 +53,6 @@ Now, I’m focused on software engineering — building clean, maintainable code
     { label: "Zod Validation", icon: SiZod },
     { label: "Tailwind CSS", icon: SiTailwindcss },
     { label: "Linux (Ubuntu, RedHat, Oracle)", icon: SiLinux },
-    { label: "Docker", icon: GrDocker },
     { label: "API Troubleshooting (REST/SOAP)", icon: SiPostman },
     { label: "Networking (TCP/IP, VPN, Firewalls)", icon: SiMikrotik },
     { label: "SSH & Remote Access", icon: GrGithub },
@@ -62,7 +60,7 @@ Now, I’m focused on software engineering — building clean, maintainable code
     { label: "Git & GitHub", icon: GrGithub },
   ],
   contact: {
-    email: "jeremydanielbarber@outlook.com",
+    email: "jeremydanielbarber@hotmail.com",
     phone: "702-513-6632",
     location: "Las Vegas, NV",
     cta: "Get in touch to collaborate or discuss opportunities.",
