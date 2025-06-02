@@ -10,7 +10,8 @@ Key features:
 - API integration for all other data interactions
 - Prefetching and hydration for project/post listings and featured content
 
-![Portfolio](./port.png)
+![Portfolio](./1.png)
+![Portfolio](./2.png)
 
 ---
 
