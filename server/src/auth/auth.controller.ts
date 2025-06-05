@@ -1,13 +1,19 @@
-import { RequestHandler } from "express";
+import { CookieOptions, RequestHandler } from "express";
 import { LoginUserModel, RegisterUserModel } from "./auth.models";
 import { db } from "../db";
 import logger from "../logger";
 import { HttpError } from "../error";
 import argon from "argon2";
-import { signUserToken } from "./auth.utils";
-import { NODE_ENV } from "../env";
+import { signUserToken, verifyUserToken } from "./auth.utils";
+
 import { baseUserSelect } from "../users/users.controller";
 
+const cookieConfig: CookieOptions = {
+  maxAge: 1000 * 60 * 60 * 7 * 24, // 7 days
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+};
 export const registerUserHandler: RequestHandler = async (req, res, next) => {
   try {
     // password confirmation checked by zod
@@ -41,20 +47,16 @@ export const registerUserHandler: RequestHandler = async (req, res, next) => {
       id: newUser.id,
       role: newUser.role,
     };
-    const [access, refresh] = [
-      signUserToken("ACCESS", tokenPayload),
-      signUserToken("REFRESH", tokenPayload),
-    ];
+    const { access, refresh } = {
+      access: signUserToken("ACCESS", tokenPayload),
+      refresh: signUserToken("REFRESH", tokenPayload),
+    };
     // Update DB Login
     await db.user.update({
       where: { id: newUser.id },
-      data: { lastLoginDate: new Date(), refreshToken: refresh },
+      data: { lastLoginDate: new Date() },
     });
-    res.cookie("refreshToken", refresh, {
-      maxAge: 1000 * 60 * 60 * 7 * 24,
-      httpOnly: true,
-      secure: NODE_ENV === "production",
-    }); // 7 days
+    res.cookie("refreshToken", refresh, cookieConfig); // 7 days
     logger.info(meta, "User Registered Successfully");
     res.status(201).json({
       data: { user: newUser, accessToken: access },
@@ -103,20 +105,16 @@ export const loginUserHandler: RequestHandler = async (req, res, next) => {
       id: foundUser.id,
       role: foundUser.role,
     };
-    const [access, refresh] = [
-      signUserToken("ACCESS", tokenPayload),
-      signUserToken("REFRESH", tokenPayload),
-    ];
+    const { access, refresh } = {
+      access: signUserToken("ACCESS", tokenPayload),
+      refresh: signUserToken("REFRESH", tokenPayload),
+    };
     // Update DB Login
     await db.user.update({
       where: { id: foundUser.id },
-      data: { lastLoginDate: new Date(), refreshToken: refresh },
+      data: { lastLoginDate: new Date() },
     });
-    res.cookie("refreshToken", refresh, {
-      maxAge: 1000 * 60 * 60 * 7 * 24,
-      httpOnly: true,
-      secure: NODE_ENV === "production",
-    }); // 7 days
+    res.cookie("refreshToken", refresh, cookieConfig); // 7 days
     logger.info(meta, "User Login Successfully");
     res.status(200).json({
       data: { user: toUser, accessToken: access },
@@ -129,12 +127,16 @@ export const loginUserHandler: RequestHandler = async (req, res, next) => {
 };
 export const refreshUserHandler: RequestHandler = async (req, res, next) => {
   const refreshToken = req.cookies?.refreshToken;
-
+  if (!refreshToken)
+    throw new HttpError({
+      message: "Refresh Token Must Be Provided!",
+      status: "NOT_AUTHORIZED",
+    });
+  logger.info("Token", refreshToken);
   const meta = {
     ip: req.ip,
     method: req.method,
     url: req.url,
-    data: { refreshToken },
   };
   try {
     logger.info(meta, "Request to Refresh User");
@@ -145,11 +147,9 @@ export const refreshUserHandler: RequestHandler = async (req, res, next) => {
         message: "Refresh Token Not Provided",
       });
     }
-    // Find user
-    const foundUser = await db.user.findUnique({
-      where: { refreshToken },
-      select: baseUserSelect,
-    });
+    const { id } = await verifyUserToken("REFRESH", refreshToken);
+    const foundUser = await db.user.findUnique({ where: { id } });
+
     if (!foundUser) {
       logger.error(meta, "Failed to Refresh User, No User");
       throw new HttpError({
@@ -187,10 +187,6 @@ export const signOutUserHandler: RequestHandler = async (req, res, next) => {
   };
   logger.info(meta, "Request to Sign Off");
   try {
-    await db.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
-    });
     res.clearCookie("refreshToken", { expires: new Date(0) });
     logger.info(meta, "User Signed Out");
     res.status(200).json({ data: null, message: "User Signed Out" });

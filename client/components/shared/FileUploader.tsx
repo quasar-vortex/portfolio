@@ -42,7 +42,7 @@ const FileUploader = ({
       {content && (
         <div className="mb-3">
           <Image
-            className="rounded-full h-32 w-32"
+            className="max-h-100 w-full"
             height={200}
             width={200}
             alt="Upload"

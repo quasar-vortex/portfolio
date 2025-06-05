@@ -86,7 +86,7 @@ const RegisterPage = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col  h-full justify-center">
         <Form
           title="Register Account"
           description="Create a new account."

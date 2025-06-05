@@ -14,9 +14,10 @@ import { FiMenu, FiX } from "react-icons/fi";
 const navLinks = [
   { href: "/dash", label: "Dash Home" },
   { href: "/dash/posts", label: "Manage Posts" },
+  { href: "/dash/projects", label: "Manage Projects" },
   { href: "/dash/tags", label: "Manage Tags" },
   { href: "/dash/users", label: "Manage Users" },
-  { href: "/dash/projects", label: "Manage Projects" },
+
   { href: "/dash/profile", label: "User Profile" },
 ];
 function Sidebar() {

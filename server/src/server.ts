@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { APP_PORT } from "./env";
+import { APP_PORT, CLEANUP_INTERVAL } from "./env";
 import { pinoHttp } from "pino-http";
 import logger from "./logger";
 import { db } from "./db";
@@ -12,24 +12,21 @@ import { uploadsRouter } from "./uploads/uploads.routes";
 import { usersRouter } from "./users/users.routes";
 import cookieParser from "cookie-parser";
 import { projectsRouter } from "./projects/projects.routes";
+import { deleteFileByKey, listAllFiles, s3 } from "./upload";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(pinoHttp({ logger }));
 
 /* 
 for debugging requests to look at query, body or params as they come in the backend
 
-app.use((req, res, next) => {
-  console.log(req.query);
-  console.log(req.body)
-  console.log(req.params)
-  next();
-});
+
 */
 
 app.get("/api/v1/health", (req, res, next) => {
@@ -45,54 +42,59 @@ app.use("/api/v1/projects", projectsRouter);
 
 app.use(errorMiddleware);
 
-/* 
-// Testing linode connection and creds
-if (process.argv[2] === "test" || NODE_ENV === "development") {
-  const testFile = {
-    key: "fcb61e32-a326-4a9c-890a-b75acb0d70d3",
-    path: path.join(__dirname, "images.jpeg"),
-  };
-  const fileTest = async () => {
-    try {
-      // find the file
-      const foundFile = await s3.send(
-        new GetObjectCommand({ Key: testFile.key, Bucket: s3Config.bucketName })
-      );
-      if (foundFile) await deleteFileByKey(testFile.key);
-      console.log("Removed uploaded file");
-    } catch (error) {
-      console.log(error);
-      // if not found upload a file
-      const f = await readFile(testFile.path);
-
-      const uploaded = await s3.send(
-        new PutObjectCommand({
-          Body: f,
-          Key: testFile.key,
-          Bucket: s3Config.bucketName,
-          ACL: "public-read",
-          ContentType: "image/jpeg",
+const cleanUpFiles = async () => {
+  try {
+    logger.info("Cleaning Up Files");
+    const foundFiles = await listAllFiles();
+    const fileKeys = foundFiles.Contents?.map((item) => {
+      return item.Key;
+    });
+    if (fileKeys) {
+      await Promise.all(
+        fileKeys!.map(async (item) => {
+          return await deleteFileByKey(item!);
         })
       );
-      console.log("Uploaded file");
     }
-  };
-  fileTest();
-}
-
-*/
+    logger.info("Finished Cleaning Up Files");
+  } catch (error) {
+    logger.warn("Unable to clean up files");
+  }
+};
 const main = async () => {
   try {
     await db.$connect();
 
     app.listen(APP_PORT, () => console.log(`Server Running On: ${APP_PORT}`));
 
-    setInterval(() => {
+    // could be set as a cron job but just passing env var
+    logger.info(
+      `Inactive record cleanup runs every ${CLEANUP_INTERVAL} minutes.`
+    );
+    setInterval(async () => {
       logger.info("Running Inactive Record Cleanup");
       // find files older than x minutes with no record link
-      // find posts and projects x minutes after delete
-      // find inactive user record to remove
-    }, 1000 * 60 * 15);
+      // tags delete on cascade for projects and posts
+      await db.post.deleteMany({ where: { isActive: false } });
+      await db.project.deleteMany({
+        where: { isActive: false },
+      });
+      // find files, delete from s3 and then DB
+      const files = await db.file.findMany({ where: { isActive: false } });
+      await Promise.all(
+        files.map(async (item) => {
+          return await deleteFileByKey(item.objectKey);
+        })
+      );
+      await db.file.deleteMany({
+        where: { id: { in: files.map((item) => item.id) } },
+      });
+      // clean up inactive users
+      await db.user.deleteMany({ where: { isActive: false } });
+
+      logger.info("Inactive Record Cleanup Completed");
+      // runs every 15 minutes default
+    }, 1000 * 60 * CLEANUP_INTERVAL);
   } catch (error) {
     logger.error(error);
     process.exit(1);

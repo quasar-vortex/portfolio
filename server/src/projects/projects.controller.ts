@@ -74,6 +74,7 @@ const createProjectHandler: AuthenticatedRequestHandler = async (
       codeUrl,
       liveUrl,
     } = req.body as CreateProjectModel;
+
     logger.info(meta, "Creating new project!");
 
     const slug = slugify(title).slice(0, 100);
@@ -84,17 +85,34 @@ const createProjectHandler: AuthenticatedRequestHandler = async (
         status: "BAD_REQUEST",
         message: `Title, ${title} already in use!`,
       });
+
+    if (isFeatured && !isPublished) {
+      throw new HttpError({
+        status: "BAD_REQUEST",
+        message: "Only published projects may be featured!",
+      });
+    }
+
+    if (coverImageId) {
+      const foundImage = await db.file.findUnique({
+        where: { id: coverImageId },
+      });
+      if (!foundImage) {
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: "Cover image does not exist!",
+        });
+      }
+    }
+
     const newProject = await db.$transaction(async (tx) => {
       const foundTags = await tx.tag.findMany({
         where: { id: { in: tags } },
       });
-      // Verify tag Ids
+
       if (foundTags.length !== tags.length) {
-        const tagMap = new Map();
-        for (let found of foundTags) {
-          tagMap.set(found.id, found);
-        }
-        for (let tagId of tags) {
+        const tagMap = new Set(foundTags.map((t) => t.id));
+        for (const tagId of tags) {
           if (!tagMap.has(tagId)) {
             throw new HttpError({
               status: "BAD_REQUEST",
@@ -103,7 +121,22 @@ const createProjectHandler: AuthenticatedRequestHandler = async (
           }
         }
       }
-      const newProject = await tx.project.create({
+
+      if (isFeatured) {
+        const featuredProjects = await tx.project.findMany({
+          where: { isFeatured: true },
+          orderBy: { publishDate: "asc" },
+        });
+
+        if (featuredProjects.length >= 3) {
+          await tx.project.update({
+            where: { id: featuredProjects[0].id },
+            data: { isFeatured: false },
+          });
+        }
+      }
+
+      return await tx.project.create({
         data: {
           authorId: userId,
           slug,
@@ -115,22 +148,26 @@ const createProjectHandler: AuthenticatedRequestHandler = async (
           codeUrl,
           liveUrl,
           publishDate: isPublished ? new Date() : null,
-          ProjectTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
           content,
+          ProjectTag: {
+            createMany: { data: tags.map((tagId) => ({ tagId })) },
+          },
         },
         select: adminProjectSelect,
       });
-      return newProject;
     });
-    logger.info(meta, "Project created!");
-    res
-      .status(201)
-      .json({ data: newProject, message: "Project created successfully!" });
+
+    logger.info({ ...meta, projectId: newProject.id }, "Project created!");
+    res.status(201).json({
+      data: newProject,
+      message: "Project created successfully!",
+    });
   } catch (error) {
-    logger.warn({ error }, "Unable to create project!");
+    logger.warn({ error, ...meta }, "Unable to create project!");
     next(error);
   }
 };
+
 const updateProjectHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -139,7 +176,13 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
   const projectId = req.params.projectId;
   const isAdmin = req.user!.role === "ADMIN";
   const userId = req.user!.id;
-  const meta = { ip: req.ip, method: req.method, url: req.url, userId };
+  const meta = {
+    ip: req.ip,
+    method: req.method,
+    url: req.url,
+    userId,
+    projectId,
+  };
 
   try {
     if (!isAdmin)
@@ -159,7 +202,9 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
       codeUrl,
       liveUrl,
     } = req.body as UpdateProjectModel;
-    logger.info(meta, "Updating project!");
+
+    logger.info(meta, "Updating project");
+
     const foundProject = await db.project.findUnique({
       where: { id: projectId },
     });
@@ -168,27 +213,45 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
         status: "NOT_FOUND",
         message: "Project was not found!",
       });
+
     const slug = slugify(title).slice(0, 100);
-    if (title !== foundProject!.title) {
-      const newT = await db.project.findUnique({ where: { title } });
-      if (newT)
+    if (title !== foundProject.title) {
+      const existingSlug = await db.project.findUnique({ where: { slug } });
+      if (existingSlug)
         throw new HttpError({
           status: "BAD_REQUEST",
           message: `Project title/slug already in use: ${slug}`,
         });
     }
+
+    if (isFeatured && !isPublished) {
+      throw new HttpError({
+        status: "BAD_REQUEST",
+        message: "Only published projects may be featured!",
+      });
+    }
+
+    if (coverImageId) {
+      const foundImage = await db.file.findUnique({
+        where: { id: coverImageId },
+      });
+      if (!foundImage) {
+        throw new HttpError({
+          status: "BAD_REQUEST",
+          message: "Cover image does not exist!",
+        });
+      }
+    }
+
     const updatedProject = await db.$transaction(async (tx) => {
       const foundTags = await tx.tag.findMany({
         where: { id: { in: tags } },
       });
-      // Verify tag Ids
+
       if (foundTags.length !== tags.length) {
-        const tagMap = new Map();
-        for (let found of foundTags) {
-          tagMap.set(found.id, found);
-        }
-        for (let tagId of tags) {
-          if (!tagMap.has(tagId)) {
+        const tagSet = new Set(foundTags.map((t) => t.id));
+        for (const tagId of tags) {
+          if (!tagSet.has(tagId)) {
             throw new HttpError({
               status: "BAD_REQUEST",
               message: `Invalid tag id: ${tagId}`,
@@ -196,8 +259,24 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
           }
         }
       }
+
       await tx.projectTag.deleteMany({ where: { projectId } });
-      const updatedProject = await tx.project.update({
+
+      if (isFeatured) {
+        const featuredProjects = await tx.project.findMany({
+          where: { isFeatured: true },
+          orderBy: { publishDate: "asc" },
+        });
+
+        if (featuredProjects.length >= 3 && !foundProject.isFeatured) {
+          await tx.project.update({
+            where: { id: featuredProjects[0].id },
+            data: { isFeatured: false },
+          });
+        }
+      }
+
+      return await tx.project.update({
         where: { id: projectId },
         data: {
           slug,
@@ -208,33 +287,42 @@ const updateProjectHandler: AuthenticatedRequestHandler = async (
           coverImageId,
           codeUrl,
           liveUrl,
-          publishDate: isPublished ? new Date() : null,
+          publishDate: isPublished
+            ? foundProject.publishDate ?? new Date()
+            : null,
           content,
-          ProjectTag: { createMany: { data: tags.map((t) => ({ tagId: t })) } },
+          ProjectTag: {
+            createMany: {
+              data: tags.map((tagId) => ({ tagId })),
+            },
+          },
           updatedById: userId,
           updatedDate: new Date(),
         },
         select: adminProjectSelect,
       });
-      return updatedProject;
     });
-    logger.info(meta, "Project updated!");
-    res
-      .status(200)
-      .json({ data: updatedProject, message: "Project updated successfully!" });
+
+    logger.info({ ...meta, projectId: updatedProject.id }, "Project updated!");
+    res.status(200).json({
+      data: updatedProject,
+      message: "Project updated successfully!",
+    });
   } catch (error) {
-    logger.warn({ error }, "Unable to update project!");
+    logger.warn({ error, ...meta }, "Unable to update project!");
     next(error);
   }
 };
+
 const getProjectByIdHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
 ) => {
-  const isAdmin = req.user!.role === "ADMIN";
-  const userId = req.user!.id;
   const projectId = req.params.projectId;
+  const isAdmin = req.user?.role === "ADMIN";
+  const userId = req.user?.id;
+
   const meta = {
     ip: req.ip,
     method: req.method,
@@ -244,35 +332,46 @@ const getProjectByIdHandler: AuthenticatedRequestHandler = async (
   };
 
   try {
-    logger.info(meta, "Finding project");
-    const where: Prisma.ProjectWhereUniqueInput = { id: projectId };
-    if (!isAdmin) where.isActive = true;
+    logger.info(meta, "Locating project");
+
+    const where = isAdmin
+      ? { id: projectId }
+      : { id: projectId, isActive: true, isPublished: true };
+
+    const select = isAdmin ? adminProjectSelect : baseProjectSelect;
+
     const foundProject = await db.project.findUnique({
       where,
-      select: isAdmin ? adminProjectSelect : baseProjectSelect,
+      select: { ...select, content: true },
     });
-    logger.info(meta, "Successfully found project");
-    if (!foundProject)
+
+    if (!foundProject) {
       throw new HttpError({
         status: "NOT_FOUND",
         message: "Project was not found!",
       });
-    res
-      .status(200)
-      .json({ data: foundProject, message: "Successfully found project" });
+    }
+
+    logger.info(meta, "Project was found");
+    res.status(200).json({
+      message: "Project was found!",
+      data: foundProject,
+    });
   } catch (error) {
-    logger.warn({ error }, "Unable to find project!");
+    logger.warn({ ...meta, error }, "Unable to get project");
     next(error);
   }
 };
+
 const getProjectBySlugHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
 ) => {
-  const isAdmin = req.user!.role === "ADMIN";
-  const userId = req.user!.id;
-  const slug = req.params.slug;
+  const slug = req.params.slug!;
+  const isAdmin = req.user?.role === "ADMIN";
+  const userId = req.user?.id;
+
   const meta = {
     ip: req.ip,
     method: req.method,
@@ -282,36 +381,50 @@ const getProjectBySlugHandler: AuthenticatedRequestHandler = async (
   };
 
   try {
-    logger.info(meta, "Finding project");
-    const where: Prisma.ProjectWhereUniqueInput = { slug: slug };
-    if (!isAdmin) where.isActive = true;
+    logger.info(meta, "Locating project by slug");
+
+    const where = isAdmin
+      ? { slug }
+      : { slug, isActive: true, isPublished: true };
+
+    const select = isAdmin ? adminProjectSelect : baseProjectSelect;
+
     const foundProject = await db.project.findUnique({
       where,
-      select: isAdmin ? adminProjectSelect : baseProjectSelect,
+      select: { ...select, content: true },
     });
-    logger.info(meta, "Successfully found project");
-    if (!foundProject)
+
+    if (!foundProject) {
       throw new HttpError({
         status: "NOT_FOUND",
         message: "Project was not found!",
       });
-    res
-      .status(200)
-      .json({ data: foundProject, message: "Successfully found project" });
+    }
+
+    logger.info(meta, "Project was found");
+    res.status(200).json({
+      message: "Project was found!",
+      data: foundProject,
+    });
   } catch (error) {
-    logger.warn({ error }, "Unable to find project!");
+    logger.warn({ ...meta, error }, "Unable to get project by slug");
     next(error);
   }
 };
+
 const getManyProjectsHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
 ) => {
-  const meta = { ip: req.ip, method: req.method, url: req.url };
+  const isAdmin = req.user?.role === "ADMIN";
+  const userId = req.user?.id;
+
+  const meta = { ip: req.ip, method: req.method, url: req.url, userId };
 
   try {
-    const isAdmin = req.user?.role === "ADMIN";
+    logger.info(meta, "Fetching many projects");
+
     const {
       term,
       tags,
@@ -325,19 +438,18 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
     const trimmedTerm = term?.trim();
     const index = Math.max(parseInt(pageIndex) - 1 || 0, 0);
     const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
-    const select = isAdmin ? baseProjectSelect : adminProjectSelect;
+    const select = isAdmin ? adminProjectSelect : baseProjectSelect;
 
-    // Sorting
     const order: "asc" | "desc" = sortOrder === "asc" ? "asc" : "desc";
     const key: string = sortKey || "publishDate";
 
-    // isFeatured
-    const searchIsFeatured =
-      isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
-
-    // conditions
     const where: Prisma.ProjectWhereInput = {};
     const andConditions: Prisma.ProjectWhereInput[] = [];
+
+    if (!isAdmin) {
+      where.isPublished = true;
+      where.isActive = true;
+    }
 
     if (tags?.length) {
       where.ProjectTag = {
@@ -358,6 +470,8 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
       });
     }
 
+    const searchIsFeatured =
+      isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
     if (searchIsFeatured !== undefined) {
       andConditions.push({ isFeatured: searchIsFeatured });
     }
@@ -366,48 +480,53 @@ const getManyProjectsHandler: AuthenticatedRequestHandler = async (
       where.AND = andConditions;
     }
 
-    const [count, foundprojects] = await Promise.all([
+    const [count, foundProjects] = await Promise.all([
       db.project.count({ where }),
       db.project.findMany({
         where,
         skip: index * size,
         take: size,
         orderBy: { [key]: order },
-        select: {
-          ...select,
-          content: false,
-        },
+        select: { ...select, content: false },
       }),
     ]);
 
     const totalPages = Math.max(1, Math.ceil(count / size));
-    const searchMeta = {
-      ...meta,
-      pageIndex: index + 1,
-      pageSize: size,
-      totalPages,
-      totalCount: count,
-      isFeatured: searchIsFeatured,
-    };
 
-    logger.info(searchMeta, "Found projects!");
+    logger.info(
+      {
+        ...meta,
+        pageIndex: index + 1,
+        pageSize: size,
+        totalCount: count,
+        totalPages,
+        isFeatured: searchIsFeatured,
+      },
+      "Found projects"
+    );
 
     res.status(200).json({
-      data: foundprojects,
+      data: foundProjects,
       message: "Found projects!",
-      meta: searchMeta,
+      meta: {
+        pageIndex: index + 1,
+        pageSize: size,
+        totalCount: count,
+        totalPages,
+      },
     });
   } catch (error) {
-    logger.warn({ error }, "Unable to find projects!");
+    logger.warn({ ...meta, error }, "Unable to get projects");
     next(error);
   }
 };
+
 const deleteProjectByIdHandler: AuthenticatedRequestHandler = async (
   req,
   res,
   next
 ) => {
-  const pId = req.params.projectId;
+  const projectId = req.params.projectId;
   const isAdmin = req.user!.role === "ADMIN";
   const userId = req.user!.id;
   const meta = {
@@ -415,30 +534,44 @@ const deleteProjectByIdHandler: AuthenticatedRequestHandler = async (
     method: req.method,
     url: req.url,
     userId,
-    projcetId: pId,
+    projectId,
   };
 
   try {
+    logger.info(meta, "Deleting project");
+
     if (!isAdmin)
       throw new HttpError({
         status: "NOT_AUTHORIZED",
         message: "Only an admin may delete a project!",
       });
-    const foundProject = await db.project.findUnique({ where: { id: pId } });
-    // set to inactive and after x days delete on a scheduled job
-    if (!foundProject) {
-      logger.info(meta, "Project was not found!");
+
+    const foundProject = await db.project.findUnique({
+      where: { id: projectId },
+    });
+
+    const completeDelete = () => {
+      logger.info(meta, "Project deleted");
       res.status(200).json({ message: "Project was deleted!" });
+    };
+
+    if (!foundProject) {
+      completeDelete();
       return;
     }
 
     await db.project.update({
-      where: { id: pId },
-      data: { isActive: false, isFeatured: false, isPublished: false },
+      where: { id: projectId },
+      data: {
+        isActive: false,
+        isFeatured: false,
+        isPublished: false,
+      },
     });
-    logger.info(meta, "Project was deleted");
-    res.status(200).json({ message: `Project ${pId} was deleted!` });
+
+    completeDelete();
   } catch (error) {
+    logger.warn({ ...meta, error }, "Unable to delete project");
     next(error);
   }
 };
@@ -455,8 +588,8 @@ const toggleProjectFeatured: AuthenticatedRequestHandler = async (
     ip: req.ip,
     method: req.method,
     url: req.url,
-    projectId,
     userId,
+    projectId,
   };
 
   try {
@@ -469,45 +602,35 @@ const toggleProjectFeatured: AuthenticatedRequestHandler = async (
       });
     }
 
-    const foundproject = await db.project.findUnique({
+    const project = await db.project.findUnique({
       where: { id: projectId },
     });
 
-    if (!foundproject) {
+    if (!project) {
       throw new HttpError({
         status: "NOT_FOUND",
-        message: "project not found!",
+        message: "Project not found!",
       });
     }
 
-    const isCurrentlyFeatured = foundproject.isFeatured;
-    // turn off
-    if (isCurrentlyFeatured) {
+    if (project.isFeatured) {
       await db.project.update({
         where: { id: projectId },
         data: { isFeatured: false },
       });
-
-      logger.info(meta, "project unfeatured.");
-      return res.status(200).json({ message: "project unfeatured." });
+      logger.info(meta, "Project unfeatured");
+      return res.status(200).json({ message: "Project unfeatured." });
     }
 
-    // enable as featured
-    const featuredprojects = await db.project.findMany({
+    const featuredProjects = await db.project.findMany({
       where: { isFeatured: true },
+      orderBy: { publishDate: "asc" },
     });
 
     await db.$transaction(async (tx) => {
-      if (featuredprojects.length >= 3) {
-        // Unfeature the oldest featured project
-        const oldestprojectId = featuredprojects.sort(
-          (a, b) =>
-            new Date(a.publishDate!).getTime() -
-            new Date(b.publishDate!).getTime()
-        )[0].id;
-
+      if (featuredProjects.length >= 3) {
         await tx.project.update({
-          where: { id: oldestprojectId },
+          where: { id: featuredProjects[0].id },
           data: { isFeatured: false },
         });
       }
@@ -518,10 +641,10 @@ const toggleProjectFeatured: AuthenticatedRequestHandler = async (
       });
     });
 
-    logger.info(meta, "project featured.");
-    res.status(200).json({ message: "project featured." });
+    logger.info(meta, "Project featured");
+    res.status(200).json({ message: "Project featured." });
   } catch (error) {
-    logger.warn({ error, meta }, "Error toggling project.");
+    logger.warn({ ...meta, error }, "Error toggling project featured");
     next(error);
   }
 };
@@ -552,19 +675,19 @@ const toggleProjectPublished: AuthenticatedRequestHandler = async (
       });
     }
 
-    const foundproject = await db.project.findUnique({
+    const project = await db.project.findUnique({
       where: { id: projectId },
     });
 
-    if (!foundproject) {
+    if (!project) {
       throw new HttpError({
         status: "NOT_FOUND",
-        message: "project not found!",
+        message: "Project not found!",
       });
     }
 
-    const newStatus = !foundproject.isPublished;
-    const shouldSetPublishDate = !foundproject.isPublished && newStatus;
+    const newStatus = !project.isPublished;
+    const shouldSetPublishDate = !project.isPublished && newStatus;
 
     await db.project.update({
       where: { id: projectId },
@@ -574,14 +697,14 @@ const toggleProjectPublished: AuthenticatedRequestHandler = async (
       },
     });
 
-    logger.info(meta, `project ${newStatus ? "published" : "unpublished"}.`);
+    logger.info(meta, `Project ${newStatus ? "published" : "unpublished"}`);
     res.status(200).json({
-      message: `project successfully ${
+      message: `Project successfully ${
         newStatus ? "published" : "unpublished"
       }.`,
     });
   } catch (error) {
-    logger.warn({ error, meta }, "Error toggling published status.");
+    logger.warn({ ...meta, error }, "Error toggling published status");
     next(error);
   }
 };

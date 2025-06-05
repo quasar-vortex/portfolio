@@ -243,17 +243,6 @@ const NewPostPage = () => {
                 setPostCoverImageFile(f);
               }}
             />
-            {postFields.slice(0, 2).map(renderField)}
-
-            {editor && (
-              <div className="">
-                <MenuBar editor={editor} />
-                <EditorContent
-                  className=" overflow-hidden [&>*]:py-4 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
-                  editor={editor}
-                />
-              </div>
-            )}
             <div className="">
               <TagSelector
                 selectedTags={selectedTags}
@@ -261,9 +250,25 @@ const NewPostPage = () => {
                 onTagSelection={handleAddTag}
               />
             </div>
+            {postFields.slice(0, 2).map(renderField)}
+
+            {editor && (
+              <div className="">
+                <MenuBar editor={editor} />
+                <EditorContent
+                  className="[&>*]:min-h-75 overflow-hidden [&>*]:py-4 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
+                  editor={editor}
+                />
+              </div>
+            )}
+
             <div className="flex">{postFields.slice(2).map(renderField)}</div>
 
-            <Button type="submit" className="mx-auto">
+            <Button
+              size={"lg"}
+              type="submit"
+              className="mx-auto font-bold cursor-pointer"
+            >
               Create Post
             </Button>
           </form>

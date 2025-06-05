@@ -217,6 +217,7 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
           message: "Post title in use!",
         });
     }
+
     if (coverImageId) {
       const foundImageFile = await db.file.findUnique({
         where: { id: coverImageId },
@@ -291,7 +292,7 @@ const updatePostHandler: AuthenticatedRequestHandler = async (
           publishDate: isPublished
             ? existingPost.publishDate ?? new Date()
             : null,
-          coverImageId,
+          coverImageId: typeof coverImageId === "string" ? coverImageId : null,
         },
         select: adminSelect,
       });
@@ -420,6 +421,8 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     const where: Prisma.PostWhereInput = {};
     const andConditions: Prisma.PostWhereInput[] = [];
 
+    // only admin can see unpubsished posts
+    if (!isAdmin) where.isPublished = true;
     if (tags?.length) {
       where.PostTag = {
         some: {

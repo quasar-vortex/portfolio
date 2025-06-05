@@ -141,6 +141,7 @@ function Form<T extends FieldValues>({
               {fields.map(renderField)}
               <div className="flex w-full justify-center">
                 <Button
+                  type="submit"
                   size="lg"
                   className="bg-blue-500 hover:bg-blue-600 duration-200 cursor-pointer text-lg"
                 >

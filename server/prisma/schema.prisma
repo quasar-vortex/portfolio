@@ -52,7 +52,6 @@ model User {
   passwordHash   String    @db.VarChar(255)
   registeredDate DateTime  @default(now())
   lastLoginDate  DateTime?
-  refreshToken   String?   @unique @db.VarChar(500)
   role           Role      @default(USER)
   bio            String?   @db.VarChar(250)
   avatarFile     File?     @relation("avatar-file", fields: [avatarFileId], references: [id], onDelete: Cascade)

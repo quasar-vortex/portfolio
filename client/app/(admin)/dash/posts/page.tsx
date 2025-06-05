@@ -12,7 +12,7 @@ import { useAuthStore } from "@/app/providers/storeProvider";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { capitalize } from "@/lib/utils/index";
+import { capitalize } from "@/lib/utils";
 import Image from "next/image";
 
 const columns: TableColumn<Post>[] = [
@@ -27,6 +27,7 @@ const columns: TableColumn<Post>[] = [
             height={200}
             width={200}
             alt="cover"
+            className="h-full w-full object-cover"
           />
         </div>
       ),
@@ -51,7 +52,7 @@ const columns: TableColumn<Post>[] = [
   },
   {
     key: "isFeatured",
-    header: "Is Post Featured?",
+    header: "Featured?",
     render: (val) => (val ? "Yes" : "No"),
   },
 ];

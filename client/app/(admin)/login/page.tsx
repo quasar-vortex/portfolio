@@ -9,6 +9,7 @@ import { LoginResponse } from "@/app/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Form, { Fields } from "@/components/shared/form";
+import api from "@/lib/api";
 
 export const passwordRegex =
   /^(?=.{8,16}$)(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]+$/;
@@ -57,13 +58,8 @@ const LoginPage = () => {
 
   const handleLogin = async (d: LoginSchema) => {
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        body: JSON.stringify(d),
-      });
-      const { data } = await res.json();
-      const { user, accessToken } = data as LoginResponse;
+      const res = await api.authService.loginUser(d);
+      const { user, accessToken } = res.data;
       setUser({ user, accessToken, createdAt: Date.now() });
       router.push("/dash");
     } catch (error) {
@@ -73,7 +69,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center">
+    <div className="flex flex-col  h-full justify-center">
       <Form
         title="Login"
         description="Login to account."

@@ -26,9 +26,7 @@ const searchUsersModel = z.object({
   query: z.object({
     pageIndex: z.string(),
     pageSize: z.string(),
-    firstName: baseUseModel.shape.firstName.optional(),
-    lastName: baseUseModel.shape.lastName.optional(),
-    email: baseUseModel.shape.email.optional(),
+    term: z.string().max(100).optional(),
   }),
 });
 

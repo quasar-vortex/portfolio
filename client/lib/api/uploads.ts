@@ -1,44 +1,60 @@
-import { authHeaders, handleResponse } from ".";
+import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
 import { AdminFile, DbFile, SearchFilesModel } from "../types";
+import { apiUrl } from "../utils";
 
 const baseUrl = `${API_URL}/uploads`;
+const url = apiUrl(baseUrl);
 
 const uploadNewFile = async (
   f: FormData,
   token: string
 ): Promise<{ data: DbFile | AdminFile }> => {
-  const res = async () =>
-    fetch(baseUrl, {
-      method: "POST",
-      // form data, not json (why not using authHeaders)
-      headers: { Authorization: `Bearer ${token}` },
-      body: f,
+  try {
+    const res = await axiosInstance.post(url(), f, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 const deleteFile = async (
   id: string,
   token: string
 ): Promise<{ message: string }> => {
-  const res = async () =>
-    fetch(baseUrl + "/" + id, {
-      method: "DELETE",
+  try {
+    const res = await axiosInstance.delete(url(id), {
       headers: authHeaders(token),
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 const getFileById = async (
   id: string
 ): Promise<{ data: DbFile | AdminFile }> => {
-  const res = async () =>
-    fetch(`${baseUrl}/${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
+  try {
+    const res = await axiosInstance.get(url(id), {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 const getManyFiles = async (
@@ -54,12 +70,21 @@ const getManyFiles = async (
     totalCount: number;
   };
 }> => {
-  const res = async () =>
-    fetch(`${baseUrl}/?${new URLSearchParams(q as Record<string, string>)}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
+  try {
+    const searchParams = new URLSearchParams(
+      q as Record<string, string>
+    ).toString();
+    const res = await axiosInstance.get(url(`?${searchParams}`), {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export { uploadNewFile, deleteFile, getFileById, getManyFiles };

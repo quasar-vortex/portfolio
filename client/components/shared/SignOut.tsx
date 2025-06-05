@@ -21,8 +21,10 @@ const SignOut = () => {
       clearUser();
       router.replace("/login");
     } catch (error) {
+      router.replace("/");
       console.error(error);
       toast.error("Something Went Wrong", { position: "top-right" });
+      clearUser();
     }
   };
 

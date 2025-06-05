@@ -197,27 +197,20 @@ const getManyUsersHandler: AuthenticatedRequestHandler = async (
     const {
       pageIndex = "1",
       pageSize = "10",
-      firstName,
-      lastName,
-      email,
+      term,
     } = req.query as SearchUsersModel;
 
-    const trimmedFirst = firstName?.trim(),
-      trimmedLast = lastName?.trim(),
-      trimmedEmail = email?.trim();
+    const trimmedTerm = term?.trim();
 
     const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
     const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
-    const where: {
-      AND: {
-        [key: string]: {
-          contains: string;
-        };
-      }[];
-    } = { AND: [] };
-    if (trimmedFirst) where.AND.push({ firstName: { contains: trimmedFirst } });
-    if (trimmedLast) where.AND.push({ lastName: { contains: trimmedLast } });
-    if (trimmedEmail) where.AND.push({ email: { contains: trimmedEmail } });
+    const where = {
+      OR: [
+        { firstName: { contains: term } },
+        { lastName: { contains: term } },
+        { email: { contains: term } },
+      ],
+    };
     const foundUsers = await db.user.findMany({
       where,
       select: adminUserSelect,
@@ -305,7 +298,6 @@ const deleteUserByIdHandler: AuthenticatedRequestHandler = async (
         where: { id: toDeleteId },
         data: {
           isActive: false,
-          refreshToken: null,
           updatedById: signedInUserId,
           dateUpdated: new Date().toISOString(),
         },

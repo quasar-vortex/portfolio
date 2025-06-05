@@ -1,16 +1,62 @@
 "use client";
 
-import PostsTable from "@/components/posts/PostsTable";
+import PaginatedTable, {
+  TableColumn,
+} from "@/components/shared/PaginatedTable";
 import ProjectsTable from "@/components/projects/ProjectsTable";
-
 import Spinner from "@/components/shared/Spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import api from "@/lib/api";
+import { capitalize } from "@/lib/utils";
+import Image from "next/image";
+import { Post, CoverImage } from "@/lib/types";
+
+const columns: TableColumn<Post>[] = [
+  {
+    key: "coverImage",
+    header: "Cover Image",
+    render: (val) =>
+      val && (
+        <div className="w-24 h-24">
+          <Image
+            src={(val as CoverImage).url}
+            height={200}
+            width={200}
+            alt="cover"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ),
+  },
+  {
+    key: "title",
+    header: "Title",
+    render: (val) => (val ? capitalize(val as Post["title"]) : ""),
+  },
+  { key: "slug", header: "Slug" },
+  {
+    key: "author",
+    header: "Author",
+    render: (val) => (val ? capitalize((val as Post["author"]).firstName) : ""),
+  },
+  {
+    key: "PostTag",
+    header: "Tags",
+    render: (value) => {
+      return (value as Post["PostTag"]).map((item) => item.tag.name).join(",");
+    },
+  },
+  {
+    key: "isFeatured",
+    header: "Featured?",
+    render: (val) => (val ? "Yes" : "No"),
+  },
+];
 
 const DashBoard = () => {
   const {
@@ -21,6 +67,7 @@ const DashBoard = () => {
     queryKey: ["featuredPosts"],
     queryFn: async () => api.postService.searchPosts({ isFeatured: true }),
   });
+
   const {
     isPending: projectsPending,
     error: projectsError,
@@ -57,7 +104,24 @@ const DashBoard = () => {
             </Alert>
           )}
           {postsPending && <Spinner />}
-          {!postsPending && <PostsTable posts={featuredPosts?.data} />}
+          {!postsPending && (
+            <PaginatedTable<Post>
+              displaySearch={false}
+              queryKey="featuredPosts"
+              queryFn={async (params) =>
+                api.postService.searchPosts({ ...params, isFeatured: true })
+              }
+              columns={columns}
+              searchPlaceholder="Search featured posts..."
+              actions={(post) => (
+                <Link href={`/dash/posts/edit/${post.id}`}>
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                </Link>
+              )}
+            />
+          )}
         </div>
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-blue-600">

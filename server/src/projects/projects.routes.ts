@@ -5,6 +5,7 @@ import * as projectsController from "./projects.controller";
 const projectsRouter = Router();
 
 projectsRouter
+  .get("/:projectId", projectsController.getProjectByIdHandler)
   .post(
     "/",
     authMiddleware,
@@ -13,7 +14,6 @@ projectsRouter
   )
   .get("/", projectsController.getManyProjectsHandler)
   .get("/slug/:slug", projectsController.getProjectByIdHandler)
-  .get("/:projectId", projectsController.getProjectByIdHandler)
   .patch(
     "/:projectId/feature",
     authMiddleware,

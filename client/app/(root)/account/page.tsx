@@ -6,7 +6,7 @@ import { Container } from "@/components/shared/container";
 import { Fields } from "@/components/shared/form";
 import Section from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
-import { capitalize } from "@/lib/utils/index";
+import { capitalize } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 import React, { useState } from "react";

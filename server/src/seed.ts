@@ -2,20 +2,58 @@ import { db } from "./db";
 import { faker } from "@faker-js/faker";
 import argon from "argon2";
 import { FileType, Role } from "./generated/prisma";
+import { deleteFileByKey } from "./upload";
+import logger from "./logger";
 
+const initTags = [
+  "Linux",
+  "Networking",
+  "ReactJS",
+  "Node.JS",
+  "TailwindCSS",
+  "SSH",
+  "AWS",
+  "S3",
+  "Log Analysis",
+];
 async function main() {
-  await db.user.deleteMany();
-  // Delete posts and projects first
-  await db.postTag.deleteMany();
-  await db.post.deleteMany();
-  await db.projectTag?.deleteMany?.();
-  await db.project?.deleteMany?.();
+  logger.info("Running Seed Script");
+  try {
+    await db.user.deleteMany();
+    logger.info("Deleted Users");
+    // Delete posts and projects first
+    await db.postTag.deleteMany();
+    logger.info("Deleted Post Tags");
+    await db.post.deleteMany();
+    logger.info("Deleted Posts");
+    await db.projectTag?.deleteMany?.();
+    logger.info("Deleted Project Tags");
+    await db.project?.deleteMany?.();
+    logger.info("Deleted Projects");
+    await db.tag.deleteMany();
+    logger.info("Deleted Tags");
+    await db.user.deleteMany();
+    logger.info("Deleted Users");
+    const foundFiles = await db.file.findMany();
 
-  await db.tag.deleteMany();
-  await db.user.deleteMany();
+    // clean up files from s3
+    await Promise.all(
+      foundFiles.map(async (file) => {
+        return await deleteFileByKey(file.objectKey);
+      })
+    );
+    logger.info(`Deleted Files From S3`);
+
+    await db.file.deleteMany();
+    logger.info(`Deleted Files From DB`);
+  } catch (error) {
+    console.error("Somethin Went Wrong");
+    process.exit();
+  }
+
   const passwordHash = await argon.hash("qP1^Kt9X");
 
-  // Create users
+  logger.info(`Creating Users`);
   const users = await Promise.all(
     Array.from({ length: 5 }).map(async () => {
       const avatar = await db.file.create({
@@ -47,18 +85,12 @@ async function main() {
     })
   );
 
-  // Create tags
-  const tags = await Promise.all(
-    Array.from({ length: 10 }).map((_, i) =>
-      db.tag.create({
-        data: {
-          name: `Tag-${i + 1}`,
-        },
-      })
-    )
-  );
-
-  // Create posts
+  logger.info(`Creating Tags`);
+  await db.tag.createMany({
+    data: initTags.map((t) => ({ name: t })),
+  });
+  const tags = await db.tag.findMany();
+  logger.info(`Creating Posts`);
   for (let i = 0; i < 15; i++) {
     const author = users[i % users.length];
     const cover = await db.file.create({
@@ -99,7 +131,7 @@ async function main() {
     }
   }
 
-  // Create projects
+  logger.info(`Creating Projects`);
   for (let i = 0; i < 15; i++) {
     const author = users[i % users.length];
     const cover = await db.file.create({
@@ -141,6 +173,8 @@ async function main() {
       });
     }
   }
+
+  logger.info(`Finished Seeding`);
 }
 
 main()

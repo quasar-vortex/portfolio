@@ -11,12 +11,13 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import api from "@/lib/api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import FileUploader from "@/components/shared/FileUploader";
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
+import { AdminPost } from "@/lib/types";
 const content =
   '<h2 class="text-2xl sm:text-3xl font-bold">Try Writing Something</h2><p class="text-gray-700"><strong>Anything at all</strong></p><p class="text-gray-700"></p><ul class="list-disk  text-gray-800"><li class="pl-4 text-gray-800"><p class="text-gray-700">here is a list of items</p></li><li class="pl-4 text-gray-800"><p class="text-gray-700">to review</p></li></ul><p class="text-gray-700"></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">function greeeting(user: string) {</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">alert(`Good Morning ${user}`)</code></p><p class="text-gray-700"><code class="bg-[#1e1e1e] text-green-300 font-mono text-sm leading-relaxed p-4 block rounded-lg overflow-x-auto whitespace-pre">}</code></p><p class="text-gray-700"></p><blockquote class="border-l-4 border-gray-400 pl-4 italic text-gray-700"><p class="text-gray-700">Here is a really awesome quote</p></blockquote>';
 type Tag = { id: string; name: string };
@@ -92,7 +93,7 @@ const EditPostPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, defaultValues },
     setValue,
     reset,
   } = useForm<Omit<CreatePostModel, "content">>({
@@ -107,34 +108,29 @@ const EditPostPage = () => {
       isPublished: true,
     },
   });
-
+  const { data, isPending, error } = useQuery({
+    queryKey: [postId],
+    queryFn: () => api.postService.getPostById(postId as string, accessToken!),
+  });
   useEffect(() => {
-    (async function getData() {
-      try {
-        const post = await api.postService.getPostById(
-          postId as string,
-          accessToken!
-        );
-
-        const { data } = post;
-
-        setSelectedTags(data.PostTag.map((item) => item.tag));
-        reset({
-          title: data.title,
-          excerpt: data.excerpt,
-          coverImageId: data.coverImage?.id,
-          isFeatured: data.isFeatured,
-          isPublished: data.isPublished,
-          tags: data.PostTag.map((item) => item.tag.id),
-        });
-        if (data.coverImage) setImageUrl(data.coverImage.url);
-        editor?.commands.setContent(data.content);
-      } catch (error) {
-        console.error("Unable to get post details", error);
-        toast.error("Unable to get post details!");
-      }
-    })();
-  }, [postId, reset, accessToken, editor]);
+    if (!accessToken) {
+      return router.replace("/login");
+    }
+    if (data) {
+      const { data: pData } = data as { data: AdminPost };
+      setSelectedTags(pData.PostTag.map((item) => item.tag));
+      reset({
+        title: pData.title,
+        excerpt: pData.excerpt,
+        coverImageId: pData.coverImage?.id,
+        isFeatured: pData.isFeatured,
+        isPublished: pData.isPublished,
+        tags: pData.PostTag.map((item) => item.tag.id),
+      });
+      if (pData.coverImage) setImageUrl(pData.coverImage.url);
+      editor?.commands.setContent(pData.content);
+    }
+  }, [postId, reset, accessToken, editor, data]);
 
   const renderField = (field: BaseField<CreatePostModel>) => {
     const fieldId = `field-${field.name}`;
@@ -236,17 +232,21 @@ const EditPostPage = () => {
         title,
         excerpt,
         isFeatured,
-        isPublished: isPublished === undefined ? false : true,
+        isPublished: isPublished !== undefined && isPublished ? true : false,
         tags,
-        coverImageId,
+        coverImageId: !imageUrl && !coverImageId ? undefined : coverImageId,
         content,
       };
-
-      await api.postService.updatePost(
+      const post = await api.postService.updatePost(
         postId as string,
         postPayload,
         accessToken!
       );
+      if (!post) {
+        toast.error("Unable to update post");
+        return;
+      }
+      qc.invalidateQueries({ queryKey: [postId] });
       qc.invalidateQueries({ queryKey: ["posts"] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
       if (isFeatured) qc.invalidateQueries({ queryKey: ["featuredPosts"] });
@@ -269,58 +269,71 @@ const EditPostPage = () => {
           Back
         </Button>
       </div>
-      <Card>
-        <CardContent>
-          <form
-            onSubmit={handleSubmit(handlePostSubmit)}
-            className="flex flex-col gap-4"
-          >
-            {imageUrl ? (
-              <div className="flex justify-center flex-col gap-4 items-center">
-                <Image src={imageUrl} height={200} width={200} alt="cover" />
-                <Button
-                  onClick={() => {
-                    setImageUrl("");
+      {defaultValues?.title && (
+        <Card>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit(handlePostSubmit)}
+              className="flex flex-col gap-4"
+            >
+              {imageUrl ? (
+                <div className="flex justify-center flex-col gap-4 items-center">
+                  <Image
+                    className="object-cover max-h-100 w-full"
+                    src={imageUrl}
+                    height={400}
+                    width={400}
+                    alt="cover"
+                  />
+                  <Button
+                    onClick={() => {
+                      setImageUrl("");
+                      setValue("coverImageId", undefined);
+                    }}
+                    type="button"
+                    className="cursor-pointer bg-red-500 duration-200 hover:bg-red-600"
+                  >
+                    <FiX /> Delete
+                  </Button>
+                </div>
+              ) : (
+                <FileUploader
+                  onFileUpload={(f) => {
+                    setPostCoverImageFile(f);
                   }}
-                  type="button"
-                  className="cursor-pointer bg-red-500 duration-200 hover:bg-red-600"
-                >
-                  <FiX /> Delete
-                </Button>
-              </div>
-            ) : (
-              <FileUploader
-                onFileUpload={(f) => {
-                  setPostCoverImageFile(f);
-                }}
-              />
-            )}
-            {postFields.slice(0, 2).map(renderField)}
-
-            {editor && (
+                />
+              )}
               <div className="">
-                <MenuBar editor={editor} />
-                <EditorContent
-                  className=" overflow-hidden [&>*]:py-4 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
-                  editor={editor}
+                <TagSelector
+                  selectedTags={selectedTags}
+                  onTagRemoval={handleRemoveTag}
+                  onTagSelection={handleAddTag}
                 />
               </div>
-            )}
-            <div className="">
-              <TagSelector
-                selectedTags={selectedTags}
-                onTagRemoval={handleRemoveTag}
-                onTagSelection={handleAddTag}
-              />
-            </div>
-            <div className="flex">{postFields.slice(2).map(renderField)}</div>
+              {postFields.slice(0, 2).map(renderField)}
 
-            <Button type="submit" className="mx-auto">
-              Edit Post
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              {editor && (
+                <div className="">
+                  <MenuBar editor={editor} />
+                  <EditorContent
+                    className="[&>*]:min-h-75 overflow-hidden [&>*]:py-4 [&>*]:px-2 border-gray-300 rounded-b-sm [&>*]:duration-200 [&>*]:outline-none [&>*]:border-2 [&>*]:border-gray-300 [&>*]:focus:border-gray-500 duration-200"
+                    editor={editor}
+                  />
+                </div>
+              )}
+
+              <div className="flex">{postFields.slice(2).map(renderField)}</div>
+              <Button
+                size={"lg"}
+                type="submit"
+                className="mx-auto font-bold cursor-pointer"
+              >
+                Edit Post
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </section>
   );
 };

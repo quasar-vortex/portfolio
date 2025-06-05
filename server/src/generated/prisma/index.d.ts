@@ -2779,7 +2779,6 @@ export namespace Prisma {
     passwordHash: string | null
     registeredDate: Date | null
     lastLoginDate: Date | null
-    refreshToken: string | null
     role: $Enums.Role | null
     bio: string | null
     avatarFileId: string | null
@@ -2796,7 +2795,6 @@ export namespace Prisma {
     passwordHash: string | null
     registeredDate: Date | null
     lastLoginDate: Date | null
-    refreshToken: string | null
     role: $Enums.Role | null
     bio: string | null
     avatarFileId: string | null
@@ -2813,7 +2811,6 @@ export namespace Prisma {
     passwordHash: number
     registeredDate: number
     lastLoginDate: number
-    refreshToken: number
     role: number
     bio: number
     avatarFileId: number
@@ -2832,7 +2829,6 @@ export namespace Prisma {
     passwordHash?: true
     registeredDate?: true
     lastLoginDate?: true
-    refreshToken?: true
     role?: true
     bio?: true
     avatarFileId?: true
@@ -2849,7 +2845,6 @@ export namespace Prisma {
     passwordHash?: true
     registeredDate?: true
     lastLoginDate?: true
-    refreshToken?: true
     role?: true
     bio?: true
     avatarFileId?: true
@@ -2866,7 +2861,6 @@ export namespace Prisma {
     passwordHash?: true
     registeredDate?: true
     lastLoginDate?: true
-    refreshToken?: true
     role?: true
     bio?: true
     avatarFileId?: true
@@ -2956,7 +2950,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate: Date
     lastLoginDate: Date | null
-    refreshToken: string | null
     role: $Enums.Role
     bio: string | null
     avatarFileId: string | null
@@ -2990,7 +2983,6 @@ export namespace Prisma {
     passwordHash?: boolean
     registeredDate?: boolean
     lastLoginDate?: boolean
-    refreshToken?: boolean
     role?: boolean
     bio?: boolean
     avatarFileId?: boolean
@@ -3019,7 +3011,6 @@ export namespace Prisma {
     passwordHash?: boolean
     registeredDate?: boolean
     lastLoginDate?: boolean
-    refreshToken?: boolean
     role?: boolean
     bio?: boolean
     avatarFileId?: boolean
@@ -3028,7 +3019,7 @@ export namespace Prisma {
     dateUpdated?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "registeredDate" | "lastLoginDate" | "refreshToken" | "role" | "bio" | "avatarFileId" | "isActive" | "updatedById" | "dateUpdated", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "registeredDate" | "lastLoginDate" | "role" | "bio" | "avatarFileId" | "isActive" | "updatedById" | "dateUpdated", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     avatarFile?: boolean | User$avatarFileArgs<ExtArgs>
     updatedBy?: boolean | User$updatedByArgs<ExtArgs>
@@ -3063,7 +3054,6 @@ export namespace Prisma {
       passwordHash: string
       registeredDate: Date
       lastLoginDate: Date | null
-      refreshToken: string | null
       role: $Enums.Role
       bio: string | null
       avatarFileId: string | null
@@ -3455,7 +3445,6 @@ export namespace Prisma {
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly registeredDate: FieldRef<"User", 'DateTime'>
     readonly lastLoginDate: FieldRef<"User", 'DateTime'>
-    readonly refreshToken: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
     readonly bio: FieldRef<"User", 'String'>
     readonly avatarFileId: FieldRef<"User", 'String'>
@@ -9048,7 +9037,6 @@ export namespace Prisma {
     passwordHash: 'passwordHash',
     registeredDate: 'registeredDate',
     lastLoginDate: 'lastLoginDate',
-    refreshToken: 'refreshToken',
     role: 'role',
     bio: 'bio',
     avatarFileId: 'avatarFileId',
@@ -9160,7 +9148,6 @@ export namespace Prisma {
     lastName: 'lastName',
     email: 'email',
     passwordHash: 'passwordHash',
-    refreshToken: 'refreshToken',
     bio: 'bio',
     avatarFileId: 'avatarFileId',
     updatedById: 'updatedById'
@@ -9391,7 +9378,6 @@ export namespace Prisma {
     passwordHash?: StringFilter<"User"> | string
     registeredDate?: DateTimeFilter<"User"> | Date | string
     lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
-    refreshToken?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
     bio?: StringNullableFilter<"User"> | string | null
     avatarFileId?: StringNullableFilter<"User"> | string | null
@@ -9417,7 +9403,6 @@ export namespace Prisma {
     passwordHash?: SortOrder
     registeredDate?: SortOrder
     lastLoginDate?: SortOrderInput | SortOrder
-    refreshToken?: SortOrderInput | SortOrder
     role?: SortOrder
     bio?: SortOrderInput | SortOrder
     avatarFileId?: SortOrderInput | SortOrder
@@ -9439,7 +9424,6 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     email?: string
-    refreshToken?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -9463,7 +9447,7 @@ export namespace Prisma {
     ProjectUpdater?: ProjectListRelationFilter
     FileU?: FileListRelationFilter
     User?: UserListRelationFilter
-  }, "id" | "email" | "refreshToken">
+  }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -9473,7 +9457,6 @@ export namespace Prisma {
     passwordHash?: SortOrder
     registeredDate?: SortOrder
     lastLoginDate?: SortOrderInput | SortOrder
-    refreshToken?: SortOrderInput | SortOrder
     role?: SortOrder
     bio?: SortOrderInput | SortOrder
     avatarFileId?: SortOrderInput | SortOrder
@@ -9496,7 +9479,6 @@ export namespace Prisma {
     passwordHash?: StringWithAggregatesFilter<"User"> | string
     registeredDate?: DateTimeWithAggregatesFilter<"User"> | Date | string
     lastLoginDate?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
-    refreshToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     avatarFileId?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -9985,7 +9967,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -10009,7 +9990,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -10033,7 +10013,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -10057,7 +10036,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10081,7 +10059,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -10098,7 +10075,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -10113,7 +10089,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10797,7 +10772,6 @@ export namespace Prisma {
     passwordHash?: SortOrder
     registeredDate?: SortOrder
     lastLoginDate?: SortOrder
-    refreshToken?: SortOrder
     role?: SortOrder
     bio?: SortOrder
     avatarFileId?: SortOrder
@@ -10814,7 +10788,6 @@ export namespace Prisma {
     passwordHash?: SortOrder
     registeredDate?: SortOrder
     lastLoginDate?: SortOrder
-    refreshToken?: SortOrder
     role?: SortOrder
     bio?: SortOrder
     avatarFileId?: SortOrder
@@ -10831,7 +10804,6 @@ export namespace Prisma {
     passwordHash?: SortOrder
     registeredDate?: SortOrder
     lastLoginDate?: SortOrder
-    refreshToken?: SortOrder
     role?: SortOrder
     bio?: SortOrder
     avatarFileId?: SortOrder
@@ -12132,7 +12104,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12155,7 +12126,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -12183,7 +12153,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12206,7 +12175,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -12234,7 +12202,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12257,7 +12224,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12393,7 +12359,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -12416,7 +12381,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12450,7 +12414,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -12473,7 +12436,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12515,7 +12477,6 @@ export namespace Prisma {
     passwordHash?: StringFilter<"User"> | string
     registeredDate?: DateTimeFilter<"User"> | Date | string
     lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
-    refreshToken?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
     bio?: StringNullableFilter<"User"> | string | null
     avatarFileId?: StringNullableFilter<"User"> | string | null
@@ -12643,7 +12604,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12666,7 +12626,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -12962,7 +12921,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -12985,7 +12943,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -13072,7 +13029,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13095,7 +13051,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13368,7 +13323,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -13391,7 +13345,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -13419,7 +13372,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -13442,7 +13394,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -13542,7 +13493,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13565,7 +13515,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13599,7 +13548,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13622,7 +13570,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13822,7 +13769,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -13845,7 +13791,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -13873,7 +13818,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -13896,7 +13840,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -13996,7 +13939,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14019,7 +13961,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14053,7 +13994,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14076,7 +14016,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14247,7 +14186,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     isActive?: boolean
@@ -14297,7 +14235,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14320,7 +14257,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14343,7 +14279,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14559,7 +14494,6 @@ export namespace Prisma {
     passwordHash: string
     registeredDate?: Date | string
     lastLoginDate?: Date | string | null
-    refreshToken?: string | null
     role?: $Enums.Role
     bio?: string | null
     avatarFileId?: string | null
@@ -14877,7 +14811,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -14900,7 +14833,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14923,7 +14855,6 @@ export namespace Prisma {
     passwordHash?: StringFieldUpdateOperationsInput | string
     registeredDate?: DateTimeFieldUpdateOperationsInput | Date | string
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null

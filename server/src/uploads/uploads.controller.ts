@@ -19,7 +19,6 @@ export const userFileSelect = {
 export const adminFileSelect = {
   ...userFileSelect,
   isActive: true,
-  objectKey: true,
   originalName: true,
   size: true,
   userId: true,

@@ -37,6 +37,7 @@ type PaginatedTableProps<T> = {
   columns: TableColumn<T>[];
   actions?: (row: T) => React.ReactNode;
   searchPlaceholder?: string;
+  displaySearch?: boolean;
 };
 
 function PaginatedTable<T>({
@@ -46,6 +47,7 @@ function PaginatedTable<T>({
   actions,
   searchPlaceholder = "Search...",
   simpleKey,
+  displaySearch = true,
 }: PaginatedTableProps<T>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -109,13 +111,15 @@ function PaginatedTable<T>({
 
   return (
     <div className="space-y-6">
-      <input
-        type="text"
-        placeholder={searchPlaceholder}
-        value={storedTerm}
-        onChange={(e) => setStoredTerm(e.target.value)}
-        className="w-full border border-gray-300 focus:border-gray-500 outline-none p-2 text-lg rounded"
-      />
+      {displaySearch && (
+        <input
+          type="text"
+          placeholder={searchPlaceholder}
+          value={storedTerm}
+          onChange={(e) => setStoredTerm(e.target.value)}
+          className="w-full border border-gray-300 focus:border-gray-500 outline-none p-2 text-lg rounded"
+        />
+      )}
 
       {error && (
         <Alert>

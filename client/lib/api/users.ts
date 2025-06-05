@@ -1,61 +1,90 @@
-import { authHeaders, handleResponse } from ".";
+import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
-import { AdminFile, DbFile } from "../types";
+import {
+  AdminFile,
+  DbFile,
+  PaginatedUserResponse,
+  SearchUsersPayload,
+  UpdateUserPayload,
+} from "../types";
+import { apiUrl } from "../utils";
 
 const BASE_URL = `${API_URL}/users`;
+const url = apiUrl(BASE_URL);
 
 export const updateUserProfile = async (
-  payload: Record<string, string>,
+  payload: UpdateUserPayload,
   token: string
 ) => {
-  const res = async () =>
-    fetch(BASE_URL, {
-      method: "POST",
+  try {
+    const res = await axiosInstance.post(url(), payload, {
       headers: authHeaders(token),
-      body: JSON.stringify(payload),
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getManyUsersHandler = async (
-  payload: Record<string, string>,
+  payload: SearchUsersPayload,
   token: string
-) => {
-  const res = async () =>
-    fetch(BASE_URL, {
-      method: "POST",
-      headers: authHeaders(token),
-      body: JSON.stringify(payload),
-    });
-  return await handleResponse(res);
+): Promise<PaginatedUserResponse> => {
+  try {
+    const res = await axiosInstance.get(
+      url(`?${new URLSearchParams(payload as any)}`),
+      {
+        headers: authHeaders(token),
+      }
+    );
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getUploadsByUserId = async (
   userId: string,
   token: string
 ): Promise<{ data: (DbFile | AdminFile)[] }> => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${userId}/uploads`, {
-      method: "GET",
+  try {
+    const res = await axiosInstance.get(url(`${userId}/uploads`), {
       headers: authHeaders(token),
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getPostsByUserId = async (userId: string, token: string) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${userId}/posts`, {
-      method: "GET",
+  try {
+    const res = await axiosInstance.get(url(`${userId}/posts`), {
       headers: authHeaders(token),
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getProjecstByUserId = async (userId: string, token: string) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${userId}/posts`, {
-      method: "GET",
+  try {
+    const res = await axiosInstance.get(url(`${userId}/posts`), {
       headers: authHeaders(token),
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };

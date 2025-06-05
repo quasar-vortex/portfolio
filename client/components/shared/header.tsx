@@ -60,7 +60,7 @@ const MobileMenu = ({
       <div
         className={`z-50 duration-200 ${
           !isOpen && "-translate-x-full"
-        } border-r border-gray-300  top-0 left-0 absolute h-screen w-60 ${
+        } border-r border-gray-300  top-0 left-0 absolute h-screen fixed w-60 ${
           isOpen && "menu"
         } `}
       >

@@ -1,4 +1,5 @@
-import { authHeaders, handleResponse } from ".";
+import { AxiosError } from "axios";
+import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
 import {
   AdminPost,
@@ -6,21 +7,25 @@ import {
   SearchPostsModel,
   UpdatePostModel,
 } from "../types";
-
+import { apiUrl } from "../utils";
 const BASE_URL = `${API_URL}/posts`;
+const url = apiUrl(BASE_URL);
 
 export const createPost = async (
   payload: CreatePostModel,
   token: string
 ): Promise<{ data: AdminPost }> => {
-  const res = async () =>
-    fetch(BASE_URL, {
-      method: "POST",
+  try {
+    const res = await axiosInstance.post(url(), payload, {
       headers: authHeaders(token),
-      body: JSON.stringify(payload),
-      credentials: "include",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const updatePost = async (
@@ -28,75 +33,104 @@ export const updatePost = async (
   payload: UpdatePostModel,
   token: string
 ) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${postId}`, {
-      method: "PUT",
+  try {
+    const res = await axiosInstance.put(url(postId), payload, {
       headers: authHeaders(token),
-      body: JSON.stringify(payload),
-      credentials: "include",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getPostById = async (
   postId: string,
   token: string
 ): Promise<{ data: AdminPost }> => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${postId}`, {
+  try {
+    const res = await axiosInstance.get(url(postId), {
       headers: authHeaders(token),
-      credentials: "include",
-      method: "GET",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const getPostBySlug = async (slug: string) => {
-  const res = async () => fetch(`${BASE_URL}/slug/${slug}`);
-  return await handleResponse(res);
+  try {
+    const res = await axiosInstance.get(url(`slug/${slug}`));
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const searchPosts = async (query: SearchPostsModel, token?: string) => {
-  const searchParams = new URLSearchParams(
-    query as Record<string, string>
-  ).toString();
-  const res = async () =>
-    fetch(`${BASE_URL}?${searchParams}`, {
+  try {
+    const searchParams = new URLSearchParams(
+      query as Record<string, string>
+    ).toString();
+    const res = await axiosInstance.get(url(`?${searchParams}`), {
       headers: token
         ? authHeaders(token)
         : { "Content-Type": "application/json" },
-      credentials: "include",
-      method: "GET",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const deletePostById = async (postId: string, token: string) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${postId}`, {
-      method: "DELETE",
+  try {
+    const res = await axiosInstance.delete(url(postId), {
       headers: authHeaders(token),
-      credentials: "include",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const togglePostAsFeatured = async (postId: string, token: string) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${postId}/feature`, {
-      method: "PATCH",
+  try {
+    const res = await axiosInstance.patch(url(`${postId}/feature`), null, {
       headers: authHeaders(token),
-      credentials: "include",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };
 
 export const togglePostAsPublished = async (postId: string, token: string) => {
-  const res = async () =>
-    fetch(`${BASE_URL}/${postId}/publish`, {
-      method: "PATCH",
+  try {
+    const res = await axiosInstance.patch(url(`${postId}/publish`), null, {
       headers: authHeaders(token),
-      credentials: "include",
+      withCredentials: true,
     });
-  return await handleResponse(res);
+    return res.data;
+  } catch (error) {
+    //@ts-ignore
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
 };

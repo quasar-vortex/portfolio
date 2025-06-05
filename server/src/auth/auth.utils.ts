@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from "../env";
 import { HttpError } from "../error";
 import { Role } from "../generated/prisma";
+import logger from "../logger";
 type TokenType = "ACCESS" | "REFRESH";
 type SignUserTokenPayload = {
   id: string;
@@ -14,7 +15,7 @@ export const signUserToken = (
   return jwt.sign(
     payload,
     type === "ACCESS" ? JWT_ACCESS_SECRET : JWT_REFRESH_SECRET,
-    { expiresIn: JWT_ACCESS_SECRET ? "30m" : "7d" }
+    { expiresIn: type === "ACCESS" ? "15m" : "7d" }
   );
 };
 
@@ -27,13 +28,15 @@ export const verifyUserToken = (
       payload,
       type === "ACCESS" ? JWT_ACCESS_SECRET : JWT_REFRESH_SECRET,
       (err, decoded) => {
-        if (err)
+        if (err) {
+          logger.warn(err);
           rej(
             new HttpError({
               status: "NOT_AUTHORIZED",
               message: "Invalid Token",
             })
           );
+        }
         res(decoded as SignUserTokenPayload);
       }
     );

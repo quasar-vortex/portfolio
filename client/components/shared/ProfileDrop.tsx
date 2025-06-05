@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { capitalize } from "@/lib/utils/index";
+import { capitalize } from "@/lib/utils";
 
 import Link from "next/link";
 import React from "react";

@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/app/providers/storeProvider";
 import React from "react";
 import { Container } from "../shared/container";
-import { capitalize } from "@/lib/utils/index";
+import { capitalize } from "@/lib/utils";
 
 const DashHeader = () => {
   const { user } = useAuthStore();

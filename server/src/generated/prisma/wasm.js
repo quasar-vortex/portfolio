@@ -139,7 +139,6 @@ exports.Prisma.UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   registeredDate: 'registeredDate',
   lastLoginDate: 'lastLoginDate',
-  refreshToken: 'refreshToken',
   role: 'role',
   bio: 'bio',
   avatarFileId: 'avatarFileId',
@@ -224,7 +223,6 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   passwordHash: 'passwordHash',
-  refreshToken: 'refreshToken',
   bio: 'bio',
   avatarFileId: 'avatarFileId',
   updatedById: 'updatedById'
