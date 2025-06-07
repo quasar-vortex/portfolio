@@ -353,7 +353,6 @@ const getPostBySlugHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const slug = req.params.slug!;
-  const isAdmin = req.user?.role === "ADMIN";
   const userId = req.user?.id;
   const meta = {
     ip: req.ip,
@@ -364,9 +363,9 @@ const getPostBySlugHandler: AuthenticatedRequestHandler = async (
   };
   try {
     logger.info(meta, "Locating post.");
-    const where = isAdmin ? { slug } : { slug, isActive: true };
+    const where = { slug, isActive: true };
 
-    const select = isAdmin ? adminSelect : baseSelect;
+    const select = baseSelect;
     const foundPost = await db.post.findUnique({
       where,
       select,

@@ -6,6 +6,8 @@ export const NODE_ENV =
   (process.env.NODE_ENV?.toLocaleLowerCase() as "production" | "development") ||
   "development";
 
+export const IS_FIRST_RUN =
+  process.env.IS_FIRST_RUN?.toLocaleLowerCase() === "yes" || false;
 export const APP_PORT = parseInt((process.env.PORT as string) || "5000");
 export const CLEANUP_INTERVAL = Number(process.env.CLEANUP_INTERVAL || "15m");
 export const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;

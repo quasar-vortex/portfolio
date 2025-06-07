@@ -46,9 +46,9 @@ const HomePage = async () => {
           Ready to work together?
         </h3>
         <p className="sm:text-lg mb-8 font-semibold text-gray-800">
-          Whether you need a full-stack developer for your next project or want
-          to collaborate on something exciting, let&apos;s connect and build
-          something great.
+          Whether you need a full-stack developer, Linux application and
+          infrastructure support, or someone who can bridge both worlds,
+          let&apos;s connect and build something solid.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button

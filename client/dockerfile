@@ -1,15 +1,21 @@
-# frontend/Dockerfile
 FROM node:18-alpine
 
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 
+# Copy full app source
 COPY . .
 
+# Build Next.js app
 RUN npm run build
 
+RUN cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
+
+# Expose port
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+# Start Next.js app in production mode
+CMD ["node", ".next/standalone/server.js"]

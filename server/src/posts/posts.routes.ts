@@ -14,6 +14,7 @@ import {
 export const postsRouter = Router();
 
 postsRouter
+  .get("/slug/:slug", postController.getPostBySlugHandler)
   .post(
     "/",
     authMiddleware,
@@ -47,11 +48,7 @@ postsRouter
     postController.getManyPostsHandler
   )
   .get("/:postId", authMiddleware, postController.getPostByIdHandler)
-  .get(
-    "/slug/:slug",
-    optionalAuthMiddleware,
-    postController.getPostBySlugHandler
-  )
+
   .delete(
     "/:postId",
     authMiddleware,

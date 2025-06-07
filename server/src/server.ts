@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { APP_PORT, CLEANUP_INTERVAL } from "./env";
+import { APP_PORT, CLEANUP_INTERVAL, IS_FIRST_RUN } from "./env";
 import { pinoHttp } from "pino-http";
 import logger from "./logger";
 import { db } from "./db";
@@ -12,22 +12,22 @@ import { uploadsRouter } from "./uploads/uploads.routes";
 import { usersRouter } from "./users/users.routes";
 import cookieParser from "cookie-parser";
 import { projectsRouter } from "./projects/projects.routes";
-import { deleteFileByKey, listAllFiles, s3 } from "./upload";
+import { deleteFileByKey } from "./upload";
+import argon from "argon2";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://frontend:3000"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(pinoHttp({ logger }));
-
-/* 
-for debugging requests to look at query, body or params as they come in the backend
-
-
-*/
 
 app.get("/api/v1/health", (req, res, next) => {
   res.sendStatus(200);

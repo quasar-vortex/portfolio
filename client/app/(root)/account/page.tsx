@@ -2,7 +2,6 @@
 
 import { useAuthStore } from "@/app/providers/storeProvider";
 import { Container } from "@/components/shared/container";
-
 import Section from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
 import { capitalize } from "@/lib/utils";

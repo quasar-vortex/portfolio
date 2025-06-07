@@ -369,7 +369,6 @@ const getProjectBySlugHandler: AuthenticatedRequestHandler = async (
   next
 ) => {
   const slug = req.params.slug!;
-  const isAdmin = req.user?.role === "ADMIN";
   const userId = req.user?.id;
 
   const meta = {
@@ -383,11 +382,9 @@ const getProjectBySlugHandler: AuthenticatedRequestHandler = async (
   try {
     logger.info(meta, "Locating project by slug");
 
-    const where = isAdmin
-      ? { slug }
-      : { slug, isActive: true, isPublished: true };
+    const where = { slug, isActive: true, isPublished: true };
 
-    const select = isAdmin ? adminProjectSelect : baseProjectSelect;
+    const select = baseProjectSelect;
 
     const foundProject = await db.project.findUnique({
       where,

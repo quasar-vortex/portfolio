@@ -1,8 +1,5 @@
-"use client";
+import { notFound, redirect } from "next/navigation";
 
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,43 +7,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import Section from "@/components/shared/section";
 import Link from "next/link";
 
-export default function ProjectDetailPage() {
-  const params = useParams();
-  const slug = params?.slug as string;
+export default async function ProjectDetailsPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  let project = null;
+  let slug = null;
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["project", slug],
-    queryFn: () => api.projectService.getProjectBySlug(slug),
-    enabled: !!slug,
-  });
+  try {
+    const { slug: sl } = await params;
+    slug = sl;
 
-  if (isLoading) {
-    return (
-      <Section>
-        <Card className="max-w-4xl mx-auto min-h-[max(500px,calc(1/3*100vh))] skeleton-card">
-          <div></div>
-        </Card>
-      </Section>
-    );
+    const res = await fetch(`${process.env.API_URL}/projects/slug/${slug}`, {
+      cache: "no-store",
+    });
+
+    if (res.status === 404) return notFound();
+    if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+
+    const data = await res.json();
+    project = data.data;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return redirect("/projects");
   }
 
-  if (isError || !data) {
-    return (
-      <Section>
-        <Card className="max-w-4xl mx-auto p-6 text-center">
-          <p className="text-red-500">Project not found.</p>
-        </Card>
-      </Section>
-    );
-  }
-  const { data: project } = data;
   return (
     <Section>
       <Card className="max-w-4xl mx-auto">
         <CardContent>
           <div className="flex justify-end mb-4">
             <Button asChild>
-              <Link href="..">Go Back</Link>
+              <Link href="/projects">Go Back</Link>
             </Button>
           </div>
           <article className="space-y-6">

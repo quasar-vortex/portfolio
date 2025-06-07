@@ -28,7 +28,7 @@ export const siteData = {
       "Node.js + React Developer",
     ],
     description:
-      "Application support engineer with full-stack development skills. I combine backend debugging and infrastructure knowledge to solve production issues and build reliable systems. Experienced with React, Node.js, MySQL, and Linux environments.",
+      "Support engineer and full-stack developer focused on Linux, infrastructure, and production systems. I troubleshoot live issues, debug backend code, and build reliable applications using React, Node.js, and MySQL. Currently pursuing AWS Solutions Architect certification.",
     cta: {
       label: "View Projects",
       href: "/projects",
@@ -37,10 +37,10 @@ export const siteData = {
   about: {
     title: "About Me",
     content: `
-I'm an Application Support Engineer and Developer with a strong background in Linux systems, backend diagnostics, and supporting production environments for SaaS and on-premise platforms. After completing a full-stack coding bootcamp, I spent the past few years troubleshooting and resolving real-world issues such as database inconsistencies, VPN and firewall misconfigurations, broken APIs, and server outages.
+I'm a Linux-focused Application Support Engineer and Developer with hands-on experience supporting infrastructure and applications across SaaS and on-premise environments. I’ve solved issues ranging from database failures and broken APIs to VPN, firewall, and server misconfigurations.
 
-My development work focuses on building clean and maintainable software using React, Node.js, TypeScript, and MySQL. I bring a hybrid perspective to engineering by writing code with an understanding of production behavior and by supporting systems under real pressure. Whether I'm building features or resolving tough support cases, I provide value across the entire application lifecycle.
-  `.trim(),
+I build clean, maintainable software using Node.js, TypeScript, React, and MySQL, always keeping production behavior and stability in mind. I regularly work in CLI environments, review system logs, tune configurations, and create tools that stand up to real-world demands. I'm currently pursuing the AWS Solutions Architect certification to deepen my cloud expertise and expand my infrastructure capabilities.
+    `.trim(),
   },
 
   skills: [
@@ -59,6 +59,7 @@ My development work focuses on building clean and maintainable software using Re
     { label: "Nginx", icon: SiNginx },
     { label: "Git & GitHub", icon: GrGithub },
   ],
+
   contact: {
     email: "jeremydanielbarber@hotmail.com",
     phone: "702-513-6632",

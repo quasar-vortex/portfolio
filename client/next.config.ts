@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "loremflickr.com", pathname: "/**" },
     ],
   },
+  output: "standalone",
 };
 
 export default nextConfig;
