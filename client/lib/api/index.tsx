@@ -14,7 +14,7 @@ type CustomRequestConf = Parameters<typeof axios.request>[0] & {
   isRetryRequest?: boolean;
   retryCount?: number;
 };
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 4000,
   withCredentials: true,
@@ -78,8 +78,9 @@ axiosInstance.interceptors.response.use(
 export const authHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
 });
+export { axiosInstance };
 
-export default {
+const defaults = {
   postService,
   projectService,
   uploadService,
@@ -87,3 +88,5 @@ export default {
   authService,
   tagService,
 };
+
+export default defaults;

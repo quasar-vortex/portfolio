@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Ref, RefObject, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HomeIcon,
   NewspaperIcon,
@@ -9,7 +9,6 @@ import {
   MenuIcon,
   XIcon,
   LogInIcon,
-  Grid,
   HammerIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -19,7 +18,6 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { useOutsideClick } from "@/app/useOutsideClick";
 
-import SignOut from "./SignOut";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import ProfileDrop from "./ProfileDrop";
 
@@ -39,6 +37,7 @@ const links = [
     icon: BriefcaseIcon,
     href: "/projects",
   },
+
   {
     label: "Contact",
     icon: MailIcon,

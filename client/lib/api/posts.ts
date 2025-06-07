@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
 import {
@@ -22,7 +21,7 @@ export const createPost = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -40,7 +39,7 @@ export const updatePost = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -57,7 +56,7 @@ export const getPostById = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -68,7 +67,7 @@ export const getPostBySlug = async (slug: string) => {
     const res = await axiosInstance.get(url(`slug/${slug}`));
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -87,7 +86,7 @@ export const searchPosts = async (query: SearchPostsModel, token?: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -101,7 +100,7 @@ export const deletePostById = async (postId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -115,7 +114,7 @@ export const togglePostAsFeatured = async (postId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -129,7 +128,7 @@ export const togglePostAsPublished = async (postId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }

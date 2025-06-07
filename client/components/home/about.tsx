@@ -1,9 +1,7 @@
 import React from "react";
-import { Container } from "../shared/container";
 import Section from "../shared/section";
 
 const About = ({
-  title,
   content,
   bgGray,
 }: {

@@ -2,14 +2,8 @@
 
 import { CustomLink } from "@/components/shared/customlink";
 import Protected from "@/components/shared/Protected";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
-import { ReactNode, useRef, useState } from "react";
-import { FiMenu, FiX } from "react-icons/fi";
+
+import { ReactNode } from "react";
 
 const navLinks = [
   { href: "/dash", label: "Dash Home" },
@@ -17,8 +11,6 @@ const navLinks = [
   { href: "/dash/projects", label: "Manage Projects" },
   { href: "/dash/tags", label: "Manage Tags" },
   { href: "/dash/users", label: "Manage Users" },
-
-  { href: "/dash/profile", label: "User Profile" },
 ];
 function Sidebar() {
   return (

@@ -9,9 +9,10 @@ import {
 } from "../ui/card";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Post } from "./featuredposts";
+
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { Post } from "@/lib/types";
 
 type PostCardProps = Post & {};
 const PostCard = (post: PostCardProps) => {
@@ -45,14 +46,16 @@ const PostCard = (post: PostCardProps) => {
           </CardTitle>
           <CardDescription>
             <ul className="flex flex-wrap gap-2">
-              {post.PostTag?.map(({ tag }) => (
-                <li
-                  key={tag.id}
-                  className="text-xs px-2 py-1 bg-blue-100 text-blue-700 font-semibold rounded-md"
-                >
-                  {tag.name}
-                </li>
-              ))}
+              {post.PostTag?.map(
+                ({ tag }: { tag: { id: string; name: string } }) => (
+                  <li
+                    key={tag.id}
+                    className="text-xs px-2 py-1 bg-blue-100 text-blue-700 font-semibold rounded-md"
+                  >
+                    {tag.name}
+                  </li>
+                )
+              )}
             </ul>
           </CardDescription>
         </div>

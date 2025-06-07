@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import useDebouncedValue from "@/app/hooks/useDebouncedValue";
 
@@ -51,13 +51,12 @@ function PaginatedTable<T>({
 }: PaginatedTableProps<T>) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [hasInitialized] = useState(false);
   const [term, setTerm] = useState("");
   const [storedTerm, setStoredTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
   const debouncedTerm = useDebouncedValue(storedTerm, 500);
@@ -72,20 +71,20 @@ function PaginatedTable<T>({
       setTerm(debouncedTerm);
       setPageIndex(1);
     }
-  }, [debouncedTerm]);
+  }, [debouncedTerm, term]);
 
   useEffect(() => {
     if (data && data?.meta.totalPages !== totalPages) {
       setTotalPages(data.meta.totalPages);
     }
-  }, [data]);
+  }, [data, totalPages]);
 
   useEffect(() => {
     if (!hasInitialized) return;
 
     const newUrl = `${pathname}?${new URLSearchParams({
-      pageIndex,
-      pageSize,
+      pageIndex: String(pageIndex),
+      pageSize: String(pageSize),
       term,
       tags: [],
     } as unknown as Record<string, string>)}`;
@@ -93,115 +92,114 @@ function PaginatedTable<T>({
     if (newUrl !== currentUrl) {
       router.replace(newUrl);
     }
-  }, [term, pageIndex, pageSize, hasInitialized]);
-
-  useEffect(() => {
-    if (hasInitialized) return;
-
-    const t = searchParams.get("term") || "";
-    const ind = parseInt(searchParams.get("pageIndex") || "1");
-    const size = parseInt(searchParams.get("pageSize") || "10");
-
-    setTerm(t);
-    setStoredTerm(t);
-    setPageIndex(ind);
-    setPageSize(size);
-    setHasInitialized(true);
-  }, [searchParams, hasInitialized]);
+  }, [term, pageIndex, pageSize, hasInitialized, pathname, router]);
 
   return (
-    <div className="space-y-6">
-      {displaySearch && (
-        <input
-          type="text"
-          placeholder={searchPlaceholder}
-          value={storedTerm}
-          onChange={(e) => setStoredTerm(e.target.value)}
-          className="w-full border border-gray-300 focus:border-gray-500 outline-none p-2 text-lg rounded"
-        />
-      )}
-
-      {error && (
-        <Alert>
-          <AlertTitle>Failed to load data</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
+    <>
+      {data && data?.data.length === 0 ? (
+        <Alert className="mb-6 text-gray-800 font-bold shadow-md">
+          <AlertTitle>
+            <h4 className="font-bold text-lg sm:text-xl">
+              There currently aren&rsquo;t any items to display.
+            </h4>
+          </AlertTitle>
+          <AlertDescription>No data to display</AlertDescription>
         </Alert>
-      )}
-
-      {isPending ? (
-        <Spinner />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="border-b border-gray-300">
-                {columns.map((col) => (
-                  <th key={String(col.key)} className="p-2 font-semibold">
-                    {col.header}
-                  </th>
-                ))}
-                {actions && <th className="p-2 font-semibold">Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {data?.data.map((row, idx) => (
-                <tr
-                  key={idx}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  {columns.map((col) => (
-                    <td key={String(col.key)} className="p-2">
-                      {col.render
-                        ? col.render(row[col.key], row)
-                        : String(row[col.key])}
-                    </td>
+        <div className="space-y-6">
+          {displaySearch && (
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={storedTerm}
+              onChange={(e) => setStoredTerm(e.target.value)}
+              className="w-full border border-gray-300 focus:border-gray-500 outline-none p-2 text-lg rounded"
+            />
+          )}
+
+          {error && (
+            <Alert>
+              <AlertTitle>Failed to load data</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
+
+          {isPending ? (
+            <Spinner />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-left">
+                <thead>
+                  <tr className="border-b border-gray-300">
+                    {columns.map((col) => (
+                      <th key={String(col.key)} className="p-2 font-semibold">
+                        {col.header}
+                      </th>
+                    ))}
+                    {actions && <th className="p-2 font-semibold">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.data.map((row, idx) => (
+                    <tr
+                      key={idx}
+                      className="border-b border-gray-200 hover:bg-gray-50"
+                    >
+                      {columns.map((col) => (
+                        <td key={String(col.key)} className="p-2">
+                          {col.render
+                            ? col.render(row[col.key], row)
+                            : String(row[col.key])}
+                        </td>
+                      ))}
+                      {actions && <td className="p-2">{actions(row)}</td>}
+                    </tr>
                   ))}
-                  {actions && <td className="p-2">{actions(row)}</td>}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <Button
+                  variant="ghost"
+                  className="gap-1 px-2.5 cursor-pointer"
+                  onClick={() => setPageIndex((prev) => Math.max(1, prev - 1))}
+                >
+                  <span className="hidden sm:block">Prev</span>
+                  <ChevronLeftIcon />
+                </Button>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  {pageIndex}
+                </PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+
+              {pageIndex < totalPages && (
+                <PaginationItem>
+                  <Button
+                    variant="ghost"
+                    className="gap-1 px-2.5 cursor-pointer"
+                    onClick={() => setPageIndex((prev) => prev + 1)}
+                  >
+                    <span className="hidden sm:block">Next</span>
+                    <ChevronRightIcon />
+                  </Button>
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
-
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <Button
-              variant="ghost"
-              className="gap-1 px-2.5 cursor-pointer"
-              onClick={() => setPageIndex((prev) => Math.max(1, prev - 1))}
-            >
-              <span className="hidden sm:block">Prev</span>
-              <ChevronLeftIcon />
-            </Button>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              {pageIndex}
-            </PaginationLink>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-
-          {pageIndex < totalPages && (
-            <PaginationItem>
-              <Button
-                variant="ghost"
-                className="gap-1 px-2.5 cursor-pointer"
-                onClick={() => setPageIndex((prev) => prev + 1)}
-              >
-                <span className="hidden sm:block">Next</span>
-                <ChevronRightIcon />
-              </Button>
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
-    </div>
+    </>
   );
 }
 

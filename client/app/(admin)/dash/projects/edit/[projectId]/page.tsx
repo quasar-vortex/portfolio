@@ -1,14 +1,14 @@
 "use client";
 
 import { editorExtensions, MenuBar } from "@/components/editor/Editor";
-import { BaseField, Fields } from "@/components/shared/form";
+
 import TagSelector from "@/components/tags/TagSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import api from "@/lib/api";
@@ -74,8 +74,16 @@ const EditProjectPage = () => {
       api.projectService.getProjectById(projectId, accessToken!),
     enabled: !!projectId && !!accessToken && !!editor,
   });
-
+  const goBack = useCallback(
+    () => () => router.replace("/dash/projects"),
+    [router]
+  );
   useEffect(() => {
+    if (!isLoading && error) {
+      toast.error("Unable to load project");
+      console.log(error);
+      return goBack();
+    }
     if (!accessToken) return router.replace("/login");
     if (data) {
       const { data: project } = data as { data: AdminProject };
@@ -93,9 +101,17 @@ const EditProjectPage = () => {
       if (project.coverImage) setImageUrl(project.coverImage.url);
       editor?.commands.setContent(project.content);
     }
-  }, [projectId, reset, accessToken, editor, data, router]);
-
-  const goBack = () => router.replace("/dash/projects");
+  }, [
+    projectId,
+    reset,
+    accessToken,
+    editor,
+    data,
+    router,
+    error,
+    isLoading,
+    goBack,
+  ]);
 
   const handleUpdate = async (d: UpdateProjectModel) => {
     try {
@@ -126,8 +142,10 @@ const EditProjectPage = () => {
         qc.invalidateQueries({ queryKey: ["featuredProjects"] });
 
       goBack();
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to update project");
+    } catch (e) {
+      toast.error(
+        (e instanceof Error && e.message) || "Failed to update project"
+      );
     }
   };
 
@@ -192,7 +210,7 @@ const EditProjectPage = () => {
                   </label>
                   {isTextarea ? (
                     <textarea
-                      {...register(name as any)}
+                      {...register(name)}
                       id={fieldId}
                       rows={3}
                       placeholder=""
@@ -200,7 +218,9 @@ const EditProjectPage = () => {
                     />
                   ) : (
                     <input
-                      {...register(name as any)}
+                      {...register(
+                        name as "title" | "description" | "codeUrl" | "liveUrl"
+                      )}
                       id={fieldId}
                       type="text"
                       className="w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
@@ -221,7 +241,7 @@ const EditProjectPage = () => {
                   className="flex items-center gap-2 text-gray-600"
                 >
                   <input
-                    {...register(name as any)}
+                    {...register(name as "isPublished" | "isFeatured")}
                     id={`field-${name}`}
                     type="checkbox"
                     className="border border-gray-300 focus:border-gray-500 duration-200 outline-none text-lg"

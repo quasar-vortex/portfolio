@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Button } from "../ui/button";
 import Heading from "@tiptap/extension-heading";

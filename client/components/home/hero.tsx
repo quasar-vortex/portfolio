@@ -41,7 +41,7 @@ const Hero = ({ titles, description, cta, name }: HeroProps) => {
       // Destroy Typed instance during cleanup to stop animation
       typed.destroy();
     };
-  }, []);
+  }, [titles]);
 
   const scrollContainer = useRef<HTMLUListElement | null>(null);
 

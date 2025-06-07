@@ -16,7 +16,7 @@ export const createTagHandler = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -34,7 +34,7 @@ export const searchTagsHandler = async (query: SearchTagsModel) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -51,7 +51,7 @@ export const updateTagsHandler = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -66,7 +66,7 @@ export const getTagByIdHandler = async (tagId: string, token?: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -81,7 +81,7 @@ export const getTagByNameHandler = async (name: string, token?: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -94,7 +94,7 @@ export const deleteTagByIdHandler = async (tagId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }

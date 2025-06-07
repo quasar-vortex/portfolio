@@ -1,8 +1,8 @@
 import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
-import { AdminFile, DbFile, SearchFilesModel } from "../types";
+import { AdminFile, DbFile } from "../types";
 import { apiUrl } from "../utils";
-
+// import { SearchFilesModel } from "../types";
 const baseUrl = `${API_URL}/uploads`;
 const url = apiUrl(baseUrl);
 
@@ -18,7 +18,7 @@ const uploadNewFile = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -34,7 +34,7 @@ const deleteFile = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -51,12 +51,13 @@ const getFileById = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
 };
 
+/* 
 const getManyFiles = async (
   q: SearchFilesModel,
   token: string
@@ -81,10 +82,11 @@ const getManyFiles = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
 };
+*/
 
-export { uploadNewFile, deleteFile, getFileById, getManyFiles };
+export { uploadNewFile, deleteFile, getFileById };

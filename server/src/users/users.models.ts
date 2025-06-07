@@ -1,14 +1,22 @@
 import z from "zod";
 import { baseUseModel } from "../auth";
 
+const updateUserRole = z.object({
+  params: z.object({ userId: z.string() }),
+  body: z.object({
+    role: z.union([z.literal("ADMIN"), z.literal("USER")]).optional(),
+  }),
+});
+type UpdateUserRole = z.infer<typeof updateUserRole>["body"];
 type UpdateUserModel = z.infer<typeof updateUserModel>["body"];
+
 const updateUserModel = z.object({
   params: z.object({ userId: z.string() }),
   body: z.object({
     firstName: baseUseModel.shape.firstName,
     lastName: baseUseModel.shape.lastName,
     email: baseUseModel.shape.email,
-    role: z.union([z.literal("ADMIN"), z.literal("USER")]).optional(),
+
     bio: z
       .string()
       .max(250, { message: "Bio cannot exceeed 250 characters." })
@@ -30,4 +38,11 @@ const searchUsersModel = z.object({
   }),
 });
 
-export { updateUserModel, UpdateUserModel, searchUsersModel, SearchUsersModel };
+export {
+  updateUserRole,
+  UpdateUserRole,
+  updateUserModel,
+  UpdateUserModel,
+  searchUsersModel,
+  SearchUsersModel,
+};

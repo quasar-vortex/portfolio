@@ -1,7 +1,7 @@
 "use client";
 
+import { Post } from "@/lib/types";
 import Link from "next/link";
-import { Post } from "./featuredposts";
 
 const PostsTable = ({ posts }: { posts: Post[] }) => {
   return (

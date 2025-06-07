@@ -19,7 +19,7 @@ export const createProject = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -36,7 +36,7 @@ export const updateProject = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -49,7 +49,7 @@ export const getProjectById = async (projectId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -60,7 +60,7 @@ export const getProjectBySlug = async (slug: string) => {
     const res = await axiosInstance.get(url(`slug/${slug}`));
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -74,7 +74,7 @@ export const getManyProjects = async (query: SearchProjectsModel) => {
     const res = await axiosInstance.get(url(`?${searchParams}`));
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -90,7 +90,7 @@ export const toggleProjectFeatured = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -106,7 +106,7 @@ export const toggleProjectPublished = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -122,7 +122,7 @@ export const deleteProjectByIdHandler = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }

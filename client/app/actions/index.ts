@@ -1,5 +1,4 @@
 "use server";
-import twilio from "twilio";
 import z from "zod";
 
 /* 
@@ -32,7 +31,8 @@ const contactSchema = z.object({
     .max(500, { message: "Message cannot exceed 500 characters." }),
 });
 
-export const sendMessage = async (prevState: any, data: FormData) => {
+//@ts-expect-error previous state in form send message
+export const sendMessage = async (prevState, data: FormData) => {
   /* 
   const t = twilio(twilioConfig.keyId, twilioConfig.key, {
     accountSid: twilioConfig.accountId,

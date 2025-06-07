@@ -1,11 +1,10 @@
-import { RegisterSchema } from "@/app/(admin)/register/page";
 import { authHeaders, axiosInstance } from ".";
 import { API_URL } from "../constants";
-import { LoginSchema } from "@/app/(admin)/login/page";
-import { authStoreRef, User } from "@/app/store";
+import { User } from "@/app/store";
 import { AxiosResponse } from "axios";
 import { ApiRes, apiUrl } from "../utils";
-import { toast } from "sonner";
+import { LoginSchema, RegisterSchema } from "../auth/models";
+
 const baseUrl = `${API_URL}/auth`;
 const url = apiUrl(baseUrl);
 
@@ -20,7 +19,7 @@ export const registerUser = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -37,7 +36,7 @@ export const loginUser: (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -51,7 +50,7 @@ export const logOffUser = async (token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -70,7 +69,7 @@ export const refreshUser = async (): Promise<{
     isRefreshing = false;
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error?.response?.data?.message;
     throw new Error(msg);
   }

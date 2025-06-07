@@ -17,7 +17,7 @@ const SignOut = () => {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      const json = await res.json();
+      await res.json();
       clearUser();
       router.replace("/login");
     } catch (error) {

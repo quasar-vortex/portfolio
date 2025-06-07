@@ -3,7 +3,7 @@
 "use client";
 
 import { editorExtensions, MenuBar } from "@/components/editor/Editor";
-import { BaseField, Fields } from "@/components/shared/form";
+import { Fields } from "@/components/shared/form";
 import TagSelector from "@/components/tags/TagSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,11 +31,6 @@ const createProjectModel = z.object({
   isFeatured: z.boolean(),
   coverImageId: z.string().optional(),
 });
-
-const contentSchema = z
-  .string()
-  .min(10, "Content must be at least 10 characters")
-  .max(100_000);
 
 type CreateProjectModel = z.infer<typeof createProjectModel>;
 
@@ -136,8 +131,10 @@ const NewProjectPage = () => {
         qc.invalidateQueries({ queryKey: ["featuredProjects"] });
 
       goBack();
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to create project");
+    } catch (e) {
+      toast.error(
+        (e instanceof Error && e.message) || "Failed to create project"
+      );
     }
   };
 

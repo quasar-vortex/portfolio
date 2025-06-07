@@ -26,7 +26,7 @@ const updateTagModel = z.object({
 type SearchTagsModel = z.infer<typeof searchTagsModel>["query"];
 const searchTagsModel = z.object({
   query: z.object({
-    name: z
+    term: z
       .string()
       .max(50, { message: "Search cannot exceed 50 characters." })
       .optional(),

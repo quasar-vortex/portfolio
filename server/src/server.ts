@@ -42,6 +42,7 @@ app.use("/api/v1/projects", projectsRouter);
 
 app.use(errorMiddleware);
 
+/* 
 const cleanUpFiles = async () => {
   try {
     logger.info("Cleaning Up Files");
@@ -61,6 +62,46 @@ const cleanUpFiles = async () => {
     logger.warn("Unable to clean up files");
   }
 };
+
+*/
+const runInactiveRecordCleanUp = () => {
+  setInterval(async () => {
+    try {
+      logger.info("Running Inactive Record Cleanup");
+
+      await db.post.deleteMany({ where: { isActive: false } });
+      await db.project.deleteMany({ where: { isActive: false } });
+
+      const files = await db.file.findMany({ where: { isActive: false } });
+      await Promise.all(files.map((item) => deleteFileByKey(item.objectKey)));
+
+      const f = await db.$queryRaw<{ id: string; objectKey: string }[]>`
+                  select f.id, f.objectKey
+                  from File f
+                  where f.id not in (select u.avatarFileId from User u)
+                  and f.id not in (select p.coverImageId from Post p)
+                  and f.id not in (select p.coverImageId from Project p)
+    `;
+      await Promise.all(f.map((item) => deleteFileByKey(item.objectKey)));
+
+      await db.file.deleteMany({
+        where: {
+          OR: [
+            { id: { in: files.map((item) => item.id) } },
+            { id: { in: f.map((item) => item.id) } },
+          ],
+        },
+      });
+
+      await db.user.deleteMany({ where: { isActive: false } });
+
+      logger.info("Inactive Record Cleanup Completed");
+    } catch (err) {
+      logger.error("Error during Inactive Record Cleanup", err);
+    }
+  }, 1000 * 60 * CLEANUP_INTERVAL);
+};
+
 const main = async () => {
   try {
     await db.$connect();
@@ -71,30 +112,7 @@ const main = async () => {
     logger.info(
       `Inactive record cleanup runs every ${CLEANUP_INTERVAL} minutes.`
     );
-    setInterval(async () => {
-      logger.info("Running Inactive Record Cleanup");
-      // find files older than x minutes with no record link
-      // tags delete on cascade for projects and posts
-      await db.post.deleteMany({ where: { isActive: false } });
-      await db.project.deleteMany({
-        where: { isActive: false },
-      });
-      // find files, delete from s3 and then DB
-      const files = await db.file.findMany({ where: { isActive: false } });
-      await Promise.all(
-        files.map(async (item) => {
-          return await deleteFileByKey(item.objectKey);
-        })
-      );
-      await db.file.deleteMany({
-        where: { id: { in: files.map((item) => item.id) } },
-      });
-      // clean up inactive users
-      await db.user.deleteMany({ where: { isActive: false } });
-
-      logger.info("Inactive Record Cleanup Completed");
-      // runs every 15 minutes default
-    }, 1000 * 60 * CLEANUP_INTERVAL);
+    runInactiveRecordCleanUp();
   } catch (error) {
     logger.error(error);
     process.exit(1);

@@ -1,167 +1,221 @@
 "use client";
 
-import { registerSchema } from "@/app/(admin)/register/page";
 import { useAuthStore } from "@/app/providers/storeProvider";
-import { Container } from "@/components/shared/container";
-import Form, { Fields } from "@/components/shared/form";
-import Section from "@/components/shared/section";
-import { Button } from "@/components/ui/button";
-import { capitalize } from "@/lib/utils/index";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import Link from "next/link";
-import React, { useState } from "react";
-import { FiPenTool } from "react-icons/fi";
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { z } from "zod";
-import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
-import Spinner from "@/components/shared/Spinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
-const upateUserSchema = registerSchema
-  .pick({
-    firstName: true,
-    lastName: true,
-    email: true,
-  })
-  .extend({
-    bio: z
-      .string()
-      .min(20, "Bio must be at least 20 characters.")
-      .max(250, "Bio cannot exceed 250 characters."),
-  });
 
-type UpdateUserSchema = z.infer<typeof upateUserSchema>;
-const registerFields: Fields<UpdateUserSchema> = [
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import React, { useState } from "react";
+import FileUploader from "@/components/shared/FileUploader";
+import Image from "next/image";
+import { FiX } from "react-icons/fi";
+
+const updateUserSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  bio: z
+    .string()
+    .min(20, "Bio must be at least 20 characters.")
+    .max(250, "Bio cannot exceed 250 characters."),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().optional(),
+});
+
+type UpdateUserForm = z.infer<typeof updateUserSchema>;
+
+const userFields: {
+  name: keyof UpdateUserForm;
+  label: string;
+  type: "text" | "textarea" | "password";
+  placeholder: string;
+}[] = [
   {
     name: "firstName",
     label: "First Name",
-    placeholder: "Enter your first name...",
     type: "text",
+    placeholder: "Enter first name",
   },
   {
     name: "lastName",
     label: "Last Name",
-    placeholder: "Enter your last name...",
     type: "text",
+    placeholder: "Enter last name",
   },
   {
     name: "email",
     label: "Email",
-    placeholder: "Enter your email...",
     type: "text",
+    placeholder: "Enter email address",
   },
   {
     name: "bio",
     label: "Bio",
-    placeholder: "Write about yourself...",
     type: "textarea",
+    placeholder: "Write a short bio",
+  },
+  {
+    name: "currentPassword",
+    label: "Current Password",
+    type: "password",
+    placeholder: "Enter current password",
+  },
+  {
+    name: "newPassword",
+    label: "New Password",
+    type: "password",
+    placeholder: "Enter new password (optional)",
   },
 ];
 
-const UploadList = () => {
-  const { user, accessToken } = useAuthStore();
-  const { isPending, error, data } = useQuery({
-    queryKey: ["userUploads"],
-    queryFn: async () =>
-      api.userService.getUploadsByUserId(user!.id, accessToken!),
+export default function EditUserPage() {
+  const { user, setUser, accessToken } = useAuthStore();
+  const qc = useQueryClient();
+  const router = useRouter();
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>(user?.avatarFile?.url || "");
+  const [avatarFileRemoved, setAvatarFileRemoved] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateUserForm>({
+    resolver: zodResolver(updateUserSchema),
+    mode: "onTouched",
+    defaultValues: {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      bio: user?.bio || "",
+      currentPassword: "",
+      newPassword: "",
+    },
   });
-  if (isPending) return <Spinner />;
-  if (error)
-    return (
-      <Alert className="mb-6 text-red-600 font-bold shadow-md">
-        <AlertTitle>
-          <h4 className="font-bold text-lg sm:text-xl">Unable to Load Posts</h4>
-        </AlertTitle>
-        {error?.message && <AlertDescription>{error.message}</AlertDescription>}
-      </Alert>
-    );
+
+  const mutation = useMutation({
+    mutationFn: async (data: UpdateUserForm) => {
+      let avatarFileId: string | undefined = undefined;
+      if (coverImageFile) {
+        const formData = new FormData();
+        formData.set("image", coverImageFile);
+        const { data: uploaded } = await api.uploadService.uploadNewFile(
+          formData,
+          accessToken!
+        );
+        avatarFileId = uploaded.id;
+      } else if (!avatarFileRemoved) {
+        avatarFileId = user?.avatarFile?.id;
+      }
+
+      return api.userService.updateUserProfile(
+        user!.id,
+        {
+          ...data,
+          avatarFileId,
+          ...(data.newPassword == "" && { newPassword: undefined }),
+        },
+        accessToken!
+      );
+    },
+    onSuccess: (data) => {
+      setUser({
+        user: data.data,
+        accessToken,
+        createdAt: Date.now(),
+      });
+      qc.invalidateQueries({ queryKey: ["account"] });
+      toast.success("Profile updated successfully");
+      router.push("/account");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
+    },
+  });
+
   return (
-    <ul className="space-y-4">
-      {data &&
-        data.data.map((item) => {
-          return (
-            <li
-              key={item.id}
-              className="flex hover:bg-gray-400 duration-200 odd:bg-gray-100 p-4 flex-col items-center gap-3"
-            >
-              <h4>{item.originalName}</h4>
-              <Image
-                alt="user upload"
-                height={200}
-                width={200}
-                src={item.url}
+    <section className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Edit Account</h1>
+        <Button onClick={() => router.back()}>Back</Button>
+      </div>
+      <Card>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit((d) => mutation.mutate(d))}
+            className="flex flex-col gap-4"
+          >
+            {imageUrl ? (
+              <div className="flex flex-col items-center gap-4">
+                <Image
+                  className="rounded-full object-cover mx-auto"
+                  src={imageUrl}
+                  width={128}
+                  height={128}
+                  alt="Avatar Preview"
+                />
+                <Button
+                  onClick={() => {
+                    setImageUrl("");
+                    setCoverImageFile(null);
+                    setAvatarFileRemoved(true);
+                  }}
+                  type="button"
+                  className="cursor-pointer bg-red-500 duration-200 hover:bg-red-600"
+                >
+                  <FiX /> Delete
+                </Button>
+              </div>
+            ) : (
+              <FileUploader
+                onFileUpload={(file) => {
+                  setCoverImageFile(file);
+                  setImageUrl(URL.createObjectURL(file!));
+                  setAvatarFileRemoved(false);
+                }}
               />
-            </li>
-          );
-        })}
-    </ul>
-  );
-};
+            )}
 
-const EditAccountPage = () => {
-  const { user, setUser } = useAuthStore();
-  const { firstName, lastName, avatarFile, bio, role } = user!;
-
-  return (
-    <>
-      <header>
-        <Container className="flex justify-between ">
-          <h1 className="text-2xl font-bold sm:text-3xl">
-            Edit Account Settings
-          </h1>
-          <Button asChild className="cursor-pointer">
-            <Link href="/account">Back</Link>
-          </Button>
-        </Container>
-      </header>
-
-      <Section wrapperPadding={false}>
-        <Card className="p-6 max-w-xl mx-auto">
-          <div className="flex flex-col gap-6 items-center mb-6">
-            <Dialog>
-              <DialogTrigger className="cursor-pointer w-full hover:bg-gray-100 duration-200">
-                <Avatar className="flex flex-col items-center">
-                  <AvatarImage
-                    className="size-24 sm:size-32 rounded-full"
-                    src={avatarFile?.url || ""}
+            {userFields.map(({ name, label, type, placeholder }) => (
+              <div key={name}>
+                <label htmlFor={name} className="text-gray-600 block mb-2">
+                  {label}
+                </label>
+                {type === "textarea" ? (
+                  <textarea
+                    {...register(name)}
+                    id={name}
+                    placeholder={placeholder}
+                    className="resize-y w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
                   />
-                  <AvatarFallback>
-                    <div className="size-24 sm:size-32 rounded-full bg-slate-900 relative">
-                      <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white whitespace-nowrap">
-                        No Image
-                      </p>
-                    </div>
-                  </AvatarFallback>
-                  <span className="text-red-600 block mt-3">
-                    Click to Replace
-                  </span>
-                </Avatar>
-              </DialogTrigger>
-              <DialogContent className="max-h-1/2 overflow-y-auto">
-                <DialogTitle>User Files</DialogTitle>
-                <UploadList />
-              </DialogContent>
-            </Dialog>
-            <Form
-              fields={registerFields}
-              onSubmit={(d) => {}}
-              schema={upateUserSchema}
-              btnText="Update Profile"
-            />
-          </div>
-        </Card>
-      </Section>
-    </>
+                ) : (
+                  <input
+                    {...register(name)}
+                    id={name}
+                    type={type}
+                    placeholder={placeholder}
+                    className="w-full border border-gray-300 focus:border-gray-500 duration-200 outline-none p-2 text-lg"
+                  />
+                )}
+                {errors[name] && (
+                  <p className="text-red-600 text-sm font-bold">
+                    {errors[name]?.message as string}
+                  </p>
+                )}
+              </div>
+            ))}
+            <Button type="submit" className="mx-auto font-bold cursor-pointer">
+              Update Profile
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </section>
   );
-};
-
-export default EditAccountPage;
+}

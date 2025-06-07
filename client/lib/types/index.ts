@@ -137,7 +137,7 @@ export type SearchFilesModel = {
 };
 
 export type SearchTagsModel = {
-  name?: string | undefined;
+  term?: string | undefined;
   pageIndex?: number | undefined;
   pageSize?: number | undefined;
 };

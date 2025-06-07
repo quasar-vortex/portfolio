@@ -3,20 +3,18 @@
 import PaginatedTable, {
   TableColumn,
 } from "@/components/shared/PaginatedTable";
-import ProjectsTable from "@/components/projects/ProjectsTable";
 import Spinner from "@/components/shared/Spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import api from "@/lib/api";
 import { capitalize } from "@/lib/utils";
 import Image from "next/image";
-import { Post, CoverImage } from "@/lib/types";
+import { Post, CoverImage, Project } from "@/lib/types";
 
-const columns: TableColumn<Post>[] = [
+const postColumns: TableColumn<Post>[] = [
   {
     key: "coverImage",
     header: "Cover Image",
@@ -51,6 +49,80 @@ const columns: TableColumn<Post>[] = [
       return (value as Post["PostTag"]).map((item) => item.tag.name).join(",");
     },
   },
+];
+
+const projectColumns: TableColumn<Project>[] = [
+  {
+    key: "coverImage",
+    header: "Cover Image",
+    render: (val) =>
+      val && (
+        <div className="w-24 h-24">
+          <Image
+            src={(val as CoverImage).url}
+            height={200}
+            width={200}
+            alt="cover"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ),
+  },
+  {
+    key: "title",
+    header: "Title",
+    render: (val) => (val ? capitalize(val as Project["title"]) : ""),
+  },
+  { key: "slug", header: "Slug" },
+  {
+    key: "codeUrl",
+    header: "Code URL",
+    render: (val) =>
+      val ? (
+        <a
+          href={val as string}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline"
+        >
+          View Code
+        </a>
+      ) : (
+        ""
+      ),
+  },
+  {
+    key: "liveUrl",
+    header: "Live URL",
+    render: (val) =>
+      val ? (
+        <a
+          href={val as string}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-600 underline"
+        >
+          Visit Site
+        </a>
+      ) : (
+        ""
+      ),
+  },
+  {
+    key: "author",
+    header: "Author",
+    render: (val) =>
+      val ? capitalize((val as Project["author"]).firstName) : "",
+  },
+  {
+    key: "ProjectTag",
+    header: "Tags",
+    render: (value) => {
+      return (value as Project["ProjectTag"])
+        .map((item) => item.tag.name)
+        .join(",");
+    },
+  },
   {
     key: "isFeatured",
     header: "Featured?",
@@ -59,20 +131,12 @@ const columns: TableColumn<Post>[] = [
 ];
 
 const DashBoard = () => {
-  const {
-    isPending: postsPending,
-    error: postsError,
-    data: featuredPosts,
-  } = useQuery({
+  const { isPending: postsPending, error: postsError } = useQuery({
     queryKey: ["featuredPosts"],
     queryFn: async () => api.postService.searchPosts({ isFeatured: true }),
   });
 
-  const {
-    isPending: projectsPending,
-    error: projectsError,
-    data: featuredProjects,
-  } = useQuery({
+  const { isPending: projectsPending, error: projectsError } = useQuery({
     queryKey: ["featuredProjects"],
     queryFn: async () =>
       api.projectService.getManyProjects({ isFeatured: true }),
@@ -111,7 +175,7 @@ const DashBoard = () => {
               queryFn={async (params) =>
                 api.postService.searchPosts({ ...params, isFeatured: true })
               }
-              columns={columns}
+              columns={postColumns}
               searchPlaceholder="Search featured posts..."
               actions={(post) => (
                 <Link href={`/dash/posts/edit/${post.id}`}>
@@ -141,7 +205,25 @@ const DashBoard = () => {
           )}
           {projectsPending && <Spinner />}
           {!projectsPending && (
-            <ProjectsTable projects={featuredProjects?.data} />
+            <PaginatedTable<Project>
+              displaySearch={false}
+              queryKey="featuredProjects"
+              queryFn={async (params) =>
+                api.projectService.getManyProjects({
+                  ...params,
+                  isFeatured: true,
+                })
+              }
+              columns={projectColumns}
+              searchPlaceholder="Search featured projects..."
+              actions={(project) => (
+                <Link href={`/dash/projects/edit/${project.id}`}>
+                  <Button variant="outline" size="sm">
+                    Edit
+                  </Button>
+                </Link>
+              )}
+            />
           )}
         </div>
       </div>

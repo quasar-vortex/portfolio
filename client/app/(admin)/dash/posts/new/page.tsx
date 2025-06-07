@@ -32,10 +32,7 @@ const createPostModel = z.object({
   isFeatured: z.boolean(),
   coverImageId: z.string().optional(),
 });
-const contentSchema = z
-  .string()
-  .min(10, "Content must be at least 10 characters")
-  .max(100_000, "Content must be less than 100,000 characters");
+
 type CreatePostModel = z.infer<typeof createPostModel>;
 
 const postFields: Fields<CreatePostModel> = [
@@ -203,10 +200,7 @@ const NewPostPage = () => {
         coverImageId,
         content,
       };
-      const newPost = await api.postService.createPost(
-        postPayload,
-        accessToken!
-      );
+      await api.postService.createPost(postPayload, accessToken!);
       qc.invalidateQueries({ queryKey: ["posts", 1, 10, ""] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
       if (isFeatured) qc.invalidateQueries({ queryKey: ["featuredPosts"] });

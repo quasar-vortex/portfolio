@@ -70,12 +70,12 @@ const searchTagsHandler: AuthenticatedRequestHandler = async (
   try {
     const role = req.user?.role;
     const {
-      name = "",
+      term = "",
       pageIndex = "1",
       pageSize = "10",
     } = req.query as unknown as SearchTagsModel;
 
-    const trimmedTerm = name && name !== "" && name.trim();
+    const trimmedTerm = term && term !== "" && term.trim();
     const index = Math.max((parseInt(pageIndex, 10) || 1) - 1, 0);
     const size = Math.min(Math.max(parseInt(pageSize, 10) || 10, 1), 50);
 

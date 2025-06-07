@@ -13,16 +13,30 @@ const BASE_URL = `${API_URL}/users`;
 const url = apiUrl(BASE_URL);
 
 export const updateUserProfile = async (
+  userId: string,
   payload: UpdateUserPayload,
   token: string
 ) => {
   try {
-    const res = await axiosInstance.post(url(), payload, {
+    const res = await axiosInstance.put(url(`${userId}`), payload, {
       headers: authHeaders(token),
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
+    const msg = error.response?.data?.message || "Request Failed";
+    throw new Error(msg);
+  }
+};
+
+export const toggleUserRole = async (userId: string, token: string) => {
+  try {
+    const res = await axiosInstance.put(url(`${userId}/role`), {
+      headers: authHeaders(token),
+    });
+    return res.data;
+  } catch (error) {
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -34,14 +48,14 @@ export const getManyUsersHandler = async (
 ): Promise<PaginatedUserResponse> => {
   try {
     const res = await axiosInstance.get(
-      url(`?${new URLSearchParams(payload as any)}`),
+      url(`?${new URLSearchParams(payload as Record<string, string>)}`),
       {
         headers: authHeaders(token),
       }
     );
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -57,7 +71,7 @@ export const getUploadsByUserId = async (
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -70,7 +84,7 @@ export const getPostsByUserId = async (userId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }
@@ -83,7 +97,7 @@ export const getProjecstByUserId = async (userId: string, token: string) => {
     });
     return res.data;
   } catch (error) {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     const msg = error.response?.data?.message || "Request Failed";
     throw new Error(msg);
   }

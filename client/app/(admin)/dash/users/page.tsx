@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { User } from "@/lib/types";
 import Image from "next/image";
 import { capitalize } from "@/lib/utils";
@@ -21,7 +21,7 @@ const columns: TableColumn<User>[] = [
     render: (val) =>
       val ? (
         <Image
-          src={val.url}
+          src={(val as User["avatarFile"])!.url!}
           alt="avatar"
           width={40}
           height={40}
@@ -32,12 +32,12 @@ const columns: TableColumn<User>[] = [
   {
     key: "firstName",
     header: "First Name",
-    render: (val) => capitalize(val),
+    render: (val) => capitalize(val as string),
   },
   {
     key: "lastName",
     header: "Last Name",
-    render: (val) => capitalize(val),
+    render: (val) => capitalize(val as string),
   },
   {
     key: "email",
@@ -46,7 +46,7 @@ const columns: TableColumn<User>[] = [
   {
     key: "role",
     header: "Role",
-    render: (val) => val.toLowerCase(),
+    render: (val) => (val as string).toLowerCase(),
   },
   {
     key: "isActive",
@@ -58,7 +58,19 @@ const columns: TableColumn<User>[] = [
 export default function ManageUsersPage() {
   const { accessToken } = useAuthStore();
   const qc = useQueryClient();
-  const r = useRouter();
+
+  const { mutate: updateRole, isPending } = useMutation({
+    mutationFn: async ({ userId }: { userId: string }) => {
+      return api.userService.toggleUserRole(userId, accessToken!);
+    },
+    onSuccess: () => {
+      toast.success("Role updated successfully");
+      qc.invalidateQueries({ queryKey: ["manageUsers"] });
+    },
+    onError: (err) => {
+      toast.error(err.message || "Unable to update role");
+    },
+  });
 
   return (
     <section className="p-6 space-y-6">
@@ -78,6 +90,19 @@ export default function ManageUsersPage() {
                 Edit
               </Button>
             </Link>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={isPending}
+              onClick={() =>
+                updateRole({
+                  userId: user.id,
+                })
+              }
+            >
+              Set {user.role === "ADMIN" ? "User" : "Admin"}
+            </Button>
           </div>
         )}
         searchPlaceholder="Search users by name or email..."

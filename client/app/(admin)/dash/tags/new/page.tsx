@@ -41,8 +41,8 @@ export default function NewTagPage() {
       toast.success("Tag created");
       qc.invalidateQueries({ queryKey: ["manageTags"] });
       r.replace("/dash/tags");
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to create tag");
+    } catch (e) {
+      toast.error((e instanceof Error && e.message) || "Failed to create tag");
     }
   };
 

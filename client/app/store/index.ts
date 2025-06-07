@@ -1,5 +1,3 @@
-import api from "@/lib/api";
-import { toast } from "sonner";
 import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
 export type User = {
@@ -17,7 +15,7 @@ export type User = {
 export type AuthState = {
   user: User | null;
   accessToken: string | null;
-  createdAt: Number | null;
+  createdAt: number | null;
 };
 type AuthActions = {
   setUser: (p: AuthState) => void;
@@ -52,7 +50,12 @@ export const createAuthStore = (initState: AuthState = defaultInitState) => {
           }));
         },
         clearUser: () =>
-          set((st) => ({ user: null, accessToken: null, createdAt: null })),
+          set((st) => ({
+            ...st,
+            user: null,
+            accessToken: null,
+            createdAt: null,
+          })),
       }),
       {
         name: "auth",

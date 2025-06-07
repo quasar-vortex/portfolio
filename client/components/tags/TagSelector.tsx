@@ -25,7 +25,7 @@ const TagSelector = (p: TagSelectorProps) => {
       return searchTagsHandler({
         pageIndex: 1,
         pageSize: 10,
-        name: debouncedTagName || "",
+        term: debouncedTagName || "",
       });
     },
   });

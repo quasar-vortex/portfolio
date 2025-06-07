@@ -9,12 +9,6 @@ import { Card } from "../ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import api from "@/lib/api";
 
-type PaginationMeta = {
-  pageIndex: number;
-  pageSize: number;
-  totalPages: number;
-  totalCount: number;
-};
 type Project = {
   id: string;
   title: string;

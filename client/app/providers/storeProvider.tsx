@@ -26,7 +26,7 @@ export const AuthStoreProvider = ({ children }: AuthStoreProviderProps) => {
   }
 
   useEffect(() => {
-    //@ts-ignore
+    //@ts-expect-error error type issue
     setAuthStoreRef(storeRef.current);
   }, []);
   return (

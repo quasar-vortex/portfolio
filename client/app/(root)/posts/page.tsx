@@ -9,10 +9,11 @@ import {
 import React from "react";
 
 const PostListingPage = async ({
-  searchParams,
+  searchParams: sParams,
 }: {
-  searchParams: Record<string, string>;
+  searchParams: Promise<Record<string, string>>;
 }) => {
+  const searchParams = await sParams;
   const queryClient = new QueryClient();
 
   const term = searchParams.term || "";

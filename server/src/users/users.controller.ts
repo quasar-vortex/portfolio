@@ -51,27 +51,27 @@ const updateUserProfileHandler: AuthenticatedRequestHandler = async (
         status: "FORBIDDEN",
         message: "Not allowed to update another's profile!",
       });
+
+    const foundUser = await db.user.findUnique({
+      where: { id: toUpdateUserId },
+    });
     const {
       email,
       currentPassword,
       firstName,
       lastName,
       newPassword,
-      role,
       bio,
       avatarFileId,
     } = req.body as UpdateUserModel;
+
     const payload: Partial<User> = {
       email,
       firstName,
       lastName,
-      avatarFileId,
+      avatarFileId: avatarFileId ?? null,
       bio,
     };
-
-    const foundUser = await db.user.findUnique({
-      where: { id: toUpdateUserId },
-    });
 
     if (!foundUser)
       throw new HttpError({
@@ -109,9 +109,7 @@ const updateUserProfileHandler: AuthenticatedRequestHandler = async (
         });
       payload.passwordHash = await argon.hash(newPassword);
     }
-    if (isAdmin && role) {
-      payload.role = role;
-    }
+
     if (avatarFileId && avatarFileId !== foundUser.avatarFileId) {
       const foundFile = await db.file.findUnique({
         where: { id: avatarFileId },
@@ -139,6 +137,65 @@ const updateUserProfileHandler: AuthenticatedRequestHandler = async (
     next(error);
   }
 };
+
+const toggleUserRoleHandler: AuthenticatedRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const isAdmin = req.user!.role === "ADMIN";
+  const toUpdateUserId = req.params.userId;
+  const signedInUserId = req.user!.id;
+  const meta = {
+    ip: req.ip,
+    method: req.method,
+    url: req.url,
+    userId: signedInUserId,
+    toUpdateId: toUpdateUserId,
+  };
+  try {
+    logger.info(meta, "Request to toggle user role");
+
+    if (signedInUserId === toUpdateUserId)
+      throw new HttpError({
+        status: "BAD_REQUEST",
+        message: "Unable to disable own admin account.",
+      });
+    if (!isAdmin)
+      throw new HttpError({
+        status: "FORBIDDEN",
+        message: "Only admins may change user roles!",
+      });
+
+    const user = await db.user.findUnique({
+      where: { id: toUpdateUserId },
+    });
+    if (!user)
+      throw new HttpError({
+        status: "NOT_FOUND",
+        message: "User not found to update role!",
+      });
+
+    const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
+
+    const updatedUser = await db.user.update({
+      where: { id: toUpdateUserId },
+      data: {
+        role: newRole,
+        dateUpdated: new Date(),
+        updatedById: signedInUserId,
+      },
+      select: adminUserSelect,
+    });
+
+    logger.info(meta, `Updated user role to ${newRole}`);
+    res.status(200).json({ data: updatedUser });
+  } catch (error) {
+    logger.warn({ error }, "Unable to toggle user role");
+    next(error);
+  }
+};
+
 const getUserByIdHandler: AuthenticatedRequestHandler = async (
   req,
   res,
@@ -398,4 +455,5 @@ export {
   getManyUsersHandler,
   deleteUserByIdHandler,
   getUploadsByUserId,
+  toggleUserRoleHandler,
 };

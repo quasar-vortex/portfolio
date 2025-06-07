@@ -1,63 +1,18 @@
 "use client";
 
-import { registerSchema } from "@/app/(admin)/register/page";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import { Container } from "@/components/shared/container";
-import { Fields } from "@/components/shared/form";
+
 import Section from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
 import { capitalize } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { FiPenTool } from "react-icons/fi";
 
-import { z } from "zod";
-
-const upateUserSchema = registerSchema
-  .pick({
-    firstName: true,
-    lastName: true,
-    email: true,
-  })
-  .extend({
-    bio: z
-      .string()
-      .min(20, "Bio must be at least 20 characters.")
-      .max(250, "Bio cannot exceed 250 characters."),
-  });
-
-type UpdateUserSchema = z.infer<typeof upateUserSchema>;
-const registerFields: Fields<UpdateUserSchema> = [
-  {
-    name: "firstName",
-    label: "First Name",
-    placeholder: "Enter your first name...",
-    type: "text",
-  },
-  {
-    name: "lastName",
-    label: "Last Name",
-    placeholder: "Enter your last name...",
-    type: "text",
-  },
-  {
-    name: "email",
-    label: "Email",
-    placeholder: "Enter your email...",
-    type: "text",
-  },
-  {
-    name: "bio",
-    label: "Bio",
-    placeholder: "Write about yourself...",
-    type: "textarea",
-  },
-];
-
 const AccountPage = () => {
-  const [editProfile, setEditProfile] = useState(false);
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { firstName, lastName, avatarFile, bio, role } = user!;
 
   return (

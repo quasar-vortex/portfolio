@@ -23,6 +23,7 @@ const Section = ({
 }: Props) => {
   return (
     <section
+      id={id}
       className={`${bgGray && "bg-gray-100"} ${
         wrapperPadding && "py-12"
       } ${wrapperClass}`}

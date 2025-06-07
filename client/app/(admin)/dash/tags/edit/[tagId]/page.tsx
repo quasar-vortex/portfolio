@@ -37,11 +37,12 @@ export default function EditTagPage() {
 
   const { data } = useQuery({
     queryKey: ["editTag", tagId],
-    queryFn: () => api.tagService.getTagByIdHandler(tagId, accessToken!),
+    queryFn: async () =>
+      await api.tagService.getTagByIdHandler(tagId, accessToken!),
   });
 
   useEffect(() => {
-    if (data) reset({ name: data.name });
+    if (data) reset({ name: data.data.name });
   }, [data, reset]);
 
   const onSubmit = async (formData: TagModel) => {
@@ -49,8 +50,8 @@ export default function EditTagPage() {
       await api.tagService.updateTagsHandler(tagId, formData, accessToken!);
       qc.invalidateQueries({ queryKey: ["manageTags"] });
       router.replace("/dash/tags");
-    } catch (e: any) {
-      toast.error(e?.message || "Unable to update tag");
+    } catch (e) {
+      toast.error((e instanceof Error && e.message) || "Unable to update tag");
     }
   };
 

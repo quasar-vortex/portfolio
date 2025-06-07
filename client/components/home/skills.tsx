@@ -1,13 +1,14 @@
 import React from "react";
-import { Container } from "../shared/container";
 import Section from "../shared/section";
+import { IconType } from "react-icons/lib";
+import { LucideIcon } from "lucide-react";
 
 const Skills = ({
   sillList,
   bgGray,
 }: {
   bgGray?: boolean;
-  sillList: { label: string; icon: any }[];
+  sillList: { label: string; icon: IconType | LucideIcon }[];
 }) => {
   return (
     <Section bgGray={bgGray} title="Skills">

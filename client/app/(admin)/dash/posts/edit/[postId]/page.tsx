@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import api from "@/lib/api";
@@ -36,10 +36,12 @@ const createPostModel = z.object({
   isFeatured: z.boolean().optional(),
   coverImageId: z.string().optional(),
 });
+/* 
 const contentSchema = z
   .string()
   .min(10, "Content must be at least 10 characters")
   .max(100_000, "Content must be less than 100,000 characters");
+*/
 type CreatePostModel = z.infer<typeof createPostModel>;
 
 const postFields: Fields<CreatePostModel> = [
@@ -83,9 +85,10 @@ const EditPostPage = () => {
   const params = useParams();
   const { postId } = params;
 
-  const goBack = () => {
-    router.replace("/dash/posts");
-  };
+  const goBack = useCallback(
+    () => () => router.replace("/dash/projects"),
+    [router]
+  );
   const [postCoverImageFile, setPostCoverImageFile] = useState<File | null>(
     null
   );
@@ -93,7 +96,7 @@ const EditPostPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, defaultValues },
+    formState: { errors },
     setValue,
     reset,
   } = useForm<Omit<CreatePostModel, "content">>({
@@ -113,6 +116,11 @@ const EditPostPage = () => {
     queryFn: () => api.postService.getPostById(postId as string, accessToken!),
   });
   useEffect(() => {
+    if (error) {
+      console.log(error);
+      toast.error("Unable to load post");
+      return goBack();
+    }
     if (!accessToken) {
       return router.replace("/login");
     }
@@ -130,7 +138,17 @@ const EditPostPage = () => {
       if (pData.coverImage) setImageUrl(pData.coverImage.url);
       editor?.commands.setContent(pData.content);
     }
-  }, [postId, reset, accessToken, editor, data]);
+  }, [
+    postId,
+    reset,
+    accessToken,
+    editor,
+    data,
+    error,
+    isPending,
+    router,
+    goBack,
+  ]);
 
   const renderField = (field: BaseField<CreatePostModel>) => {
     const fieldId = `field-${field.name}`;
@@ -249,7 +267,11 @@ const EditPostPage = () => {
       qc.invalidateQueries({ queryKey: [postId] });
       qc.invalidateQueries({ queryKey: ["posts"] });
       qc.invalidateQueries({ queryKey: ["managePosts"] });
-      if (isFeatured) qc.invalidateQueries({ queryKey: ["featuredPosts"] });
+      if (
+        (isFeatured && !data!.data.isFeatured) ||
+        (!isFeatured && data!.data.isFeatured)
+      )
+        qc.invalidateQueries({ queryKey: ["featuredPosts"] });
       return goBack();
     } catch (error) {
       console.error(error);
@@ -269,7 +291,7 @@ const EditPostPage = () => {
           Back
         </Button>
       </div>
-      {defaultValues?.title && (
+      {!isPending && data && (
         <Card>
           <CardContent>
             <form

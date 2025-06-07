@@ -45,7 +45,6 @@ export type Project = {
 };
 type ProjectCardProps = Project & {};
 const ProjectCard = ({
-  id,
   title,
   description,
   author,
@@ -69,7 +68,7 @@ const ProjectCard = ({
         <div className="p-5 pb-0">
           <CardTitle>
             <h3 className="text-xl hover:text-gray-500 duration-200 underline font-semibold text-gray-700 mb-2">
-              <Link href={`/posts/${slug}`}>{title}</Link>
+              <Link href={`/projects/${slug}`}>{title}</Link>
             </h3>
             <div className="flex gap-3 items-center mb-2">
               <Avatar>

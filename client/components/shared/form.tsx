@@ -12,7 +12,6 @@ import {
 import { useForm, FieldValues, Path } from "react-hook-form";
 import { ZodTypeAny } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReactNode } from "react";
 
 export type BaseField<T extends FieldValues> = {
   name: Path<T>;
@@ -50,14 +49,13 @@ function Form<T extends FieldValues>({
   } = useForm<T>({
     resolver: zodResolver(schema),
     mode: "onTouched",
+    //@ts-expect-error error type issue
     defaultValues: fields.reduce((a, c) => {
-      //@ts-ignore
       return {
         ...a,
-        //@ts-ignore
         [c.name]: c.type === "checkbox" ? (c.value ? 1 : 0) : c.value || "",
       };
-    }, {} as any),
+    }, {}),
   });
 
   const renderField = (field: BaseField<T>) => {
@@ -137,6 +135,7 @@ function Form<T extends FieldValues>({
             )}
           </CardHeader>
           <CardContent>
+            {/* @ts-expect-error form data type */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {fields.map(renderField)}
               <div className="flex w-full justify-center">
@@ -155,6 +154,7 @@ function Form<T extends FieldValues>({
     );
 
   return (
+    //@ts-expect-error form data type
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
       {fields.map(renderField)}
       <div className="flex w-full justify-center">

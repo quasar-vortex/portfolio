@@ -47,7 +47,7 @@ const HomePage = async () => {
         </h3>
         <p className="sm:text-lg mb-8 font-semibold text-gray-800">
           Whether you need a full-stack developer for your next project or want
-          to collaborate on something exciting, let's connect and build
+          to collaborate on something exciting, let&apos;s connect and build
           something great.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">

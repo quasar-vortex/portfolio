@@ -393,7 +393,6 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
 
   try {
     const isAdmin = req.user?.role === "ADMIN";
-    logger.info(`This use is ${!isAdmin && "NOT"} an Admin.`);
     const {
       term,
       tags,
@@ -409,29 +408,15 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
     const size = Math.min(Math.max(parseInt(pageSize) || 10, 1), 50);
     const select = isAdmin ? adminSelect : baseSelect;
 
-    // Sorting
     const order: "asc" | "desc" = sortOrder === "asc" ? "asc" : "desc";
     const key: string = sortKey || "publishDate";
 
-    // isFeatured
-    const searchIsFeatured =
-      isFeatured === "true" ? true : isFeatured === "false" ? false : undefined;
+    const where: Prisma.PostWhereInput = {
+      isActive: true,
+      ...(isAdmin ? {} : { isPublished: true }),
+    };
 
-    // conditions
-    const where: Prisma.PostWhereInput = {};
     const andConditions: Prisma.PostWhereInput[] = [];
-
-    // only admin can see unpubsished posts
-    if (!isAdmin) where.isPublished = true;
-    if (tags?.length) {
-      where.PostTag = {
-        some: {
-          tag: {
-            id: { in: tags.split(",") },
-          },
-        },
-      };
-    }
 
     if (trimmedTerm) {
       andConditions.push({
@@ -442,14 +427,25 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       });
     }
 
-    if (searchIsFeatured !== undefined) {
-      andConditions.push({ isFeatured: searchIsFeatured });
+    if (isFeatured === "true") {
+      andConditions.push({ isFeatured: true });
+    } else if (isFeatured === "false") {
+      andConditions.push({ isFeatured: false });
+    }
+
+    if (tags?.length) {
+      where.PostTag = {
+        some: {
+          tag: {
+            id: { in: tags.split(",") },
+          },
+        },
+      };
     }
 
     if (andConditions.length > 0) {
       where.AND = andConditions;
     }
-    where.isActive = true;
 
     const [count, foundPosts] = await Promise.all([
       db.post.count({ where }),
@@ -472,7 +468,8 @@ const getManyPostsHandler: AuthenticatedRequestHandler = async (
       pageSize: size,
       totalPages,
       totalCount: count,
-      isFeatured: searchIsFeatured,
+      isFeatured,
+      where,
     };
 
     logger.info(searchMeta, "Found posts!");

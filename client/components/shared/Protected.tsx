@@ -2,28 +2,34 @@
 
 import React, { useEffect } from "react";
 import { useAuthStore } from "@/app/providers/storeProvider";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type UserRole = "ADMIN" | "USER";
-
 type AcceptedRoles = UserRole[];
-const Protected =
-  (acceptedRoles: AcceptedRoles) =>
-  ({ children }: { children: React.ReactNode }) => {
+
+const Protected = (acceptedRoles: AcceptedRoles) => {
+  const WrappedComponent = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuthStore();
     const router = useRouter();
+
     useEffect(() => {
-      if (user && !acceptedRoles.includes(user.role)) {
-        redirect("/");
-      }
       if (!user) {
-        redirect("/login");
+        router.replace("/login");
+        return;
+      }
+      if (user && !acceptedRoles.includes(user.role)) {
+        router.replace("/");
       }
     }, [user, router]);
 
     if (!user || (user && !acceptedRoles.includes(user.role))) return null;
+
     return <>{children}</>;
   };
+
+  WrappedComponent.displayName = `Protected(${acceptedRoles.join(",")})`;
+  return WrappedComponent;
+};
 
 const UserGuard = Protected(["USER", "ADMIN"]);
 export { UserGuard };

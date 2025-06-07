@@ -10,7 +10,7 @@ import api from "@/lib/api";
 import { useAuthStore } from "@/app/providers/storeProvider";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+
 import { capitalize } from "@/lib/utils";
 import Image from "next/image";
 
@@ -96,7 +96,6 @@ const columns: TableColumn<Project>[] = [
 export default function ManageProjectsPage() {
   const { accessToken } = useAuthStore();
   const qc = useQueryClient();
-  const r = useRouter();
 
   return (
     <section className="p-6 space-y-6">
