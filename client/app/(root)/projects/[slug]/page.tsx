@@ -54,7 +54,7 @@ export default async function ProjectDetailsPage({
                 {project.author.firstName} {project.author.lastName}
               </p>
               <span>·</span>
-              <p>{new Date(project.createdAt).toLocaleDateString()}</p>
+              <p>{new Date(project.publishDate).toLocaleDateString()}</p>
             </div>
 
             {project.coverImage?.url && (
@@ -72,6 +72,18 @@ export default async function ProjectDetailsPage({
               className="prose max-w-none space-y-4"
               dangerouslySetInnerHTML={{ __html: project.description }}
             />
+            <div className="flex flex-wrap gap-2 pt-4">
+              {project?.ProjectTag?.map(
+                ({ tag }: { tag: { id: string; name: string } }) => (
+                  <span
+                    key={tag.id}
+                    className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md"
+                  >
+                    {tag.name}
+                  </span>
+                )
+              )}
+            </div>
           </article>
         </CardContent>
       </Card>

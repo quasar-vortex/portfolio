@@ -59,7 +59,7 @@ const ProjectCard = ({
       <CardHeader className="p-0">
         <div className="h-40 md:h-56 w-full relative">
           <Image
-            src={coverImage?.url || "https://i.pravatar.cc/500"}
+            src={coverImage?.url || ""}
             alt="cover"
             fill
             className="object-cover"
