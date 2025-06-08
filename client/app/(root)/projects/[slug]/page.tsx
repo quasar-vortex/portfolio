@@ -70,7 +70,7 @@ export default async function ProjectDetailsPage({
 
             <div
               className="prose max-w-none space-y-4"
-              dangerouslySetInnerHTML={{ __html: project.description }}
+              dangerouslySetInnerHTML={{ __html: project.content }}
             />
             <div className="flex flex-wrap gap-2 pt-4">
               {project?.ProjectTag?.map(
