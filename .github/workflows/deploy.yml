@@ -22,10 +22,12 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
 
       - name: Deploy via SSH
+        # docker-compose down -v deletes data volumes
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p 3304 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
             cd $DEPLOY_PATH
             git pull origin master
+            
             docker-compose down 
             docker-compose up --build -d
           EOF

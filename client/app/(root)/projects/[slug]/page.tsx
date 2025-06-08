@@ -84,6 +84,26 @@ export default async function ProjectDetailsPage({
                 )
               )}
             </div>
+
+            <div className="flex justify-end gap-4">
+              {project?.codeUrl && (
+                <Button
+                  className="bg-gray-700 text-white hover:bg-gray-800 transition"
+                  asChild
+                >
+                  <Link href={project.codeUrl}>Code</Link>
+                </Button>
+              )}
+
+              {project?.liveUrl && (
+                <Button
+                  className="bg-blue-600 text-white hover:bg-blue-700 transition"
+                  asChild
+                >
+                  <Link href={project.liveUrl}>Live</Link>
+                </Button>
+              )}
+            </div>
           </article>
         </CardContent>
       </Card>
