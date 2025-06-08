@@ -86,7 +86,7 @@ const EditPostPage = () => {
   const { postId } = params;
 
   const goBack = useCallback(
-    () => () => router.replace("/dash/projects"),
+    () => () => router.replace("/dash/posts"),
     [router]
   );
   const [postCoverImageFile, setPostCoverImageFile] = useState<File | null>(

@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://frontend:3000"],
+    origin: ["https://jeremybarber.dev", "https://localhost:3000", "http://localhost:3000", "http://jeremybarber.dev"],
     credentials: true,
   })
 );
