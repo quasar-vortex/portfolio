@@ -7,6 +7,7 @@ import Heading from "@tiptap/extension-heading";
 import Paragraph from "@tiptap/extension-paragraph";
 import List from "@tiptap/extension-bullet-list";
 import ListItem from "@tiptap/extension-list-item";
+import NumberedList from "@tiptap/extension-ordered-list";
 import Code from "@tiptap/extension-code";
 import Quote from "@tiptap/extension-blockquote";
 
@@ -59,11 +60,21 @@ const CustomQuote = Quote.extend({
   },
 });
 
+const CustomOrderedList = NumberedList.extend({
+  addAttributes() {
+    return {
+      class: {
+        default: "list-decimal text-gray-800 pl-4",
+        renderHTML: (attrs) => ({ class: attrs.class }),
+      },
+    };
+  },
+});
 const CustomList = List.extend({
   addAttributes() {
     return {
       class: {
-        default: "list-disc  text-gray-800",
+        default: "list-disc  text-gray-800 pl-4",
         renderHTML: (attrs) => ({ class: attrs.class }),
       },
     };
@@ -73,7 +84,7 @@ const CustomListItem = ListItem.extend({
   addAttributes() {
     return {
       class: {
-        default: "pl-4 text-gray-800",
+        default: "text-gray-800",
         renderHTML: (attrs) => ({ class: attrs.class }),
       },
     };
@@ -142,7 +153,14 @@ export const MenuBar = ({ editor }: { editor: Editor }) => {
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
-        List
+        BList
+      </Button>
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        className={editor.isActive("orderedList") ? "is-active" : ""}
+      >
+        OList
       </Button>
       <Button
         type="button"
@@ -175,4 +193,5 @@ export const editorExtensions = [
   CustomParagraph,
   CustomQuote,
   CustomListItem,
+  CustomOrderedList,
 ];
