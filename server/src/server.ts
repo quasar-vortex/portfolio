@@ -14,6 +14,7 @@ import cookieParser from "cookie-parser";
 import { projectsRouter } from "./projects/projects.routes";
 import { deleteFileByKey } from "./upload";
 import argon from "argon2";
+// import {listAllFiles} from "./upload"
 
 const app = express();
 
@@ -52,7 +53,8 @@ const cleanUpFiles = async () => {
     });
     if (fileKeys) {
       await Promise.all(
-        fileKeys!.map(async (item) => {
+    	//@ts-ignore
+	    fileKeys!.map(async (item) => {
           return await deleteFileByKey(item!);
         })
       );
@@ -62,7 +64,6 @@ const cleanUpFiles = async () => {
     logger.warn("Unable to clean up files");
   }
 };
-
 */
 const runInactiveRecordCleanUp = () => {
   setInterval(async () => {
@@ -104,6 +105,7 @@ const runInactiveRecordCleanUp = () => {
 
 const main = async () => {
   try {
+    //    await cleanUpFiles();
     await db.$connect();
 
     app.listen(APP_PORT, () => console.log(`Server Running On: ${APP_PORT}`));
