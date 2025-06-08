@@ -105,6 +105,17 @@ const PaginatedGrid = ({
     <>
       {!isPending && data && data?.data.length === 0 ? (
         <>
+          <div className="mb-6 border-b-2 border-gray-300 pb-6">
+            <input
+              placeholder="Enter search term..."
+              type="text"
+              value={storedTerm}
+              onChange={(e) => {
+                setStoredTerm(e.target.value);
+              }}
+              className="outline-none rounded-sm text-lg border border-gray-300 focus:border-gray-500 duration-200 w-full p-2"
+            />
+          </div>
           <Alert className="mb-6 text-gray-800 font-bold shadow-md">
             <AlertTitle>
               <h4 className="font-bold text-lg sm:text-xl">

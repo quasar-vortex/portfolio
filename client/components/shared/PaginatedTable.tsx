@@ -97,14 +97,25 @@ function PaginatedTable<T>({
   return (
     <>
       {data && data?.data.length === 0 ? (
-        <Alert className="mb-6 text-gray-800 font-bold shadow-md">
-          <AlertTitle>
-            <h4 className="font-bold text-lg sm:text-xl">
-              There currently aren&rsquo;t any items to display.
-            </h4>
-          </AlertTitle>
-          <AlertDescription>No data to display</AlertDescription>
-        </Alert>
+        <>
+          {displaySearch && (
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={storedTerm}
+              onChange={(e) => setStoredTerm(e.target.value)}
+              className="w-full border border-gray-300 focus:border-gray-500 outline-none p-2 text-lg rounded"
+            />
+          )}
+          <Alert className="mb-6 text-gray-800 font-bold shadow-md">
+            <AlertTitle>
+              <h4 className="font-bold text-lg sm:text-xl">
+                There currently aren&rsquo;t any items to display.
+              </h4>
+            </AlertTitle>
+            <AlertDescription>No data to display</AlertDescription>
+          </Alert>
+        </>
       ) : (
         <div className="space-y-6">
           {displaySearch && (
