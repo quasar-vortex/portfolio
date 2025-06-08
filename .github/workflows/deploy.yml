@@ -2,7 +2,7 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [master] # or your deployment branch
+    branches: [master]
 
 jobs:
   deploy:
@@ -18,12 +18,16 @@ jobs:
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 3304 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
 
       - name: Deploy via SSH
         run: |
-          ssh -p 3304 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            cd ${{ secrets.DEPLOY_PATH }}
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p 3304 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd $DEPLOY_PATH
             git pull origin master
             docker compose build
             docker compose up -d
           EOF
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
