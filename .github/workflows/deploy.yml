@@ -26,9 +26,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p 3304 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
             cd $DEPLOY_PATH
             git pull origin master
-            sudo docker-compose down -v 
-            sudo docker-compose build
-            sudo docker-compose up -d
+            docker-compose down -v 
+            docker-compose up --build -d
           EOF
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
