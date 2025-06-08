@@ -63,7 +63,7 @@ const CustomList = List.extend({
   addAttributes() {
     return {
       class: {
-        default: "list-disk  text-gray-800",
+        default: "list-disc  text-gray-800",
         renderHTML: (attrs) => ({ class: attrs.class }),
       },
     };
