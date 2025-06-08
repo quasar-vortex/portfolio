@@ -74,10 +74,7 @@ const EditProjectPage = () => {
       api.projectService.getProjectById(projectId, accessToken!),
     enabled: !!projectId && !!accessToken && !!editor,
   });
-  const goBack = useCallback(
-    () => () => router.replace("/dash/projects"),
-    [router]
-  );
+  const goBack = useCallback(() => router.replace("/dash/posts"), [router]);
   useEffect(() => {
     if (!isLoading && error) {
       toast.error("Unable to load project");
