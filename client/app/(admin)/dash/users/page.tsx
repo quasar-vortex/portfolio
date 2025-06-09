@@ -85,11 +85,6 @@ export default function ManageUsersPage() {
         columns={columns}
         actions={(user) => (
           <div className="flex gap-2">
-            <Link href={`/dash/users/edit/${user.id}`}>
-              <Button type="button" variant="outline" size="sm">
-                Edit
-              </Button>
-            </Link>
             <Button
               type="button"
               size="sm"
