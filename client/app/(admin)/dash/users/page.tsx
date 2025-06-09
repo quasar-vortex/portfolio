@@ -3,7 +3,7 @@
 import PaginatedTable, {
   TableColumn,
 } from "@/components/shared/PaginatedTable";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { useAuthStore } from "@/app/providers/storeProvider";
