@@ -23,7 +23,7 @@ export default function ContactPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitSuccessful, isSubmitting },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<ContactSchema>({
     resolver: zodResolver(contactSchema),
@@ -61,9 +61,14 @@ export default function ContactPage() {
                 toast.success("Message Sent", { position: "top-right" });
                 reset();
               } catch (error) {
-                toast.error("Message Failed to Send", {
-                  position: "top-right",
-                });
+                toast.error(
+                  `Message Failed to Send: ${
+                    error instanceof Error && error.message
+                  }`,
+                  {
+                    position: "top-right",
+                  }
+                );
               }
             })}
             className="space-y-4"
