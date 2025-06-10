@@ -3,9 +3,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRef, useEffect, startTransition, useActionState } from "react";
-import { sendMessage } from "@/app/actions/index";
+import { useRef } from "react";
+
 import Section from "@/components/shared/section";
+import axios from "axios";
+import { toast } from "sonner";
 
 const contactSchema = z.object({
   firstName: z.string().min(2).max(20),
@@ -16,27 +18,17 @@ const contactSchema = z.object({
 });
 type ContactSchema = z.infer<typeof contactSchema>;
 
-const init: { message?: string; error?: string } = {
-  message: "",
-  error: undefined,
-};
-
 export default function ContactPage() {
-  const [state, formAction] = useActionState(sendMessage, init);
   const formRef = useRef<HTMLFormElement>(null);
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful, isSubmitting },
     reset,
   } = useForm<ContactSchema>({
     resolver: zodResolver(contactSchema),
     mode: "onTouched",
   });
-
-  useEffect(() => {
-    if (isSubmitSuccessful && state.message) reset();
-  }, [isSubmitSuccessful, state.message, reset]);
 
   return (
     <Section>
@@ -60,20 +52,20 @@ export default function ContactPage() {
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
             Send a Message
           </h3>
-          {state.message && (
-            <p className="text-green-600 font-semibold mb-4">{state.message}</p>
-          )}
+
           <form
-            action={formAction}
             ref={formRef}
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit(() => {
-                startTransition(() =>
-                  formAction(new FormData(formRef.current!))
-                );
-              })(e);
-            }}
+            onSubmit={handleSubmit(async (d) => {
+              try {
+                await axios.post("/api/contact", d);
+                toast.success("Message Sent", { position: "top-right" });
+                reset();
+              } catch (error) {
+                toast.error("Message Failed to Send", {
+                  position: "top-right",
+                });
+              }
+            })}
             className="space-y-4"
           >
             <div className="flex flex-col sm:flex-row gap-4">
@@ -152,8 +144,9 @@ export default function ContactPage() {
             </div>
             <div className="pt-2 flex justify-center">
               <button
+                disabled={isSubmitting}
                 type="submit"
-                className="bg-blue-600 text-white text-sm px-6 py-2 rounded hover:bg-blue-700 transition font-semibold"
+                className="bg-blue-600 text-white text-sm px-6 py-2 rounded hover:bg-blue-700 transition font-semibold disabled:bg-gray-500 disabled:hover:bg-gray-600"
               >
                 Send Message
               </button>
