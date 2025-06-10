@@ -43,7 +43,7 @@ const FeaturedPosts = ({ bgGray }: { bgGray?: boolean }) => {
                 </Card>
               </li>
             ))}
-        {(data as FeaturedPostResponse)?.data?.slice(0, 3).map((post: Post) => (
+        {(data as FeaturedPostResponse)?.data?.map((post: Post) => (
           <li key={post.id}>
             <PostCard {...post} />
           </li>

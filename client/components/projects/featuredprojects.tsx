@@ -63,7 +63,7 @@ const FeaturedProjects = ({ bgGray }: { bgGray?: boolean }) => {
         </Alert>
       )}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {data?.data.slice(0, 3).map((item: Project) => {
+        {data?.data.map((item: Project) => {
           return <ProjectCard key={item.id} {...item} />;
         })}
         {isPending &&
